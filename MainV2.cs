@@ -3357,39 +3357,39 @@ namespace MissionPlanner
                     log.Error(ex);
                 }
             };
-            AutoConnect.NewVideoStream += (sender, gststring) =>
-            {
-                try
-                {
-                    log.Info("AutoConnect.NewVideoStream " + gststring);
-                    GStreamer.gstlaunch = GStreamer.LookForGstreamer();
+            //AutoConnect.NewVideoStream += (sender, gststring) =>
+            //{
+            //    try
+            //    {
+            //        log.Info("AutoConnect.NewVideoStream " + gststring);
+            //        GStreamer.gstlaunch = GStreamer.LookForGstreamer();
 
-                    if (!GStreamer.gstlaunchexists)
-                    {
-                        if (CustomMessageBox.Show(
-                                "A video stream has been detected, but gstreamer has not been configured/installed.\nDo you want to install/config it now?",
-                                "GStreamer", System.Windows.Forms.MessageBoxButtons.YesNo) ==
-                            (int) System.Windows.Forms.DialogResult.Yes)
-                        {
-                            GStreamerUI.DownloadGStreamer();
-                            if (!GStreamer.gstlaunchexists)
-                            {
-                                return;
-                            }
-                        }
-                        else
-                        {
-                            return;
-                        }
-                    }
+            //        if (!GStreamer.gstlaunchexists)
+            //        {
+            //            if (CustomMessageBox.Show(
+            //                    "A video stream has been detected, but gstreamer has not been configured/installed.\nDo you want to install/config it now?",
+            //                    "GStreamer", System.Windows.Forms.MessageBoxButtons.YesNo) ==
+            //                (int) System.Windows.Forms.DialogResult.Yes)
+            //            {
+            //                GStreamerUI.DownloadGStreamer();
+            //                if (!GStreamer.gstlaunchexists)
+            //                {
+            //                    return;
+            //                }
+            //            }
+            //            else
+            //            {
+            //                return;
+            //            }
+            //        }
 
-                    GStreamer.StartA(gststring);
-                }
-                catch (Exception ex)
-                {
-                    log.Error(ex);
-                }
-            };
+            //        GStreamer.StartA(gststring);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        log.Error(ex);
+            //    }
+            //};
             AutoConnect.Start();
 
             // debound based on url
@@ -3397,30 +3397,30 @@ namespace MissionPlanner
             // prevent spaming the ui
             SemaphoreSlim videodetect = new SemaphoreSlim(1);
 
-            CameraProtocol.OnRTSPDetected += (sender, s) =>
-            {
-                if (isHerelink)
-                {
-                    return;
-                }
+            //CameraProtocol.OnRTSPDetected += (sender, s) =>
+            //{
+            //    if (isHerelink)
+            //    {
+            //        return;
+            //    }
 
-                if (!videourlseen.Contains(s) && videodetect.Wait(0))
-                {
-                    videourlseen.Add(s);
-                    if (CustomMessageBox.Show(
-                            "A video stream has been detected, Do you want to connect to it? " + s,
-                            "Mavlink Camera", System.Windows.Forms.MessageBoxButtons.YesNo) ==
-                        (int) System.Windows.Forms.DialogResult.Yes)
-                    {
-                        AutoConnect.RaiseNewVideoStream(sender,
-                            String.Format(
-                                "rtspsrc location={0} latency=41 udp-reconnect=1 timeout=0 do-retransmission=false ! application/x-rtp ! decodebin3 ! queue leaky=2 ! videoconvert ! video/x-raw,format=BGRA ! appsink name=outsink sync=false",
-                                s));
-                    }
+            //    if (!videourlseen.Contains(s) && videodetect.Wait(0))
+            //    {
+            //        videourlseen.Add(s);
+            //        if (CustomMessageBox.Show(
+            //                "A video stream has been detected, Do you want to connect to it? " + s,
+            //                "Mavlink Camera", System.Windows.Forms.MessageBoxButtons.YesNo) ==
+            //            (int) System.Windows.Forms.DialogResult.Yes)
+            //        {
+            //            AutoConnect.RaiseNewVideoStream(sender,
+            //                String.Format(
+            //                    "rtspsrc location={0} latency=41 udp-reconnect=1 timeout=0 do-retransmission=false ! application/x-rtp ! decodebin3 ! queue leaky=2 ! videoconvert ! video/x-raw,format=BGRA ! appsink name=outsink sync=false",
+            //                    s));
+            //        }
 
-                    videodetect.Release();
-                }
-            };
+            //        videodetect.Release();
+            //    }
+            //};
 
 
             BinaryLog.onFlightMode += (firmware, modeno) =>
@@ -3450,74 +3450,74 @@ namespace MissionPlanner
                 }
             };
 
-            GStreamer.onNewImage += (sender, image) =>
-            {
-                try
-                {
-                    if (image == null)
-                    {
-                        GCSViews.FlightData.myhud.bgimage = null;
-                        return;
-                    }
+            //GStreamer.onNewImage += (sender, image) =>
+            //{
+            //    try
+            //    {
+            //        if (image == null)
+            //        {
+            //            GCSViews.FlightData.myhud.bgimage = null;
+            //            return;
+            //        }
 
-                    var old = GCSViews.FlightData.myhud.bgimage;
-                    GCSViews.FlightData.myhud.bgimage = new Bitmap(image.Width, image.Height, 4 * image.Width,
-                        PixelFormat.Format32bppPArgb,
-                        image.LockBits(Rectangle.Empty, null, SKColorType.Bgra8888)
-                            .Scan0);
-                    if (old != null)
-                        old.Dispose();
-                }
-                catch
-                {
-                }
-            };
+            //        var old = GCSViews.FlightData.myhud.bgimage;
+            //        GCSViews.FlightData.myhud.bgimage = new Bitmap(image.Width, image.Height, 4 * image.Width,
+            //            PixelFormat.Format32bppPArgb,
+            //            image.LockBits(Rectangle.Empty, null, SKColorType.Bgra8888)
+            //                .Scan0);
+            //        if (old != null)
+            //            old.Dispose();
+            //    }
+            //    catch
+            //    {
+            //    }
+            //};
 
-            vlcrender.onNewImage += (sender, image) =>
-            {
-                try
-                {
-                    if (image == null)
-                    {
-                        GCSViews.FlightData.myhud.bgimage = null;
-                        return;
-                    }
+            //vlcrender.onNewImage += (sender, image) =>
+            //{
+            //    try
+            //    {
+            //        if (image == null)
+            //        {
+            //            GCSViews.FlightData.myhud.bgimage = null;
+            //            return;
+            //        }
 
-                    var old = GCSViews.FlightData.myhud.bgimage;
-                    GCSViews.FlightData.myhud.bgimage = new Bitmap(image.Width,
-                        image.Height,
-                        4 * image.Width,
-                        PixelFormat.Format32bppPArgb,
-                        image.LockBits(Rectangle.Empty, null, SKColorType.Bgra8888).Scan0);
-                    if (old != null)
-                        old.Dispose();
-                }
-                catch
-                {
-                }
-            };
+            //        var old = GCSViews.FlightData.myhud.bgimage;
+            //        GCSViews.FlightData.myhud.bgimage = new Bitmap(image.Width,
+            //            image.Height,
+            //            4 * image.Width,
+            //            PixelFormat.Format32bppPArgb,
+            //            image.LockBits(Rectangle.Empty, null, SKColorType.Bgra8888).Scan0);
+            //        if (old != null)
+            //            old.Dispose();
+            //    }
+            //    catch
+            //    {
+            //    }
+            //};
 
-            CaptureMJPEG.onNewImage += (sender, image) =>
-            {
-                try
-                {
-                    if (image == null)
-                    {
-                        GCSViews.FlightData.myhud.bgimage = null;
-                        return;
-                    }
+            //CaptureMJPEG.onNewImage += (sender, image) =>
+            //{
+            //    try
+            //    {
+            //        if (image == null)
+            //        {
+            //            GCSViews.FlightData.myhud.bgimage = null;
+            //            return;
+            //        }
 
-                    var old = GCSViews.FlightData.myhud.bgimage;
-                    GCSViews.FlightData.myhud.bgimage = new Bitmap(image.Width, image.Height, 4 * image.Width,
-                        PixelFormat.Format32bppPArgb,
-                        image.LockBits(Rectangle.Empty, null, SKColorType.Bgra8888).Scan0);
-                    if (old != null)
-                        old.Dispose();
-                }
-                catch
-                {
-                }
-            };
+            //        var old = GCSViews.FlightData.myhud.bgimage;
+            //        GCSViews.FlightData.myhud.bgimage = new Bitmap(image.Width, image.Height, 4 * image.Width,
+            //            PixelFormat.Format32bppPArgb,
+            //            image.LockBits(Rectangle.Empty, null, SKColorType.Bgra8888).Scan0);
+            //        if (old != null)
+            //            old.Dispose();
+            //    }
+            //    catch
+            //    {
+            //    }
+            //};
 
             try
             {
@@ -3591,7 +3591,7 @@ namespace MissionPlanner
 
                 ZeroConf.ProbeForMavlink();
 
-                ZeroConf.ProbeForRTSP();
+                //ZeroConf.ProbeForRTSP();
             }
             catch
             {
