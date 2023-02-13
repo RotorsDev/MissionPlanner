@@ -1029,6 +1029,16 @@ namespace MissionPlanner
                 if (Settings.Instance["MainWidth"] != null)
                     this.Width = Settings.Instance.GetInt32("MainWidth");
 
+
+                if (Settings.Instance["Bordeless"] != null)
+                {
+                    bool bLess = Settings.Instance.GetBoolean("Borderless");
+                    if (bLess)
+                    {
+                        this.FormBorderStyle = FormBorderStyle.None;
+                    }
+                }
+
                 // set presaved default telem rates
                 if (Settings.Instance["CMB_rateattitude"] != null)
                     CurrentState.rateattitudebackup = Settings.Instance.GetInt32("CMB_rateattitude");

@@ -1,0 +1,10 @@
+Showconsole = true
+showairports = false
+showtfr = false
+enableadsb = true
+advancedview = true
+MainLocX = 0
+MainLocY = 0
+MainHeight = 1080
+MainWidth = 1920
+Borderless = True
