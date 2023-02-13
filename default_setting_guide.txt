@@ -13,3 +13,10 @@ CMB_rateposition = 2
 CMB_ratestatus = 1
 CMB_raterc = 10
 CMB_ratesensors = 2
+
+GMapMarkerBase_length = 200
+GMapMarkerBase_DisplayCOG =  true
+GMapMarkerBase_DisplayHeading =  true
+GMapMarkerBase_DisplayNavBearing = true
+GMapMarkerBase_DisplayRadius = true
+GMapMarkerBase_DisplayTarget = true

@@ -3885,23 +3885,6 @@ namespace MissionPlanner
             return cmdargs;
         }
 
-        private void BGFirmwareCheck(object state)
-        {
-            try
-            {
-                if (Settings.Instance["fw_check"] != DateTime.Now.ToShortDateString())
-                {
-                    APFirmware.GetList("https://firmware.oborne.me/manifest.json.gz");
-
-                    Settings.Instance["fw_check"] = DateTime.Now.ToShortDateString();
-                }
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex);
-            }
-        }
-
         private void BGGetKIndex(object state)
         {
             try
@@ -3926,31 +3909,6 @@ namespace MissionPlanner
             }
         }
 
-        private void BGgetTFR(object state)
-        {
-            try
-            {
-                tfr.tfrcache = Settings.GetUserDataDirectory() + "tfr.xml";
-                tfr.GetTFRs();
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex);
-            }
-        }
-
-        private void BGNoFly(object state)
-        {
-            try
-            {
-                NoFly.NoFly.Scan();
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex);
-            }
-        }
-
 
         void KIndex_KIndex(object sender, EventArgs e)
         {
@@ -3958,68 +3916,6 @@ namespace MissionPlanner
             Settings.Instance["kindex"] = CurrentState.KIndexstatic.ToString();
         }
 
-        private void BGCreateMaps(object state)
-        {
-            // sort logs
-            try
-            {
-                MissionPlanner.Log.LogSort.SortLogs(Directory.GetFiles(Settings.Instance.LogDir, "*.tlog"));
-
-                MissionPlanner.Log.LogSort.SortLogs(Directory.GetFiles(Settings.Instance.LogDir, "*.rlog"));
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex);
-            }
-
-            try
-            {
-                // create maps
-                Log.LogMap.MapLogs(Directory.GetFiles(Settings.Instance.LogDir, "*.tlog", SearchOption.AllDirectories));
-                Log.LogMap.MapLogs(Directory.GetFiles(Settings.Instance.LogDir, "*.bin", SearchOption.AllDirectories));
-                Log.LogMap.MapLogs(Directory.GetFiles(Settings.Instance.LogDir, "*.log", SearchOption.AllDirectories));
-
-                if (File.Exists(tlogThumbnailHandler.tlogThumbnailHandler.queuefile))
-                {
-                    Log.LogMap.MapLogs(File.ReadAllLines(tlogThumbnailHandler.tlogThumbnailHandler.queuefile));
-
-                    File.Delete(tlogThumbnailHandler.tlogThumbnailHandler.queuefile);
-                }
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex);
-            }
-
-            try
-            {
-                if (File.Exists(tlogThumbnailHandler.tlogThumbnailHandler.queuefile))
-                {
-                    Log.LogMap.MapLogs(File.ReadAllLines(tlogThumbnailHandler.tlogThumbnailHandler.queuefile));
-
-                    File.Delete(tlogThumbnailHandler.tlogThumbnailHandler.queuefile);
-                }
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex);
-            }
-        }
-
-        private void checkupdate(object stuff)
-        {
-            if (Program.WindowsStoreApp)
-                return;
-
-            try
-            {
-                MissionPlanner.Utilities.Update.CheckForUpdate();
-            }
-            catch (Exception ex)
-            {
-                log.Error("Update check failed", ex);
-            }
-        }
 
         private void MainV2_Resize(object sender, EventArgs e)
         {
@@ -4088,11 +3984,7 @@ namespace MissionPlanner
                 return true;
             }
 
-            /*if (keyData == (Keys.Control | Keys.S)) // screenshot
-            {
-                ScreenShot();
-                return true;
-            }*/
+    
             if (keyData == (Keys.Control | Keys.P))
             {
                 new PluginUI().Show();
@@ -4129,13 +4021,7 @@ namespace MissionPlanner
                 return true;
             }
 
-            if (keyData == (Keys.Control | Keys.Z))
-            {
-                //ScanHW.Scan(comPort);
-                new Camera().test(MainV2.comPort);
-                return true;
-            }
-
+ 
             if (keyData == (Keys.Control | Keys.T)) // for override connect
             {
                 try
@@ -4150,32 +4036,6 @@ namespace MissionPlanner
                 return true;
             }
 
-            if (keyData == (Keys.Control | Keys.Y)) // for ryan beall and ollyw42
-            {
-                // write
-                try
-                {
-                    MainV2.comPort.doCommand((byte) MainV2.comPort.sysidcurrent, (byte) MainV2.comPort.compidcurrent,
-                        MAVLink.MAV_CMD.PREFLIGHT_STORAGE, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-                }
-                catch
-                {
-                    CustomMessageBox.Show("Invalid command");
-                    return true;
-                }
-
-                //read
-                ///////MainV2.comPort.doCommand(MAVLink09.MAV_CMD.PREFLIGHT_STORAGE, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-                CustomMessageBox.Show("Done MAV_ACTION_STORAGE_WRITE");
-                return true;
-            }
-
-            if (keyData == (Keys.Control | Keys.J))
-            {
-                new DevopsUI().ShowUserControl();
-
-                return true;
-            }
 
             if (ProcessCmdKeyCallback != null)
             {
@@ -4408,15 +4268,7 @@ namespace MissionPlanner
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            try
-            {
-                System.Diagnostics.Process.Start(
-                    "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=mich146%40hotmail%2ecom&lc=AU&item_name=Michael%20Oborne&no_note=0&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHostedGuest");
-            }
-            catch
-            {
-                CustomMessageBox.Show("Link open failed. check your default webpage association");
-            }
+
         }
 
         [StructLayout(LayoutKind.Sequential)]
