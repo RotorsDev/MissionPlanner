@@ -1024,13 +1024,7 @@ namespace MissionPlanner
                     }
                 }
 
-                if (Settings.Instance["MainHeight"] != null)
-                    this.Height = Settings.Instance.GetInt32("MainHeight");
-                if (Settings.Instance["MainWidth"] != null)
-                    this.Width = Settings.Instance.GetInt32("MainWidth");
-
-
-                if (Settings.Instance["Bordeless"] != null)
+                if (Settings.Instance["Borderless"] != null)
                 {
                     bool bLess = Settings.Instance.GetBoolean("Borderless");
                     if (bLess)
@@ -1038,6 +1032,14 @@ namespace MissionPlanner
                         this.FormBorderStyle = FormBorderStyle.None;
                     }
                 }
+
+
+                if (Settings.Instance["MainHeight"] != null)
+                    this.Height = Settings.Instance.GetInt32("MainHeight");
+                if (Settings.Instance["MainWidth"] != null)
+                    this.Width = Settings.Instance.GetInt32("MainWidth");
+
+
 
                 // set presaved default telem rates
                 if (Settings.Instance["CMB_rateattitude"] != null)
