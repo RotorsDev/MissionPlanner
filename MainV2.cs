@@ -3235,22 +3235,22 @@ namespace MissionPlanner
 
             this.SuspendLayout();
 
-            // setup http server
-            try
-            {
-                log.Info("start http");
-                httpthread = new Thread(new httpserver().listernforclients)
-                {
-                    Name = "motion jpg stream-network kml",
-                    IsBackground = true
-                };
-                httpthread.Start();
-            }
-            catch (Exception ex)
-            {
-                log.Error("Error starting TCP listener thread: ", ex);
-                CustomMessageBox.Show(ex.ToString());
-            }
+            //// setup http server
+            //try
+            //{
+            //    log.Info("start http");
+            //    httpthread = new Thread(new httpserver().listernforclients)
+            //    {
+            //        Name = "motion jpg stream-network kml",
+            //        IsBackground = true
+            //    };
+            //    httpthread.Start();
+            //}
+            //catch (Exception ex)
+            //{
+            //    log.Error("Error starting TCP listener thread: ", ex);
+            //    CustomMessageBox.Show(ex.ToString());
+            //}
 
             log.Info("start joystick");
             try
@@ -3294,34 +3294,34 @@ namespace MissionPlanner
 
             ThreadPool.QueueUserWorkItem(LoadGDALImages);
 
-            ThreadPool.QueueUserWorkItem(BGLoadAirports);
-
-            ThreadPool.QueueUserWorkItem(BGCreateMaps);
+            //ThreadPool.QueueUserWorkItem(BGLoadAirports);
+            
+            //ThreadPool.QueueUserWorkItem(BGCreateMaps);
 
             //ThreadPool.QueueUserWorkItem(BGGetAlmanac);
 
-            ThreadPool.QueueUserWorkItem(BGLogMessagesMetaData);
+           // ThreadPool.QueueUserWorkItem(BGLogMessagesMetaData);
 
             // tfr went dead on 30-9-2020
             //ThreadPool.QueueUserWorkItem(BGgetTFR);
 
-            ThreadPool.QueueUserWorkItem(BGNoFly);
+            //ThreadPool.QueueUserWorkItem(BGNoFly);
 
-            ThreadPool.QueueUserWorkItem(BGGetKIndex);
+            //ThreadPool.QueueUserWorkItem(BGGetKIndex);
 
             // update firmware version list - only once per day
-            ThreadPool.QueueUserWorkItem(BGFirmwareCheck);
+            //ThreadPool.QueueUserWorkItem(BGFirmwareCheck);
 
-            Task.Run(async () =>
-            {
-                try
-                {
-                    await UserAlert.GetAlerts().ConfigureAwait(false);
-                }
-                catch
-                {
-                }
-            });
+            //Task.Run(async () =>
+            //{
+            //    try
+            //    {
+            //        await UserAlert.GetAlerts().ConfigureAwait(false);
+            //    }
+            //    catch
+            //    {
+            //    }
+            //});
 
             log.Info("start AutoConnect");
             AutoConnect.NewMavlinkConnection += (sender, serial) =>
