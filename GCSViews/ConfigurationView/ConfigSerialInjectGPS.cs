@@ -136,7 +136,6 @@ namespace MissionPlanner.GCSViews.ConfigurationView
 
             rtcm3.ObsMessage += Rtcm3_ObsMessage;
 
-            MissionPlanner.Utilities.Tracking.AddPage(this.GetType().ToString(), this.Text);
         }
 
         private void Rtcm3_ObsMessage(object sender, EventArgs e)

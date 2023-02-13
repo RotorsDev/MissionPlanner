@@ -61,9 +61,6 @@ namespace MissionPlanner
         {
             InitializeComponent();
 
-            Tracking.AddPage(
-                MethodBase.GetCurrentMethod().DeclaringType.ToString(),
-                MethodBase.GetCurrentMethod().Name);
         }
 
         //private static Factory factory; 

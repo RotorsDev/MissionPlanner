@@ -305,8 +305,6 @@ namespace MissionPlanner.GCSViews.ConfigurationView
 
                         var timetook = (DateTime.Now - starttime).TotalMilliseconds;
 
-                        Tracking.AddTiming("Firmware Download", deviceInfo.board, timetook, deviceInfo.description);
-
                         fw_Progress1(100, Strings.DownloadedFromInternet);
                         log.Info("Downloaded");
                     }
@@ -315,8 +313,6 @@ namespace MissionPlanner.GCSViews.ConfigurationView
                         CustomMessageBox.Show(Strings.FailedDownload, Strings.ERROR);
                         return;
                     }
-
-                    MissionPlanner.Utilities.Tracking.AddFW(mavtype.ToString(), deviceInfo.board);
 
                     var fw = new Firmware();
                     fw.Progress += fw_Progress1;
@@ -328,8 +324,6 @@ namespace MissionPlanner.GCSViews.ConfigurationView
                     fw.UploadFlash(deviceInfo.name, tempfile, BoardDetect.boards.pass);
                     
                     var uploadtime = (DateTime.Now - uploadstarttime).TotalMilliseconds;
-
-                    Tracking.AddTiming("Firmware Upload", deviceInfo.board, uploadtime, deviceInfo.description);
 
                     return;
 

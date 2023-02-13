@@ -36,8 +36,6 @@ namespace MissionPlanner.Controls
                 BUT_connect.Text = Strings.Stop;
             }
 
-            MissionPlanner.Utilities.Tracking.AddPage(this.GetType().ToString(), this.Text);
-
             try
             {
                 Load();

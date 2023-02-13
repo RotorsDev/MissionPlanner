@@ -205,7 +205,6 @@ namespace MissionPlanner.Log
 
             dataGridView1.RowUnshared += dataGridView1_RowUnshared;
 
-            MissionPlanner.Utilities.Tracking.AddPage(this.GetType().ToString(), this.Text);
         }
 
 

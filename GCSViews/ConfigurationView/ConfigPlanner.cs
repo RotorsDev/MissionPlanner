@@ -781,8 +781,6 @@ namespace MissionPlanner.GCSViews.ConfigurationView
 
         private void chk_analytics_CheckedChanged(object sender, EventArgs e)
         {
-            Tracking.OptOut = chk_analytics.Checked;
-            Settings.Instance["analyticsoptout"] = chk_analytics.Checked.ToString();
         }
 
         private void CHK_beta_CheckedChanged(object sender, EventArgs e)

@@ -80,7 +80,6 @@ namespace MissionPlanner.Controls
 
             hud1.SixteenXNine = true;
 
-            MissionPlanner.Utilities.Tracking.AddPage(this.GetType().ToString(), this.Text);
         }
 
         void OSDVideo_camimage(Image camimage)

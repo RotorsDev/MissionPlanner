@@ -588,8 +588,6 @@ namespace MissionPlanner.Utilities
 
                 var timetook = (DateTime.Now - starttime).TotalMilliseconds;
 
-                Tracking.AddTiming("Firmware Download", board.ToString(), timetook, temp.name);
-
                 updateProgress(100, Strings.DownloadedFromInternet);
                 log.Info("Downloaded");
             }
@@ -600,8 +598,6 @@ namespace MissionPlanner.Utilities
                 return false;
             }
 
-            MissionPlanner.Utilities.Tracking.AddFW(temp.name, board.ToString());
-
             var uploadstarttime = DateTime.Now;
 
             var ans = UploadFlash(comport,
@@ -609,7 +605,6 @@ namespace MissionPlanner.Utilities
 
             var uploadtime = (DateTime.Now - uploadstarttime).TotalMilliseconds;
 
-            Tracking.AddTiming("Firmware Upload", board.ToString(), uploadtime, temp.name);
 
             return ans;
         }

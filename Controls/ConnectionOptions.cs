@@ -22,8 +22,6 @@ namespace MissionPlanner.Controls
             CMB_serialport.Items.Add("WS");
 
             ThemeManager.ApplyThemeTo(this);
-
-            MissionPlanner.Utilities.Tracking.AddPage(this.GetType().ToString(), this.Text);
         }
 
         private void BUT_connect_Click(object sender, EventArgs e)

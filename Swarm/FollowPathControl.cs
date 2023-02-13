@@ -36,7 +36,6 @@ namespace MissionPlanner.Swarm
 
             MessageBox.Show("this is beta, use at own risk");
 
-            MissionPlanner.Utilities.Tracking.AddPage(this.GetType().ToString(), this.Text);
         }
 
         private void CMB_mavs_SelectedIndexChanged(object sender, EventArgs e)

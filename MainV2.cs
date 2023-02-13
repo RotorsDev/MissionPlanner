@@ -824,6 +824,7 @@ namespace MissionPlanner
             new Transition(new TransitionType_EaseInEaseOut(2000));
 
             PopulateSerialportList();
+
             if (_connectionControl.CMB_serialport.Items.Count > 0)
             {
                 _connectionControl.CMB_baudrate.SelectedIndex = 8;
@@ -863,8 +864,6 @@ namespace MissionPlanner
 
                 comPortBaud = int.Parse(temp2);
             }
-
-            MissionPlanner.Utilities.Tracking.cid = new Guid(Settings.Instance["guid"].ToString());
 
             if (splash != null)
             {
@@ -1056,9 +1055,6 @@ namespace MissionPlanner
 
                 if (Settings.Instance["speechenable"] != null)
                     MainV2.speechEnable = Settings.Instance.GetBoolean("speechenable");
-
-                if (Settings.Instance["analyticsoptout"] != null)
-                    MissionPlanner.Utilities.Tracking.OptOut = Settings.Instance.GetBoolean("analyticsoptout");
 
                 try
                 {
@@ -3150,7 +3146,6 @@ namespace MissionPlanner
                 }
                 catch (Exception e)
                 {
-                    Tracking.AddException(e);
                     log.Error("Serial Reader fail :" + e.ToString());
                     try
                     {
@@ -3634,8 +3629,6 @@ namespace MissionPlanner
             Program.Splash?.Close();
 
             log.Info("appload time");
-            MissionPlanner.Utilities.Tracking.AddTiming("AppLoad", "Load Time",
-                (DateTime.Now - Program.starttime).TotalMilliseconds, "");
 
             int p = (int) Environment.OSVersion.Platform;
             bool isWin = (p != 4) && (p != 6) && (p != 128);

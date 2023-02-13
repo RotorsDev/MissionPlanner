@@ -33,8 +33,6 @@ namespace MissionPlanner.GeoRef
 
             selectedProcessingMode = PROCESSING_MODE.CAM_MSG;
 
-            MissionPlanner.Utilities.Tracking.AddPage(this.GetType().ToString(), this.Text);
-
             myGMAP1.MapProvider = MainV2.instance.FlightData.gMapControl1.MapProvider;
             myGMAP1.MinZoom = MainV2.instance.FlightData.gMapControl1.MinZoom;
             myGMAP1.MaxZoom = MainV2.instance.FlightData.gMapControl1.MaxZoom;

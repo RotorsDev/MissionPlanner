@@ -135,7 +135,6 @@ namespace MissionPlanner.GCSViews
 
             Utilities.ThemeManager.ApplyThemeTo(this);
 
-            MissionPlanner.Utilities.Tracking.AddPage(this.GetType().ToString(), this.Text);
         }
 
         private async void pictureBoxplane_Click(object sender, EventArgs e)

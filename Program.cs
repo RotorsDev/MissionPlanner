@@ -298,9 +298,6 @@ namespace MissionPlanner
             MissionPlanner.Controls.InputBox.ApplyTheme += MissionPlanner.Utilities.ThemeManager.ApplyThemeTo;
             Controls.BackstageView.BackstageViewPage.ApplyTheme += MissionPlanner.Utilities.ThemeManager.ApplyThemeTo;
 
-            Controls.MainSwitcher.Tracking += MissionPlanner.Utilities.Tracking.AddPage;
-            Controls.BackstageView.BackstageView.Tracking += MissionPlanner.Utilities.Tracking.AddPage;
-
             // setup settings provider
             MissionPlanner.Comms.CommsBase.Settings += CommsBase_Settings;
             MissionPlanner.Comms.CommsBase.InputBoxShow += CommsBaseOnInputBoxShow;
@@ -341,15 +338,6 @@ namespace MissionPlanner
 
             Console.WriteLine("Setup GoogleMapProvider API");
             if (Settings.Instance["GoogleApiKey"] != null) GoogleMapProvider.APIKey = Settings.Instance["GoogleApiKey"];
-
-            Console.WriteLine("Setup Tracking.productName");
-            Tracking.productName = Application.ProductName;
-            Tracking.productVersion = Application.ProductVersion;
-            Tracking.currentCultureName = Application.CurrentCulture.Name;
-            Console.WriteLine("Setup Tracking.primaryScreenBitsPerPixel");
-            Tracking.primaryScreenBitsPerPixel = Screen.PrimaryScreen.BitsPerPixel;
-            Tracking.boundsWidth = Screen.PrimaryScreen.Bounds.Width;
-            Tracking.boundsHeight = Screen.PrimaryScreen.Bounds.Height;
 
             Console.WriteLine("Setup Settings.Instance.UserAgent");
             Settings.Instance.UserAgent = Application.ProductName + " " + Application.ProductVersion + " (" +
@@ -700,8 +688,6 @@ namespace MissionPlanner
 
             if (MainV2.instance != null && MainV2.instance.IsDisposed)
                 return;
-
-            MissionPlanner.Utilities.Tracking.AddException(ex);
 
             log.Debug(ex.ToString());
 

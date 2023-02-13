@@ -769,9 +769,6 @@ namespace MissionPlanner.GCSViews
 
                 scriptChecker_Tick(null, null);
 
-                MissionPlanner.Utilities.Tracking.AddPage(
-                    System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString(),
-                    System.Reflection.MethodBase.GetCurrentMethod().Name);
             }
             else
             {
@@ -4170,7 +4167,6 @@ namespace MissionPlanner.GCSViews
                 catch (Exception ex)
                 {
                     log.Error(ex);
-                    Tracking.AddException(ex);
                     Console.WriteLine("FD Main loop exception " + ex);
                 }
 
@@ -5515,7 +5511,6 @@ namespace MissionPlanner.GCSViews
             catch (Exception ex)
             {
                 log.Error(ex);
-                Tracking.AddException(ex);
             }
         }
 

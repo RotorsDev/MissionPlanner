@@ -40,8 +40,6 @@ namespace MissionPlanner.Log
         public LogDownload()
         {
             InitializeComponent();
-
-            MissionPlanner.Utilities.Tracking.AddPage(this.GetType().ToString(), this.Text);
         }
 
         private void waitandsleep(int time)

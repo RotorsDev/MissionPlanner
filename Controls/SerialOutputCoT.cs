@@ -42,7 +42,6 @@ namespace MissionPlanner.Controls
                 BUT_connect.Text = Strings.Stop;
             }
 
-            MissionPlanner.Utilities.Tracking.AddPage(this.GetType().ToString(), this.Text);
         }
 
         private void CMB_updaterate_SelectedIndexChanged(object sender, EventArgs e)
