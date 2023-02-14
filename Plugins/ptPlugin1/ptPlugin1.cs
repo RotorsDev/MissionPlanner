@@ -21,6 +21,12 @@ namespace ptPlugin1
         annunciator aMain = new annunciator(18, new Size(130,40));
         public static FloatingForm annunciatorForm = new FloatingForm();
 
+
+
+        public TabPage payloadControlpage = new TabPage();
+
+
+
         string actualPanel = "";
 
         public override string Name
@@ -104,6 +110,13 @@ namespace ptPlugin1
                 }
             }
 
+
+
+            payloadControlpage.Text = "PayloadControl";
+            payloadControlpage.Name = "payLoadCTRTab";
+            Host.MainForm.FlightData.tabControlactions.TabPages.Add(payloadControlpage);
+            //MainV2.instance.tabpagesLoaded = true;
+
             return true;     //If it is false plugin will not start (loop will not called)
         }
 
@@ -142,9 +155,11 @@ namespace ptPlugin1
 
                         if (actualPanel == "FD")
                         {
-                            MainV2.instance.FlightData.flightPlannerToolStripMenuItem_Click(null, EventArgs.Empty);
+                            //MainV2.instance.FlightData.flightPlannerToolStripMenuItem_Click(null, EventArgs.Empty);
+                            //// MainV2.instance.FlightPlanner.BUT_read_Click(null, EventArgs.Empty); TODO: When to read actual mission plan
+                            MainV2.instance.MyView.ShowScreen("FlightPlanner");
                             MainV2.instance.FlightPlanner.cmb_missiontype.SelectedIndex = 0;
-                            // MainV2.instance.FlightPlanner.BUT_read_Click(null, EventArgs.Empty); TODO: When to read actual mission plan
+
 
                         }
                         else if (actualPanel == "GF")
@@ -161,7 +176,7 @@ namespace ptPlugin1
 
                         if (actualPanel == "FD")
                         {
-                            MainV2.instance.FlightData.flightPlannerToolStripMenuItem_Click(null, EventArgs.Empty);
+                            MainV2.instance.MyView.ShowScreen("FlightPlanner");
                             MainV2.instance.FlightPlanner.cmb_missiontype.SelectedIndex = 1;
                             // MainV2.instance.FlightPlanner.BUT_read_Click(null, EventArgs.Empty); TODO: When to read actual mission plan
 

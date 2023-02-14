@@ -361,6 +361,8 @@ namespace MissionPlanner
         public static bool ShowAirports { get; set; }
         public static bool ShowTFR { get; set; }
 
+        //public bool tabpagesLoaded = false;
+
         private Utilities.adsb _adsb;
 
         public bool EnableADSB

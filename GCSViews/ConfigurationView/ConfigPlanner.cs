@@ -36,29 +36,30 @@ namespace MissionPlanner.GCSViews.ConfigurationView
         // Called every time that this control is made current in the backstage view
         public void Activate()
         {
-            
+
             startup = true; // flag to ignore changes while we programatically populate controls
-            if (mainv2.displayconfiguration.displayname == displaynames.advanced)
+
+            if (MainV2.DisplayConfiguration.displayName == DisplayNames.Advanced)
             {
-                cmb_layout.selectedindex = 1;
+                CMB_Layout.SelectedIndex = 1;
             }
-            else if (mainv2.displayconfiguration.displayname == displaynames.basic)
+            else if (MainV2.DisplayConfiguration.displayName == DisplayNames.Basic)
             {
-                cmb_layout.selectedindex = 0;
+                CMB_Layout.SelectedIndex = 0;
             }
-            else if (mainv2.displayconfiguration.displayname == displaynames.custom)
+            else if (MainV2.DisplayConfiguration.displayName == DisplayNames.Custom)
             {
-                cmb_layout.selectedindex = 2;
+                CMB_Layout.SelectedIndex = 2;
             }
             else
             {
-                cmb_layout.selectedindex = 0;
+                CMB_Layout.SelectedIndex = 0;
             }
 
-            if (!mainv2.displayconfiguration.displayplannerlayout)
+            if (!MainV2.DisplayConfiguration.displayPlannerLayout)
             {
-                label5.visible = false;
-                cmb_layout.visible = false;
+                label5.Visible = false;
+                CMB_Layout.Visible = false;
             }
 
 

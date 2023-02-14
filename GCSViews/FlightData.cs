@@ -5006,7 +5006,7 @@ namespace MissionPlanner.GCSViews
         /// <summary>
         /// Drops out the active tab into a seperate form
         /// </summary>
-        private void TabControlactions_DoubleClick(object sender, System.EventArgs e)
+        public void TabControlactions_DoubleClick(object sender, System.EventArgs e)
         {
             Form dropoutForm = new Form();
             TabControl sourceTC = sender as TabControl;
@@ -5341,6 +5341,10 @@ namespace MissionPlanner.GCSViews
         /// </summary>
         public void LoadDropoutsState()
         {
+            //Wait for plugins to load in case a plugin add a page
+            //while (!MainV2.instance.tabpagesLoaded) ;
+
+
             // Initialize list with default values
             DropoutsState = new List<DropoutsStateItem> // Individual Control items
             {
