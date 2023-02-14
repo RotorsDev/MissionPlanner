@@ -4239,7 +4239,7 @@ namespace MissionPlanner.GCSViews
                     StringBuilder message = new StringBuilder();
                     MainV2.comPort.MAV.cs.messages.ForEach(x =>
                     {
-                        message.Insert(0, x.Item1 + " : " + x.Item2 + "\r\n");
+                        message.Insert(0, x.Item1 + " : " + x.Item2 + " : " + x.Item3 +"\r\n");
                     });
                     txt_messagebox.Text = message.ToString();
 

@@ -10,6 +10,7 @@ using System.Drawing;
 using MissionPlanner.Controls.PreFlight;
 using MissionPlanner.Controls;
 using System.Linq;
+using FastColoredTextBoxNS;
 
 
 //By Bandi
@@ -30,6 +31,20 @@ namespace ptPlugin1
 
         public TabPage engineControlPage = new TabPage();
         public engineControl eCtrl = new engineControl();
+
+
+
+        public TabPage colorMessagePage = new TabPage();
+        public FastColoredTextBox fctb;
+
+        TextStyle infoStyle = new TextStyle(Brushes.White, null, FontStyle.Regular);
+        TextStyle warningStyle = new TextStyle(Brushes.BurlyWood, null, FontStyle.Regular);
+        TextStyle errorStyle = new TextStyle(Brushes.Red, null, FontStyle.Regular);
+
+
+        public TabPage connectionControlPage = new TabPage();
+
+
 
 
 
@@ -189,6 +204,36 @@ namespace ptPlugin1
 
             eCtrl.setEngineStatus("Ready to Start", "No error");
 
+
+
+            colorMessagePage.Text = "Messages";
+            colorMessagePage.Name = "colorMsgTab";
+            fctb = new FastColoredTextBoxNS.FastColoredTextBox();
+            setupFCTB();
+            colorMessagePage.Controls.Add(fctb);
+            Host.MainForm.FlightData.tabControlactions.TabPages.Add(colorMessagePage);
+
+
+            fctbAddLine("1Message with normal style\r\n", infoStyle);
+            fctbAddLine("2Message with normal style\r\n", infoStyle);
+            fctbAddLine("3Message with error style\r\n", errorStyle);
+            fctbAddLine("4Message with normal style\r\n", infoStyle);
+            fctbAddLine("5Message with normal style\r\n", infoStyle);
+            fctbAddLine("6Message with normal style\r\n", infoStyle);
+            fctbAddLine("7Message with warning style\r\n", warningStyle);
+            fctbAddLine("8Message with normal style\r\n", infoStyle);
+            fctbAddLine("9Message with normal style\r\n", infoStyle);
+
+            connectionControlPage.Controls.Add(MainV2._connectionControl);
+            ToolStrip ts = new ToolStrip();
+            ts.Items.Add(MainV2.instance.MenuConnect);
+            ts.Location = new Point(0, 100);
+            connectionControlPage.Controls.Add(ts);
+            MainV2._connectionControl.Location = new Point(0, 0);
+            Host.MainForm.FlightData.tabControlactions.TabPages.Add(connectionControlPage);
+
+
+
             return true;     //If it is false plugin will not start (loop will not called)
         }
 
@@ -211,6 +256,11 @@ namespace ptPlugin1
         public override bool Loop()
 		//Loop is called in regular intervalls (set by loopratehz)
         {
+            var messagetime = MainV2.comPort.MAV.cs.messages.LastOrDefault().time;
+
+
+
+
             return true;	//Return value is not used
         }
 
@@ -303,6 +353,62 @@ namespace ptPlugin1
             Settings.Instance["aMainDocked"] = "true";
             Settings.Instance.Save();
             (sender as Form).Dispose();
+        }
+
+
+
+        //************** FCTB
+
+
+        void fctbAddLine(string text, Style style)
+        {
+            fctb.BeginUpdate();
+            fctb.TextSource.CurrentTB = fctb;
+            fctb.SelectionStart = 0;
+            fctb.InsertText(text, style);
+            fctb.GoEnd();//scroll to end of the text
+            fctb.EndUpdate();
+            fctb.ClearUndo();
+        }
+
+        void setupFCTB()
+        {
+            // 
+            // fctb
+            // 
+            this.fctb.AutoCompleteBracketsList = new char[] {
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
+            this.fctb.AutoScrollMinSize = new System.Drawing.Size(25, 15);
+            this.fctb.BackBrush = null;
+            this.fctb.CharHeight = 15;
+            this.fctb.CharWidth = 7;
+            this.fctb.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.fctb.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.fctb.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fctb.Font = new System.Drawing.Font("Consolas", 11F);
+            this.fctb.IsReplaceMode = false;
+            this.fctb.Location = new System.Drawing.Point(0, 0);
+            this.fctb.Name = "fctb";
+            this.fctb.Paddings = new System.Windows.Forms.Padding(0);
+            this.fctb.ReadOnly = true;
+            this.fctb.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
+            this.fctb.Size = new System.Drawing.Size(355, 249);
+            this.fctb.TabIndex = 5;
+            this.fctb.Zoom = 100;
+            this.fctb.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            this.fctb.ShowLineNumbers = false;
+            this.fctb.BackColor = Color.Black;
+            
+
         }
 
 
