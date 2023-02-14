@@ -5014,6 +5014,7 @@ namespace MissionPlanner.GCSViews
             TabControl dropoutTab = new TabControl();
 
             dropoutForm.Text = $"{sourceTP.Text} Tab Dropout";
+            dropoutForm.Name = "X";
             dropoutForm.FormClosed += DropoutForm_FormClosed;
             dropoutForm.ResizeEnd += (s2, e2) => dropoutForm.SaveStartupLocation();
             dropoutForm.LocationChanged += (s3, e3) => dropoutForm.SaveStartupLocation();

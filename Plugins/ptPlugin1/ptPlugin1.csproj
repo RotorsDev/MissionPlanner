@@ -98,13 +98,51 @@
     <Compile Include="annunciator.Designer.cs">
       <DependentUpon>annunciator.cs</DependentUpon>
     </Compile>
+    <Compile Include="dummyform.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dummyform.Designer.cs">
+      <DependentUpon>dummyform.cs</DependentUpon>
+    </Compile>
+    <Compile Include="engineControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="engineControl.Designer.cs">
+      <DependentUpon>engineControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="FloatingForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FloatingForm.Designer.cs">
       <DependentUpon>FloatingForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="payloadcontrol.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="payloadcontrol.Designer.cs">
+      <DependentUpon>payloadcontrol.cs</DependentUpon>
+    </Compile>
+    <Compile Include="payloadsetup.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="payloadsetup.Designer.cs">
+      <DependentUpon>payloadsetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="payloadSetupForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="payloadSetupForm.Designer.cs">
+      <DependentUpon>payloadSetupForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="ptPlugin1.cs" />
+    <Compile Include="unThemedButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -115,6 +153,35 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Gaugebg.png" />
+    <Content Include="protarPayloadBG.png" />
+    <Content Include="warning1.png" />
+    <Content Include="wrench.png" />
+    <Content Include="wrench1.png" />
+    <Content Include="wrench2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="dummyform.resx">
+      <DependentUpon>dummyform.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="engineControl.resx">
+      <DependentUpon>engineControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="payloadcontrol.resx">
+      <DependentUpon>payloadcontrol.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="payloadsetup.resx">
+      <DependentUpon>payloadsetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="payloadSetupForm.resx">
+      <DependentUpon>payloadSetupForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

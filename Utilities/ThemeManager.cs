@@ -307,6 +307,7 @@ namespace MissionPlanner.Utilities
         /// <param name="control"></param>
         public static void ApplyThemeTo(Control control)
         {
+            
             if (control is ContainerControl)
                 ((ContainerControl)control).AutoScaleMode = AutoScaleMode.None;
 

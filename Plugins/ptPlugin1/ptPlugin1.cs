@@ -15,6 +15,7 @@ using System.Linq;
 //By Bandi
 namespace ptPlugin1
 {
+    [PreventTheming]
     public class ptPlugin1 : Plugin
     {
 
@@ -24,8 +25,16 @@ namespace ptPlugin1
 
 
         public TabPage payloadControlpage = new TabPage();
+        public payloadcontrol plControl = new payloadcontrol();
 
 
+        public TabPage engineControlPage = new TabPage();
+        public engineControl eCtrl = new engineControl();
+
+
+
+        public List<Payload> payloadSettings = new List<Payload>();
+        payloadSetupForm fPs;
 
         string actualPanel = "";
 
@@ -60,11 +69,45 @@ namespace ptPlugin1
             Panel panel1 = Host.MainForm.Controls.Find("Panel1", true).FirstOrDefault() as Panel;
 
 
-            string[] btnLabels = new string[] { "FLIGHT"+ Environment.NewLine +"DATA", "FLIGHT" + Environment.NewLine +"PLAN", "GEO"+ Environment.NewLine +"FENCE", "SETUP", "COM", "VIBE", "FUEL", "GEO"+ Environment.NewLine +"FENCE",
-                "AIR"+ Environment.NewLine +"SPEED", "MAG", "PAY"+ Environment.NewLine +"LOAD", "MISSION", "PARA"+ Environment.NewLine +"CHUTE",
-                "PRE"+ Environment.NewLine +"FLIGHT", "START", "MSG","MAIN" + Environment.NewLine + "SCRN","DUMMY" };
+            string[] btnLabels = new string[] { 
+                "FLIGHT"+ Environment.NewLine +"DATA",
+                "FLIGHT" + Environment.NewLine +"PLAN",
+                "GEO"+ Environment.NewLine +"FENCE",
+                "SETUP",
+                "ENGINE",
+                "FUEL",
+                "PAY"+ Environment.NewLine +"LOAD",
+                "AIR"+ Environment.NewLine +"SPEED",
+                "DUMMY",
+                "MAG",
+                "DUMMY",
+                "DUMMY",
+                "PARA"+ Environment.NewLine +"CHUTE",
+                "PRE"+ Environment.NewLine +"FLIGHT",
+                "START",
+                "MSG",
+                "DUMMY",
+                "DUMMY" };
 
-            string[] btnNames = new string[] { "FD", "FP", "GF", "SETUP", "COMM", "VIBE", "FUEL", "FENCE", "AIRSPD", "MAG", "PAYLD", "ROUTE", "CHUTE", "PRFLT", "START", "MSG", "MAIN","DUMMY" };
+            string[] btnNames = new string[] { 
+                "FD",
+                "FP",
+                "GF",
+                "SETUP", 
+                "ENGINE",
+                "FUEL",
+                "PAYLD",
+                "AIRSPD",
+                "DUMMY1",
+                "MAG",
+                "DUMMY2",
+                "DUMMY3",
+                "CHUTE",
+                "PRFLT",
+                "START",
+                "MSG",
+                "DUMMY4",
+                "DUMMY5" };
             aMain.setPanels(btnNames, btnLabels);
 
             //Setup initial button status
@@ -72,6 +115,8 @@ namespace ptPlugin1
             aMain.setStatus("FP", Stat.NOMINAL);
             aMain.setStatus("GF", Stat.NOMINAL);
             aMain.setStatus("SETUP", Stat.NOMINAL);
+            aMain.setStatus("PAYL", Stat.NOMINAL);
+            aMain.setStatus("ENGINE", Stat.NOMINAL);
 
 
 
@@ -112,12 +157,55 @@ namespace ptPlugin1
 
 
 
+
+
             payloadControlpage.Text = "PayloadControl";
             payloadControlpage.Name = "payLoadCTRTab";
+
+            plControl.Name = "plControl";
+            plControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            plControl.Location = new Point(0, 0);
+            plControl.Size = new Size(payloadControlpage.Width, payloadControlpage.Height);
+            plControl.setupClicked += PlControl_setupClicked;
+            payloadControlpage.Controls.Add(plControl);
+            plControl.redrawControls();
+            plControl.setSafetyStatus(false);
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(payloadControlpage);
-            //MainV2.instance.tabpagesLoaded = true;
+
+
+
+
+
+
+            engineControlPage.Text = "Engine Control";
+            engineControlPage.Name = "engCtrlTab";
+
+            eCtrl.Name = "engineControl";
+            eCtrl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            eCtrl.Location = new Point(0, 0);
+            eCtrl.Size = new Size(engineControlPage.Width, engineControlPage.Height);
+            engineControlPage.Controls.Add(eCtrl);
+            Host.MainForm.FlightData.tabControlactions.TabPages.Add(engineControlPage);
+
+            eCtrl.setEngineStatus("Ready to Start", "No error");
 
             return true;     //If it is false plugin will not start (loop will not called)
+        }
+
+        private void PlControl_setupClicked(object sender, EventArgs e)
+        {
+            fPs = new payloadSetupForm();
+            fPs.Show();
+            fPs.FormClosing += FPs_FormClosing;
+            fPs.updateAll(plControl.payloads);
+            plControl.setupEnabled(false);
+        }
+
+        private void FPs_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            plControl.setupEnabled(true);
+            plControl.updateAll(fPs.payloadStatus);
+            plControl.redrawControls();
         }
 
         public override bool Loop()
@@ -143,50 +231,15 @@ namespace ptPlugin1
             switch (aMain.clickedButtonName)
             {
                 case "FD":
-                    if (actualPanel != "FD")
-                    {
-                        MainV2.instance.MyView.ShowScreen("FlightData");
-                        actualPanel = "FD";
-                    }
+                    MainV2.instance.MyView.ShowScreen("FlightData");
                     break;
                 case "FP":
-                    if (actualPanel != "FP")
-                    {
-
-                        if (actualPanel == "FD")
-                        {
-                            //MainV2.instance.FlightData.flightPlannerToolStripMenuItem_Click(null, EventArgs.Empty);
-                            //// MainV2.instance.FlightPlanner.BUT_read_Click(null, EventArgs.Empty); TODO: When to read actual mission plan
-                            MainV2.instance.MyView.ShowScreen("FlightPlanner");
-                            MainV2.instance.FlightPlanner.cmb_missiontype.SelectedIndex = 0;
-
-
-                        }
-                        else if (actualPanel == "GF")
-                        {
-                            MainV2.instance.FlightPlanner.cmb_missiontype.SelectedIndex = 0;
-                        }
-                        actualPanel = "FP";
-                    }
-
+                    MainV2.instance.MyView.ShowScreen("FlightPlanner");
+                    MainV2.instance.FlightPlanner.cmb_missiontype.SelectedIndex = 0;
                     break;
                 case "GF":
-                    if (actualPanel != "GF")
-                    {
-
-                        if (actualPanel == "FD")
-                        {
-                            MainV2.instance.MyView.ShowScreen("FlightPlanner");
-                            MainV2.instance.FlightPlanner.cmb_missiontype.SelectedIndex = 1;
-                            // MainV2.instance.FlightPlanner.BUT_read_Click(null, EventArgs.Empty); TODO: When to read actual mission plan
-
-                        }
-                        else if (actualPanel == "FP")
-                        {
-                            MainV2.instance.FlightPlanner.cmb_missiontype.SelectedIndex = 1;
-                        }
-                        actualPanel = "GF";
-                    }
+                    MainV2.instance.MyView.ShowScreen("FlightPlanner");
+                    MainV2.instance.FlightPlanner.cmb_missiontype.SelectedIndex = 1;
 
                     break;
 
@@ -196,6 +249,18 @@ namespace ptPlugin1
                     actualPanel = "SETUP";
                     break;
 
+                case "PAYLD":
+                    {
+                        TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["payLoadCTRTab"];
+                        if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
+                        break;
+                    }
+                case "ENGINE":
+                    {
+                        TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["engCtrlTab"];
+                        if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
+                        break;
+                    }
                 default:
                     break;
             }
