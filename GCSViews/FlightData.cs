@@ -2694,7 +2694,7 @@ namespace MissionPlanner.GCSViews
             //attitudeIndicatorInstrumentControl1;
         }
 
-        private void flightPlannerToolStripMenuItem_Click(object sender, EventArgs e)
+        public void flightPlannerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MainSwitcher.Screen flightPlannerScreen = MainV2.View.screens.Where(s => s.Name == "FlightPlanner").FirstOrDefault();
 
@@ -2706,16 +2706,16 @@ namespace MissionPlanner.GCSViews
             foreach (Control ctl in splitContainer1.Panel2.Controls)
                 ctl.Visible = false;
 
-            // Add close button
-            MyButton but = new MyButton
-            {
-                Location = new Point(splitContainer1.Panel2.Width / 2, 0),
-                Text = "Close"
-            };
-            but.Click += but_Click;
+            //// Add close button
+            //MyButton but = new MyButton
+            //{
+            //    Location = new Point(splitContainer1.Panel2.Width / 2, 0),
+            //    Text = "Close"
+            //};
+            //but.Click += but_Click;
 
             // Add flight planner controls
-            splitContainer1.Panel2.Controls.Add(but);
+            //splitContainer1.Panel2.Controls.Add(but);
             splitContainer1.Panel2.Controls.Add(flightPlannerScreen.Control);
             ThemeManager.ApplyThemeTo(flightPlannerScreen.Control);
             ThemeManager.ApplyThemeTo(this);
@@ -2728,11 +2728,11 @@ namespace MissionPlanner.GCSViews
             if (flightPlannerScreen.Control is IActivate)
                 ((IActivate)(flightPlannerScreen.Control)).Activate();
 
-            // Show close button
-            but.BringToFront();
+            //// Show close button
+            //but.BringToFront();
         }
 
-        void but_Click(object sender, EventArgs e)
+        public void but_Click(object sender, EventArgs e)
         {
             MainSwitcher.Screen flightPlannerScreen = MainV2.View.screens.Where(s => s.Name == "FlightPlanner").FirstOrDefault();
 

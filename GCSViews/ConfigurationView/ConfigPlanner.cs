@@ -36,29 +36,31 @@ namespace MissionPlanner.GCSViews.ConfigurationView
         // Called every time that this control is made current in the backstage view
         public void Activate()
         {
+            
             startup = true; // flag to ignore changes while we programatically populate controls
-            if (MainV2.DisplayConfiguration.displayName == DisplayNames.Advanced)
+            if (mainv2.displayconfiguration.displayname == displaynames.advanced)
             {
-                CMB_Layout.SelectedIndex = 1;
+                cmb_layout.selectedindex = 1;
             }
-            else if (MainV2.DisplayConfiguration.displayName == DisplayNames.Basic)
+            else if (mainv2.displayconfiguration.displayname == displaynames.basic)
             {
-                CMB_Layout.SelectedIndex = 0;
+                cmb_layout.selectedindex = 0;
             }
-            else if (MainV2.DisplayConfiguration.displayName == DisplayNames.Custom)
+            else if (mainv2.displayconfiguration.displayname == displaynames.custom)
             {
-                CMB_Layout.SelectedIndex = 2;
+                cmb_layout.selectedindex = 2;
             }
             else
             {
-                CMB_Layout.SelectedIndex = 0;
+                cmb_layout.selectedindex = 0;
             }
 
-            if (!MainV2.DisplayConfiguration.displayPlannerLayout)
+            if (!mainv2.displayconfiguration.displayplannerlayout)
             {
-                label5.Visible = false;
-                CMB_Layout.Visible = false;
+                label5.visible = false;
+                cmb_layout.visible = false;
             }
+
 
             CMB_osdcolor.DataSource = Enum.GetNames(typeof(KnownColor));
 
@@ -938,18 +940,20 @@ namespace MissionPlanner.GCSViews.ConfigurationView
 
         private void CMB_Layout_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if ((DisplayNames)CMB_Layout.SelectedItem == DisplayNames.Advanced)
-            {
-                MainV2.DisplayConfiguration = MainV2.DisplayConfiguration.Advanced();
-            }
-            else if ((DisplayNames)CMB_Layout.SelectedItem == DisplayNames.Basic)
-            {
-                MainV2.DisplayConfiguration = MainV2.DisplayConfiguration.Basic();
-            }
-            else if ((DisplayNames)CMB_Layout.SelectedItem == DisplayNames.Custom)
-            {
-                MainV2.DisplayConfiguration = MainV2.DisplayConfiguration.Custom();
-            }
+
+            //TODO : Quick fix, it screws up dropout forms, so changind the layout needs restart at this moment.
+            //if ((DisplayNames)CMB_Layout.SelectedItem == DisplayNames.Advanced)
+            //{
+            //    MainV2.DisplayConfiguration = MainV2.DisplayConfiguration.Advanced();
+            //}
+            //else if ((DisplayNames)CMB_Layout.SelectedItem == DisplayNames.Basic)
+            //{
+            //    MainV2.DisplayConfiguration = MainV2.DisplayConfiguration.Basic();
+            //}
+            //else if ((DisplayNames)CMB_Layout.SelectedItem == DisplayNames.Custom)
+            //{
+            //    MainV2.DisplayConfiguration = MainV2.DisplayConfiguration.Custom();
+            //}
             Settings.Instance["displayview"] = MainV2.DisplayConfiguration.ConvertToString();
         }
 

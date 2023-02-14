@@ -21,6 +21,8 @@ namespace ptPlugin1
         annunciator aMain = new annunciator(18, new Size(130,40));
         public static FloatingForm annunciatorForm = new FloatingForm();
 
+        string actualPanel = "";
+
         public override string Name
         {
             get { return "ptPlugin1"; }
@@ -52,19 +54,29 @@ namespace ptPlugin1
             Panel panel1 = Host.MainForm.Controls.Find("Panel1", true).FirstOrDefault() as Panel;
 
 
-            string[] btnLabels = new string[] { "IMU", "ENGINE", "POWER", "NAV", "COM", "VIBE", "FUEL", "GEO"+ Environment.NewLine +"FENCE",
+            string[] btnLabels = new string[] { "FLIGHT"+ Environment.NewLine +"DATA", "FLIGHT" + Environment.NewLine +"PLAN", "GEO"+ Environment.NewLine +"FENCE", "SETUP", "COM", "VIBE", "FUEL", "GEO"+ Environment.NewLine +"FENCE",
                 "AIR"+ Environment.NewLine +"SPEED", "MAG", "PAY"+ Environment.NewLine +"LOAD", "MISSION", "PARA"+ Environment.NewLine +"CHUTE",
                 "PRE"+ Environment.NewLine +"FLIGHT", "START", "MSG","MAIN" + Environment.NewLine + "SCRN","DUMMY" };
 
-            string[] btnNames = new string[] { "EKF", "ENGINE", "BATT", "GPS", "COMM", "VIBE", "FUEL", "FENCE", "AIRSPD", "MAG", "PAYLD", "ROUTE", "CHUTE", "PRFLT", "START", "MSG", "MAIN","DUMMY" };
+            string[] btnNames = new string[] { "FD", "FP", "GF", "SETUP", "COMM", "VIBE", "FUEL", "FENCE", "AIRSPD", "MAG", "PAYLD", "ROUTE", "CHUTE", "PRFLT", "START", "MSG", "MAIN","DUMMY" };
             aMain.setPanels(btnNames, btnLabels);
+
+            //Setup initial button status
+            aMain.setStatus("FD", Stat.NOMINAL);
+            aMain.setStatus("FP", Stat.NOMINAL);
+            aMain.setStatus("GF", Stat.NOMINAL);
+            aMain.setStatus("SETUP", Stat.NOMINAL);
+
+
+
+
 
             aMain.Enabled = true;
             aMain.Location = new Point(0, 0);
             aMain.Size = new Size(panel1.Width, 47);
             aMain.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Right;
             aMain.undock += annunciator1_undock;
-
+            aMain.buttonClicked += annunciator1_buttonClicked;
 
             aMain.Visible = true;
             aMain.Refresh();
@@ -112,7 +124,67 @@ namespace ptPlugin1
             return true;	//Return value is not used
         }
 
+        private void annunciator1_buttonClicked(object sender, EventArgs e)
+        {
 
+            switch (aMain.clickedButtonName)
+            {
+                case "FD":
+                    if (actualPanel != "FD")
+                    {
+                        MainV2.instance.MyView.ShowScreen("FlightData");
+                        actualPanel = "FD";
+                    }
+                    break;
+                case "FP":
+                    if (actualPanel != "FP")
+                    {
+
+                        if (actualPanel == "FD")
+                        {
+                            MainV2.instance.FlightData.flightPlannerToolStripMenuItem_Click(null, EventArgs.Empty);
+                            MainV2.instance.FlightPlanner.cmb_missiontype.SelectedIndex = 0;
+                            // MainV2.instance.FlightPlanner.BUT_read_Click(null, EventArgs.Empty); TODO: When to read actual mission plan
+
+                        }
+                        else if (actualPanel == "GF")
+                        {
+                            MainV2.instance.FlightPlanner.cmb_missiontype.SelectedIndex = 0;
+                        }
+                        actualPanel = "FP";
+                    }
+
+                    break;
+                case "GF":
+                    if (actualPanel != "GF")
+                    {
+
+                        if (actualPanel == "FD")
+                        {
+                            MainV2.instance.FlightData.flightPlannerToolStripMenuItem_Click(null, EventArgs.Empty);
+                            MainV2.instance.FlightPlanner.cmb_missiontype.SelectedIndex = 1;
+                            // MainV2.instance.FlightPlanner.BUT_read_Click(null, EventArgs.Empty); TODO: When to read actual mission plan
+
+                        }
+                        else if (actualPanel == "FP")
+                        {
+                            MainV2.instance.FlightPlanner.cmb_missiontype.SelectedIndex = 1;
+                        }
+                        actualPanel = "GF";
+                    }
+
+                    break;
+
+                case "SETUP":
+                    MainV2.instance.MyView.ShowScreen("SWConfig");
+                    Console.WriteLine(MainV2.instance.FlightData.tabQuick);
+                    actualPanel = "SETUP";
+                    break;
+
+                default:
+                    break;
+            }
+        }
 
         private void annunciator1_undock(object sender, EventArgs e)
         {
