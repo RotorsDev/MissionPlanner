@@ -72,7 +72,7 @@ namespace MissionPlanner.Controls
                 item.btn.buttonName = "EMPTY";
                 item.btn.ContextMenu = contextMenu1;
                 item.btn.BackColor = Color.Black;
-                item.Status = Stat.ALERT;
+                item.Status = Stat.NOMINAL;
 
                 item.name = "EMPTY";
                 item._disabled = true;

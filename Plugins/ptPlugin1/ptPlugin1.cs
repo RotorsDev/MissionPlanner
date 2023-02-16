@@ -27,6 +27,9 @@ namespace ptPlugin1
 
         public TabPage payloadControlpage = new TabPage();
         public payloadcontrol plControl = new payloadcontrol();
+        public List<Payload> payloadSettings = new List<Payload>();
+        payloadSetupForm fPs;
+
 
 
         public TabPage engineControlPage = new TabPage();
@@ -52,9 +55,9 @@ namespace ptPlugin1
         public batterypanel bp = new batterypanel();
 
 
+        public TabPage ekfPage = new TabPage();
+        public ekfStatControl ekfStat = new ekfStatControl();
 
-        public List<Payload> payloadSettings = new List<Payload>();
-        payloadSetupForm fPs;
 
         string actualPanel = "";
 
@@ -77,7 +80,7 @@ namespace ptPlugin1
         public override bool Init()
 		//Init called when the plugin dll is loaded
         {
-            loopratehz = 3;  //Loop runs every second (The value is in Hertz, so 2 means every 500ms, 0.1f means every 10 second...) 
+            loopratehz = 2;  //Loop runs every second (The value is in Hertz, so 2 means every 500ms, 0.1f means every 10 second...) 
 
             return true;	 // If it is false then plugin will not load
         }
@@ -102,10 +105,10 @@ namespace ptPlugin1
                 "EKF",
                 "",
                 "",
-                "",
-                "",
                 "LAUNCH",
                 "PRE" + Environment.NewLine + "FLGHT",
+                "ACTIONS",
+                "DATA",
                 "MSG",
                 "COMMS" };
 
@@ -122,27 +125,13 @@ namespace ptPlugin1
                 "EKF",
                 "DUMMY2",
                 "DUMMY3",
-                "DUMMY4",
-                "DUMMY5",
                 "START",
                 "PREFLGHT",
+                "ACTIONS",
+                "DATA",
                 "MSG",
                 "COMMS" };
             aMain.setPanels(btnNames, btnLabels);
-
-            //Setup initial button status
-            aMain.setStatus("FD", Stat.NOMINAL);
-            aMain.setStatus("FP", Stat.NOMINAL);
-            aMain.setStatus("GF", Stat.NOMINAL);
-            aMain.setStatus("SETUP", Stat.NOMINAL);
-            aMain.setStatus("PAYL", Stat.NOMINAL);
-            aMain.setStatus("ENGINE", Stat.NOMINAL);
-
-            aMain.setStatus("COMMS", Stat.ALERT);
-
-
-
-
 
             aMain.Enabled = true;
             aMain.Location = new Point(0, 0);
@@ -182,7 +171,13 @@ namespace ptPlugin1
             }
 
 
-
+            colorMessagePage.Text = "ColorMessages";
+            colorMessagePage.Name = "colorMsgTab";
+            fctb = new FastColoredTextBoxNS.FastColoredTextBox();
+            setupFCTB();
+            this.fctb.Size = colorMessagePage.ClientSize;
+            colorMessagePage.Controls.Add(fctb);
+            Host.MainForm.FlightData.tabControlactions.TabPages.Add(colorMessagePage);
 
 
             payloadControlpage.Text = "PayloadControl";
@@ -217,15 +212,6 @@ namespace ptPlugin1
 
 
 
-            colorMessagePage.Text = "ColorMessages";
-            colorMessagePage.Name = "colorMsgTab";
-            fctb = new FastColoredTextBoxNS.FastColoredTextBox();
-            setupFCTB();
-            colorMessagePage.Controls.Add(fctb);
-            Host.MainForm.FlightData.tabControlactions.TabPages.Add(colorMessagePage);
-
-
-            //fctbAddLine("1Message with normal style\r\n", infoStyle);
 
 
             connectionControlPage.Text = "Comms";
@@ -235,7 +221,6 @@ namespace ptPlugin1
             ToolStrip ts = new ToolStrip();
             ts.BackColor = Color.Black;
             ts.Items.Add(MainV2.instance.MenuConnect);
-//            ts.Location = new Point(0, 100);
             connectionControlPage.Controls.Add(ts);
             MainV2._connectionControl.Location = new Point(0, 0);
             connectionStats = new ConnectionStats(Host.comPort);
@@ -253,8 +238,17 @@ namespace ptPlugin1
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(batteryPage);
 
 
+            ekfPage.Text = "EKF";
+            ekfPage.Name = "ekfTab";
+            ekfPage.Controls.Add(ekfStat);
+            ekfStat.Size = ekfPage.ClientSize;
+            ekfStat.Location = new Point(0, 0);
+            ekfStat.Dock = DockStyle.Fill;
+            Host.MainForm.FlightData.tabControlactions.TabPages.Add(ekfPage);
 
 
+            //Setup mavlink receiving
+            Host.comPort.OnPacketReceived += MavOnOnPacketReceivedHandler;
 
 
             return true;     //If it is false plugin will not start (loop will not called)
@@ -280,13 +274,32 @@ namespace ptPlugin1
 		//Loop is called in regular intervalls (set by loopratehz)
         {
 
+            {
+                var lq = Host.cs.linkqualitygcs;
+                if (lq >= 95) aMain.setStatus("COMMS", Stat.NOMINAL);
+                else if (lq < 95 && lq > 70) aMain.setStatus("COMMS", Stat.WARNING);
+                else aMain.setStatus("COMMS", Stat.ALERT);
+            }
+
+            {
+                var bs = bp.getGenericStatus();
+                switch (bs)
+                {
+                    case 0: aMain.setStatus("BATT", Stat.NOMINAL);
+                        break;
+                    case 1: aMain.setStatus("BATT", Stat.WARNING);
+                        break;
+                    case 2: aMain.setStatus("BATT", Stat.ALERT);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
             #region MessagesBox
 
-            TimeSpan Delta;
-            DateTime start = DateTime.Now;
-
-
             //Message box update
+            
             DateTime lastIncomingMessage = MainV2.comPort.MAV.cs.messages.LastOrDefault().time;
             if (lastIncomingMessage != lastDisplayedMessage)
             {
@@ -307,12 +320,14 @@ namespace ptPlugin1
                             case 2:
                                 {
                                     displayStyle = errorStyle;
+                                    aMain.setStatus("MSG", Stat.ALERT);
                                     break;
                                 }
                             case 3:
                             case 4:
                                 {
                                     displayStyle = warningStyle;
+                                    aMain.setStatus("MSG", Stat.WARNING);
                                     break;
                                 }
                             default:
@@ -323,7 +338,6 @@ namespace ptPlugin1
                         }
 
                         fctb.SelectionStart = 0;
-                        fctb.SelectionLength = 0;
                         fctb.InsertText(x.Item1 + " : (" + x.Item3 + ") " + x.Item2 + "\r\n", displayStyle);
                     }
 
@@ -332,13 +346,16 @@ namespace ptPlugin1
                 lastDisplayedMessage = lastIncomingMessage;
             }
 
-
-            DateTime now = DateTime.Now;
-            Delta = now - start;
-            Debug.WriteLine("fctb update time: " + (int)Delta.TotalMilliseconds + "ms");
-
             #endregion
 
+
+            #region BatteryVoltages
+
+            PowerStatus pwr = SystemInformation.PowerStatus;
+            bp.setGcsVoltage(pwr.BatteryLifePercent, pwr.PowerLineStatus);
+
+
+            #endregion
 
 
             return true;	//Return value is not used
@@ -353,6 +370,66 @@ namespace ptPlugin1
 
             annunciatorForm?.SaveStartupLocation();
             return true;	//Return value is not used
+        }
+
+
+
+        private void MavOnOnPacketReceivedHandler(object o, MAVLink.MAVLinkMessage linkMessage)
+        {
+
+            // Motor status and fuel level sensor data
+
+            if ((MAVLink.MAVLINK_MSG_ID)linkMessage.msgid == MAVLink.MAVLINK_MSG_ID.EFI_STATUS)
+            {
+
+                MAVLink.mavlink_efi_status_t s = linkMessage.ToStructure<MAVLink.mavlink_efi_status_t>();
+
+                eCtrl.setRpmEgt(s.rpm, s.exhaust_gas_temperature);
+                eCtrl.setThrFuel(s.throttle_position, s.fuel_flow, s.fuel_consumed);
+                eCtrl.setStatus((byte)s.health, (byte)s.ecu_index);
+            }
+
+
+            //Named values (voltage and payload status
+
+            if ((MAVLink.MAVLINK_MSG_ID)linkMessage.msgid == MAVLink.MAVLINK_MSG_ID.NAMED_VALUE_FLOAT)
+            {
+
+                MAVLink.mavlink_named_value_float_t s = linkMessage.ToStructure<MAVLink.mavlink_named_value_float_t>();
+
+                System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
+
+                if (enc.GetString(s.name) == "servo1")
+                {
+                    bp.setServo1Voltage(s.value);
+                }
+
+                if (enc.GetString(s.name) == "servo2")
+                {
+                    bp.setServo2Voltage(s.value);
+                }
+
+                if (enc.GetString(s.name) == "main")
+                {
+                    bp.setMainVoltage(s.value);
+                }
+
+                if (enc.GetString(s.name) == "payload")
+                {
+                    bp.setPayloadVoltage(s.value);
+                }
+
+                if (enc.GetString(s.name) == "S")
+                {
+                    //Set status pin TODO: Need to check 
+                    if (s.value == 1) plControl.setSafetyStatus(true);
+                    else plControl.setSafetyStatus(false);
+                }
+
+
+            }
+
+
         }
 
         private void annunciator1_buttonClicked(object sender, EventArgs e)
@@ -400,6 +477,31 @@ namespace ptPlugin1
                 case "MSG":
                     {
                         TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["colorMsgTab"];
+                        if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
+                        aMain.setStatus("MSG", Stat.NOMINAL);
+                        break;
+                    }
+                case "BATT":
+                    {
+                        TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["battTab"];
+                        if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
+                        break;
+                    }
+                case "DATA":
+                    {
+                        TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["tabQuick"];
+                        if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
+                        break;
+                    }
+                case "ACTIONS":
+                    {
+                        TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["tabActions"];
+                        if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
+                        break;
+                    }
+                case "EKF":
+                    {
+                        TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["ekfTab"];
                         if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
                         break;
                     }
@@ -451,33 +553,22 @@ namespace ptPlugin1
         //************** FCTB
 
 
-        void fctbAddLine(string text, Style style)
-        {
-            fctb.BeginUpdate();
-            fctb.TextSource.CurrentTB = fctb;
-            fctb.SelectionStart = 0;
-            fctb.InsertText(text, style);
-            fctb.GoEnd();//scroll to end of the text
-            fctb.EndUpdate();
-            fctb.ClearUndo();
-        }
-
         void setupFCTB()
         {
             // 
             // fctb
             // 
-            this.fctb.AutoCompleteBracketsList = new char[] {
-        '(',
-        ')',
-        '{',
-        '}',
-        '[',
-        ']',
-        '\"',
-        '\"',
-        '\'',
-        '\''};
+        //    this.fctb.AutoCompleteBracketsList = new char[] {
+        //'(',
+        //')',
+        //'{',
+        //'}',
+        //'[',
+        //']',
+        //'\"',
+        //'\"',
+        //'\'',
+        //'\''};
             this.fctb.AutoScrollMinSize = new System.Drawing.Size(25, 15);
             this.fctb.BackBrush = null;
             this.fctb.CharHeight = 15;
@@ -489,10 +580,9 @@ namespace ptPlugin1
             this.fctb.IsReplaceMode = false;
             this.fctb.Location = new System.Drawing.Point(0, 0);
             this.fctb.Name = "fctb";
-            this.fctb.Paddings = new System.Windows.Forms.Padding(0);
+            this.fctb.Paddings = new System.Windows.Forms.Padding(1);
             this.fctb.ReadOnly = true;
             this.fctb.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
-            this.fctb.Size = new System.Drawing.Size(355, 249);
             this.fctb.TabIndex = 5;
             this.fctb.Zoom = 100;
             this.fctb.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;

@@ -123,7 +123,7 @@
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="ekfvel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>8, 48</value>
+    <value>8, 47</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="tableLayoutPanel1.ColumnCount" type="System.Int32, mscorlib">
@@ -133,10 +133,10 @@
     <value>Fill</value>
   </data>
   <data name="ekfposv.Location" type="System.Drawing.Point, System.Drawing">
-    <value>122, 48</value>
+    <value>120, 47</value>
   </data>
   <data name="ekfposv.Size" type="System.Drawing.Size, System.Drawing">
-    <value>51, 174</value>
+    <value>50, 170</value>
   </data>
   <data name="ekfposv.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -157,10 +157,10 @@
     <value>Fill</value>
   </data>
   <data name="ekfposh.Location" type="System.Drawing.Point, System.Drawing">
-    <value>65, 48</value>
+    <value>64, 47</value>
   </data>
   <data name="ekfposh.Size" type="System.Drawing.Size, System.Drawing">
-    <value>51, 174</value>
+    <value>50, 170</value>
   </data>
   <data name="ekfposh.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -190,7 +190,7 @@
     <value>8, 0</value>
   </data>
   <data name="label1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>279, 45</value>
+    <value>274, 44</value>
   </data>
   <data name="label1.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -223,10 +223,10 @@
     <value>Microsoft Sans Serif, 12pt, style=Bold</value>
   </data>
   <data name="label8.Location" type="System.Drawing.Point, System.Drawing">
-    <value>293, 45</value>
+    <value>288, 44</value>
   </data>
   <data name="label8.Size" type="System.Drawing.Size, System.Drawing">
-    <value>126, 45</value>
+    <value>121, 44</value>
   </data>
   <data name="label8.TabIndex" type="System.Int32, mscorlib">
     <value>11</value>
@@ -253,10 +253,10 @@
     <value>Fill</value>
   </data>
   <data name="ekfcompass.Location" type="System.Drawing.Point, System.Drawing">
-    <value>179, 48</value>
+    <value>176, 47</value>
   </data>
   <data name="ekfcompass.Size" type="System.Drawing.Size, System.Drawing">
-    <value>51, 174</value>
+    <value>50, 170</value>
   </data>
   <data name="ekfcompass.TabIndex" type="System.Int32, mscorlib">
     <value>17</value>
@@ -277,10 +277,10 @@
     <value>Fill</value>
   </data>
   <data name="ekfterrain.Location" type="System.Drawing.Point, System.Drawing">
-    <value>236, 48</value>
+    <value>232, 47</value>
   </data>
   <data name="ekfterrain.Size" type="System.Drawing.Size, System.Drawing">
-    <value>51, 174</value>
+    <value>50, 170</value>
   </data>
   <data name="ekfterrain.TabIndex" type="System.Int32, mscorlib">
     <value>18</value>
@@ -304,10 +304,10 @@
     <value>Fill</value>
   </data>
   <data name="label2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>8, 225</value>
+    <value>8, 220</value>
   </data>
   <data name="label2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>51, 49</value>
+    <value>50, 45</value>
   </data>
   <data name="label2.TabIndex" type="System.Int32, mscorlib">
     <value>19</value>
@@ -337,10 +337,10 @@
     <value>Fill</value>
   </data>
   <data name="label3.Location" type="System.Drawing.Point, System.Drawing">
-    <value>65, 225</value>
+    <value>64, 220</value>
   </data>
   <data name="label3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>51, 49</value>
+    <value>50, 45</value>
   </data>
   <data name="label3.TabIndex" type="System.Int32, mscorlib">
     <value>20</value>
@@ -370,10 +370,10 @@
     <value>Fill</value>
   </data>
   <data name="label4.Location" type="System.Drawing.Point, System.Drawing">
-    <value>122, 225</value>
+    <value>120, 220</value>
   </data>
   <data name="label4.Size" type="System.Drawing.Size, System.Drawing">
-    <value>51, 49</value>
+    <value>50, 45</value>
   </data>
   <data name="label4.TabIndex" type="System.Int32, mscorlib">
     <value>21</value>
@@ -403,10 +403,10 @@
     <value>Fill</value>
   </data>
   <data name="label5.Location" type="System.Drawing.Point, System.Drawing">
-    <value>179, 225</value>
+    <value>176, 220</value>
   </data>
   <data name="label5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>51, 49</value>
+    <value>50, 45</value>
   </data>
   <data name="label5.TabIndex" type="System.Int32, mscorlib">
     <value>22</value>
@@ -436,10 +436,10 @@
     <value>Fill</value>
   </data>
   <data name="label6.Location" type="System.Drawing.Point, System.Drawing">
-    <value>236, 225</value>
+    <value>232, 220</value>
   </data>
   <data name="label6.Size" type="System.Drawing.Size, System.Drawing">
-    <value>51, 49</value>
+    <value>50, 45</value>
   </data>
   <data name="label6.TabIndex" type="System.Int32, mscorlib">
     <value>23</value>
@@ -466,10 +466,10 @@
     <value>Top, Bottom, Left, Right</value>
   </data>
   <data name="flowLayoutPanel1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>293, 93</value>
+    <value>288, 91</value>
   </data>
   <data name="flowLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>126, 129</value>
+    <value>121, 126</value>
   </data>
   <data name="flowLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
     <value>24</value>
@@ -496,7 +496,7 @@
     <value>6</value>
   </data>
   <data name="tableLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>422, 274</value>
+    <value>412, 265</value>
   </data>
   <data name="tableLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -517,7 +517,7 @@
     <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="ekfposv" Row="1" RowSpan="4" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="ekfposh" Row="1" RowSpan="4" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="ekfvel" Row="1" RowSpan="4" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label1" Row="0" RowSpan="1" Column="1" ColumnSpan="5" /&gt;&lt;Control Name="label8" Row="1" RowSpan="1" Column="6" ColumnSpan="2" /&gt;&lt;Control Name="ekfcompass" Row="1" RowSpan="4" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="ekfterrain" Row="1" RowSpan="4" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="label2" Row="5" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label3" Row="5" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="label4" Row="5" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="label5" Row="5" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="label6" Row="5" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="flowLayoutPanel1" Row="2" RowSpan="3" Column="6" ColumnSpan="2" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Absolute,5,Percent,13.81215,Percent,13.81215,Percent,13.81215,Percent,13.81215,Percent,13.81215,Percent,15.46962,Percent,15.46962" /&gt;&lt;Rows Styles="Percent,16.66667,Percent,16.66667,Percent,16.66667,Percent,16.66667,Percent,16.66667,Percent,16.66667" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
   <data name="ekfvel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>51, 174</value>
+    <value>50, 170</value>
   </data>
   <data name="ekfvel.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -540,11 +540,8 @@
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>422, 274</value>
-  </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>EKF Status</value>
+  <data name="$this.Size" type="System.Drawing.Size, System.Drawing">
+    <value>412, 265</value>
   </data>
   <data name="&gt;&gt;timer1.Name" xml:space="preserve">
     <value>timer1</value>
@@ -553,9 +550,9 @@
     <value>System.Windows.Forms.Timer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
-    <value>EKFStatus</value>
+    <value>ekfStatControl</value>
   </data>
   <data name="&gt;&gt;$this.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.UserControl, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

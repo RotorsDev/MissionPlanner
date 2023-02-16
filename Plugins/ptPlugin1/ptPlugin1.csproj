@@ -110,6 +110,12 @@
     <Compile Include="dummyform.Designer.cs">
       <DependentUpon>dummyform.cs</DependentUpon>
     </Compile>
+    <Compile Include="ekfStatControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ekfStatControl.Designer.cs">
+      <DependentUpon>ekfStatControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="engineControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -177,6 +183,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="dummyform.resx">
       <DependentUpon>dummyform.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ekfStatControl.resx">
+      <DependentUpon>ekfStatControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="engineControl.resx">
       <DependentUpon>engineControl.cs</DependentUpon>

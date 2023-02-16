@@ -1090,9 +1090,9 @@ namespace MissionPlanner
                 //Prearm messages does not displayed
                 if (value.Contains("prearm")) return;
 
-                if (messages.Count >2)
+                if (messages.Count > 3)
                 {
-                    for (int i = messages.Count -2; i <messages.Count; i++)
+                    for (int i = messages.Count -2; i < messages.Count; i++)
                     {
                         if (value == messages[i].message) return;
                     }

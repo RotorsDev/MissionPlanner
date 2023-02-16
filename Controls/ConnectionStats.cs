@@ -127,7 +127,7 @@ namespace MissionPlanner.Controls
 
         public void StopUpdates()
         {
-            _subscriptionsDisposable.Dispose();
+            _subscriptionsDisposable?.Dispose();
         }
 
         private static IObservable<TResult> CombineWithDefault<TSource, TResult>(IObservable<TSource> first,

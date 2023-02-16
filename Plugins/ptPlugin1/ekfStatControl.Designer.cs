@@ -1,6 +1,9 @@
-﻿namespace MissionPlanner.Controls
+﻿
+using MissionPlanner.Controls;
+
+namespace ptPlugin1
 {
-    partial class EKFStatus
+    partial class ekfStatControl
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +32,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EKFStatus));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ekfStatControl));
             this.ekfvel = new MissionPlanner.Controls.VerticalProgressBar2();
             this.ekfposv = new MissionPlanner.Controls.VerticalProgressBar2();
             this.ekfposh = new MissionPlanner.Controls.VerticalProgressBar2();
@@ -116,7 +119,6 @@
             this.tableLayoutPanel1.Controls.Add(this.label6, 5, 5);
             this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel1, 6, 2);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel1_Paint);
             // 
             // label1
             // 
@@ -200,13 +202,11 @@
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // EKFStatus
+            // ekfStatControl
             // 
-            resources.ApplyResources(this, "$this");
             this.Controls.Add(this.tableLayoutPanel1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.Name = "EKFStatus";
-            this.ShowIcon = false;
+            this.Name = "ekfStatControl";
+            resources.ApplyResources(this, "$this");
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);

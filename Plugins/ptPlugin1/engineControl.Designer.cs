@@ -30,17 +30,224 @@ namespace ptPlugin1
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(engineControl));
-            this.engineRpmGauge = new AGaugeApp.AGauge();
-            this.engineTempGauge = new AGaugeApp.AGauge();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.lEngineStatus = new System.Windows.Forms.Label();
             this.lThrFuel = new System.Windows.Forms.Label();
+            this.lEngineStatus = new System.Windows.Forms.Label();
+            this.engineTempGauge = new AGaugeApp.AGauge();
+            this.engineRpmGauge = new AGaugeApp.AGauge();
             this.uEngineSTOP = new MissionPlanner.Controls.utButton();
             this.bEngineEmergencyStop = new MissionPlanner.Controls.utButton();
             this.uEngineSTART = new MissionPlanner.Controls.utButton();
             this.bArm = new MissionPlanner.Controls.utButton();
+            this.pStart = new System.Windows.Forms.Panel();
+            this.pEmergency = new System.Windows.Forms.Panel();
+            this.pStop = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1.SuspendLayout();
+            this.pStart.SuspendLayout();
+            this.pEmergency.SuspendLayout();
+            this.pStop.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.pStart, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.lThrFuel, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.engineTempGauge, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.engineRpmGauge, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.bArm, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.lEngineStatus, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.pEmergency, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.pStop, 1, 2);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 52.63158F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15.78947F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15.78947F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15.78947F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(582, 556);
+            this.tableLayoutPanel1.TabIndex = 82;
+            // 
+            // lThrFuel
+            // 
+            this.lThrFuel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lThrFuel.AutoSize = true;
+            this.lThrFuel.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lThrFuel.ForeColor = System.Drawing.Color.White;
+            this.lThrFuel.Location = new System.Drawing.Point(3, 466);
+            this.lThrFuel.Name = "lThrFuel";
+            this.lThrFuel.Size = new System.Drawing.Size(285, 90);
+            this.lThrFuel.TabIndex = 87;
+            this.lThrFuel.Text = "Throttle : 0%\r\nFuel Pump : 5.6v\r\nFuel Level : 123";
+            // 
+            // lEngineStatus
+            // 
+            this.lEngineStatus.AutoSize = true;
+            this.lEngineStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lEngineStatus.ForeColor = System.Drawing.Color.White;
+            this.lEngineStatus.Location = new System.Drawing.Point(3, 379);
+            this.lEngineStatus.Name = "lEngineStatus";
+            this.lEngineStatus.Size = new System.Drawing.Size(139, 48);
+            this.lEngineStatus.TabIndex = 86;
+            this.lEngineStatus.Text = "Engine Status\r\nEngine Error";
+            // 
+            // engineTempGauge
+            // 
+            this.engineTempGauge.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.engineTempGauge.BackColor = System.Drawing.Color.Transparent;
+            this.engineTempGauge.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("engineTempGauge.BackgroundImage")));
+            this.engineTempGauge.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.engineTempGauge.BaseArcColor = System.Drawing.Color.Transparent;
+            this.engineTempGauge.BaseArcRadius = 70;
+            this.engineTempGauge.BaseArcStart = 135;
+            this.engineTempGauge.BaseArcSweep = 270;
+            this.engineTempGauge.BaseArcWidth = 2;
+            this.engineTempGauge.Cap_Idx = ((byte)(1));
+            this.engineTempGauge.CapColor = System.Drawing.Color.White;
+            this.engineTempGauge.CapColors = new System.Drawing.Color[] {
+        System.Drawing.Color.White,
+        System.Drawing.Color.White,
+        System.Drawing.Color.Black,
+        System.Drawing.Color.Black,
+        System.Drawing.Color.Black};
+            this.engineTempGauge.CapPosition = new System.Drawing.Point(62, 110);
+            this.engineTempGauge.CapsPosition = new System.Drawing.Point[] {
+        new System.Drawing.Point(62, 85),
+        new System.Drawing.Point(62, 110),
+        new System.Drawing.Point(10, 10),
+        new System.Drawing.Point(10, 10),
+        new System.Drawing.Point(10, 10)};
+            this.engineTempGauge.CapsText = new string[] {
+        "EGT",
+        "364 C°",
+        "",
+        "",
+        ""};
+            this.engineTempGauge.CapText = "364 C°";
+            this.engineTempGauge.Center = new System.Drawing.Point(75, 75);
+            this.engineTempGauge.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.engineTempGauge.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.engineTempGauge.Location = new System.Drawing.Point(291, 0);
+            this.engineTempGauge.Margin = new System.Windows.Forms.Padding(0);
+            this.engineTempGauge.MaxValue = 1000F;
+            this.engineTempGauge.MinValue = 150F;
+            this.engineTempGauge.Name = "engineTempGauge";
+            this.engineTempGauge.Need_Idx = ((byte)(3));
+            this.engineTempGauge.NeedleColor1 = AGaugeApp.AGauge.NeedleColorEnum.Gray;
+            this.engineTempGauge.NeedleColor2 = System.Drawing.Color.Brown;
+            this.engineTempGauge.NeedleEnabled = false;
+            this.engineTempGauge.NeedleRadius = 70;
+            this.engineTempGauge.NeedlesColor1 = new AGaugeApp.AGauge.NeedleColorEnum[] {
+        AGaugeApp.AGauge.NeedleColorEnum.Red,
+        AGaugeApp.AGauge.NeedleColorEnum.Red,
+        AGaugeApp.AGauge.NeedleColorEnum.Blue,
+        AGaugeApp.AGauge.NeedleColorEnum.Gray};
+            this.engineTempGauge.NeedlesColor2 = new System.Drawing.Color[] {
+        System.Drawing.Color.White,
+        System.Drawing.Color.White,
+        System.Drawing.Color.White,
+        System.Drawing.Color.Brown};
+            this.engineTempGauge.NeedlesEnabled = new bool[] {
+        true,
+        false,
+        false,
+        false};
+            this.engineTempGauge.NeedlesRadius = new int[] {
+        60,
+        50,
+        70,
+        70};
+            this.engineTempGauge.NeedlesType = new int[] {
+        0,
+        0,
+        0,
+        0};
+            this.engineTempGauge.NeedlesWidth = new int[] {
+        2,
+        1,
+        2,
+        2};
+            this.engineTempGauge.NeedleType = 0;
+            this.engineTempGauge.NeedleWidth = 2;
+            this.engineTempGauge.Range_Idx = ((byte)(0));
+            this.engineTempGauge.RangeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.engineTempGauge.RangeEnabled = true;
+            this.engineTempGauge.RangeEndValue = 450F;
+            this.engineTempGauge.RangeInnerRadius = 60;
+            this.engineTempGauge.RangeOuterRadius = 70;
+            this.engineTempGauge.RangesColor = new System.Drawing.Color[] {
+        System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0))))),
+        System.Drawing.Color.Lime,
+        System.Drawing.Color.Orange,
+        System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0))))),
+        System.Drawing.SystemColors.Control};
+            this.engineTempGauge.RangesEnabled = new bool[] {
+        true,
+        true,
+        true,
+        true,
+        false};
+            this.engineTempGauge.RangesEndValue = new float[] {
+        450F,
+        800F,
+        900F,
+        1000F,
+        0F};
+            this.engineTempGauge.RangesInnerRadius = new int[] {
+        60,
+        60,
+        60,
+        60,
+        70};
+            this.engineTempGauge.RangesOuterRadius = new int[] {
+        70,
+        70,
+        70,
+        70,
+        80};
+            this.engineTempGauge.RangesStartValue = new float[] {
+        150F,
+        450F,
+        800F,
+        900F,
+        0F};
+            this.engineTempGauge.RangeStartValue = 150F;
+            this.engineTempGauge.ScaleLinesInterColor = System.Drawing.Color.White;
+            this.engineTempGauge.ScaleLinesInterInnerRadius = 52;
+            this.engineTempGauge.ScaleLinesInterOuterRadius = 60;
+            this.engineTempGauge.ScaleLinesInterWidth = 1;
+            this.engineTempGauge.ScaleLinesMajorColor = System.Drawing.Color.White;
+            this.engineTempGauge.ScaleLinesMajorInnerRadius = 50;
+            this.engineTempGauge.ScaleLinesMajorOuterRadius = 60;
+            this.engineTempGauge.ScaleLinesMajorStepValue = 150F;
+            this.engineTempGauge.ScaleLinesMajorWidth = 2;
+            this.engineTempGauge.ScaleLinesMinorColor = System.Drawing.Color.White;
+            this.engineTempGauge.ScaleLinesMinorInnerRadius = 55;
+            this.engineTempGauge.ScaleLinesMinorNumOf = 5;
+            this.engineTempGauge.ScaleLinesMinorOuterRadius = 60;
+            this.engineTempGauge.ScaleLinesMinorWidth = 1;
+            this.engineTempGauge.ScaleNumbersColor = System.Drawing.Color.White;
+            this.engineTempGauge.ScaleNumbersFormat = null;
+            this.engineTempGauge.ScaleNumbersRadius = 42;
+            this.engineTempGauge.ScaleNumbersRotation = 0;
+            this.engineTempGauge.ScaleNumbersStartScaleLine = 1;
+            this.engineTempGauge.ScaleNumbersStepScaleLines = 1;
+            this.engineTempGauge.Size = new System.Drawing.Size(292, 292);
+            this.engineTempGauge.TabIndex = 81;
+            this.engineTempGauge.Value = 40F;
+            this.engineTempGauge.Value0 = 150F;
+            this.engineTempGauge.Value1 = 0F;
+            this.engineTempGauge.Value2 = 0F;
+            this.engineTempGauge.Value3 = 40F;
             // 
             // engineRpmGauge
             // 
@@ -183,7 +390,7 @@ namespace ptPlugin1
             this.engineRpmGauge.ScaleNumbersRotation = 0;
             this.engineRpmGauge.ScaleNumbersStartScaleLine = 1;
             this.engineRpmGauge.ScaleNumbersStepScaleLines = 1;
-            this.engineRpmGauge.Size = new System.Drawing.Size(264, 264);
+            this.engineRpmGauge.Size = new System.Drawing.Size(292, 292);
             this.engineRpmGauge.TabIndex = 80;
             this.engineRpmGauge.Value = 40F;
             this.engineRpmGauge.Value0 = 0F;
@@ -191,222 +398,16 @@ namespace ptPlugin1
             this.engineRpmGauge.Value2 = 0F;
             this.engineRpmGauge.Value3 = 40F;
             // 
-            // engineTempGauge
-            // 
-            this.engineTempGauge.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.engineTempGauge.BackColor = System.Drawing.Color.Transparent;
-            this.engineTempGauge.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("engineTempGauge.BackgroundImage")));
-            this.engineTempGauge.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.engineTempGauge.BaseArcColor = System.Drawing.Color.Transparent;
-            this.engineTempGauge.BaseArcRadius = 70;
-            this.engineTempGauge.BaseArcStart = 135;
-            this.engineTempGauge.BaseArcSweep = 270;
-            this.engineTempGauge.BaseArcWidth = 2;
-            this.engineTempGauge.Cap_Idx = ((byte)(1));
-            this.engineTempGauge.CapColor = System.Drawing.Color.White;
-            this.engineTempGauge.CapColors = new System.Drawing.Color[] {
-        System.Drawing.Color.White,
-        System.Drawing.Color.White,
-        System.Drawing.Color.Black,
-        System.Drawing.Color.Black,
-        System.Drawing.Color.Black};
-            this.engineTempGauge.CapPosition = new System.Drawing.Point(62, 110);
-            this.engineTempGauge.CapsPosition = new System.Drawing.Point[] {
-        new System.Drawing.Point(62, 85),
-        new System.Drawing.Point(62, 110),
-        new System.Drawing.Point(10, 10),
-        new System.Drawing.Point(10, 10),
-        new System.Drawing.Point(10, 10)};
-            this.engineTempGauge.CapsText = new string[] {
-        "EGT",
-        "364 C°",
-        "",
-        "",
-        ""};
-            this.engineTempGauge.CapText = "364 C°";
-            this.engineTempGauge.Center = new System.Drawing.Point(75, 75);
-            this.engineTempGauge.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.engineTempGauge.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.engineTempGauge.Location = new System.Drawing.Point(264, 0);
-            this.engineTempGauge.Margin = new System.Windows.Forms.Padding(0);
-            this.engineTempGauge.MaxValue = 1000F;
-            this.engineTempGauge.MinValue = 150F;
-            this.engineTempGauge.Name = "engineTempGauge";
-            this.engineTempGauge.Need_Idx = ((byte)(3));
-            this.engineTempGauge.NeedleColor1 = AGaugeApp.AGauge.NeedleColorEnum.Gray;
-            this.engineTempGauge.NeedleColor2 = System.Drawing.Color.Brown;
-            this.engineTempGauge.NeedleEnabled = false;
-            this.engineTempGauge.NeedleRadius = 70;
-            this.engineTempGauge.NeedlesColor1 = new AGaugeApp.AGauge.NeedleColorEnum[] {
-        AGaugeApp.AGauge.NeedleColorEnum.Red,
-        AGaugeApp.AGauge.NeedleColorEnum.Red,
-        AGaugeApp.AGauge.NeedleColorEnum.Blue,
-        AGaugeApp.AGauge.NeedleColorEnum.Gray};
-            this.engineTempGauge.NeedlesColor2 = new System.Drawing.Color[] {
-        System.Drawing.Color.White,
-        System.Drawing.Color.White,
-        System.Drawing.Color.White,
-        System.Drawing.Color.Brown};
-            this.engineTempGauge.NeedlesEnabled = new bool[] {
-        true,
-        false,
-        false,
-        false};
-            this.engineTempGauge.NeedlesRadius = new int[] {
-        60,
-        50,
-        70,
-        70};
-            this.engineTempGauge.NeedlesType = new int[] {
-        0,
-        0,
-        0,
-        0};
-            this.engineTempGauge.NeedlesWidth = new int[] {
-        2,
-        1,
-        2,
-        2};
-            this.engineTempGauge.NeedleType = 0;
-            this.engineTempGauge.NeedleWidth = 2;
-            this.engineTempGauge.Range_Idx = ((byte)(0));
-            this.engineTempGauge.RangeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.engineTempGauge.RangeEnabled = true;
-            this.engineTempGauge.RangeEndValue = 450F;
-            this.engineTempGauge.RangeInnerRadius = 60;
-            this.engineTempGauge.RangeOuterRadius = 70;
-            this.engineTempGauge.RangesColor = new System.Drawing.Color[] {
-        System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0))))),
-        System.Drawing.Color.Lime,
-        System.Drawing.Color.Orange,
-        System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0))))),
-        System.Drawing.SystemColors.Control};
-            this.engineTempGauge.RangesEnabled = new bool[] {
-        true,
-        true,
-        true,
-        true,
-        false};
-            this.engineTempGauge.RangesEndValue = new float[] {
-        450F,
-        800F,
-        900F,
-        1000F,
-        0F};
-            this.engineTempGauge.RangesInnerRadius = new int[] {
-        60,
-        60,
-        60,
-        60,
-        70};
-            this.engineTempGauge.RangesOuterRadius = new int[] {
-        70,
-        70,
-        70,
-        70,
-        80};
-            this.engineTempGauge.RangesStartValue = new float[] {
-        150F,
-        450F,
-        800F,
-        900F,
-        0F};
-            this.engineTempGauge.RangeStartValue = 150F;
-            this.engineTempGauge.ScaleLinesInterColor = System.Drawing.Color.White;
-            this.engineTempGauge.ScaleLinesInterInnerRadius = 52;
-            this.engineTempGauge.ScaleLinesInterOuterRadius = 60;
-            this.engineTempGauge.ScaleLinesInterWidth = 1;
-            this.engineTempGauge.ScaleLinesMajorColor = System.Drawing.Color.White;
-            this.engineTempGauge.ScaleLinesMajorInnerRadius = 50;
-            this.engineTempGauge.ScaleLinesMajorOuterRadius = 60;
-            this.engineTempGauge.ScaleLinesMajorStepValue = 150F;
-            this.engineTempGauge.ScaleLinesMajorWidth = 2;
-            this.engineTempGauge.ScaleLinesMinorColor = System.Drawing.Color.White;
-            this.engineTempGauge.ScaleLinesMinorInnerRadius = 55;
-            this.engineTempGauge.ScaleLinesMinorNumOf = 5;
-            this.engineTempGauge.ScaleLinesMinorOuterRadius = 60;
-            this.engineTempGauge.ScaleLinesMinorWidth = 1;
-            this.engineTempGauge.ScaleNumbersColor = System.Drawing.Color.White;
-            this.engineTempGauge.ScaleNumbersFormat = null;
-            this.engineTempGauge.ScaleNumbersRadius = 42;
-            this.engineTempGauge.ScaleNumbersRotation = 0;
-            this.engineTempGauge.ScaleNumbersStartScaleLine = 1;
-            this.engineTempGauge.ScaleNumbersStepScaleLines = 1;
-            this.engineTempGauge.Size = new System.Drawing.Size(264, 264);
-            this.engineTempGauge.TabIndex = 81;
-            this.engineTempGauge.Value = 40F;
-            this.engineTempGauge.Value0 = 150F;
-            this.engineTempGauge.Value1 = 0F;
-            this.engineTempGauge.Value2 = 0F;
-            this.engineTempGauge.Value3 = 40F;
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.lThrFuel, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.uEngineSTOP, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.bEngineEmergencyStop, 1, 3);
-            this.tableLayoutPanel1.Controls.Add(this.uEngineSTART, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.engineTempGauge, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.engineRpmGauge, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.bArm, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.lEngineStatus, 0, 2);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 4;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 52.63158F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15.78947F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15.78947F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15.78947F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(528, 503);
-            this.tableLayoutPanel1.TabIndex = 82;
-            // 
-            // lEngineStatus
-            // 
-            this.lEngineStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lEngineStatus.AutoSize = true;
-            this.lEngineStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lEngineStatus.ForeColor = System.Drawing.Color.White;
-            this.lEngineStatus.Location = new System.Drawing.Point(3, 343);
-            this.lEngineStatus.Name = "lEngineStatus";
-            this.lEngineStatus.Padding = new System.Windows.Forms.Padding(10);
-            this.lEngineStatus.Size = new System.Drawing.Size(258, 79);
-            this.lEngineStatus.TabIndex = 86;
-            this.lEngineStatus.Text = "Engine Status\r\nEngine Error";
-            // 
-            // lThrFuel
-            // 
-            this.lThrFuel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lThrFuel.AutoSize = true;
-            this.lThrFuel.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lThrFuel.ForeColor = System.Drawing.Color.White;
-            this.lThrFuel.Location = new System.Drawing.Point(3, 422);
-            this.lThrFuel.Name = "lThrFuel";
-            this.lThrFuel.Padding = new System.Windows.Forms.Padding(10);
-            this.lThrFuel.Size = new System.Drawing.Size(258, 81);
-            this.lThrFuel.TabIndex = 87;
-            this.lThrFuel.Text = "Throttle : 0%\r\nFuel Pump : 5.6v\r\nFuel Level : 123";
-            // 
             // uEngineSTOP
             // 
             this.uEngineSTOP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.uEngineSTOP.Dock = System.Windows.Forms.DockStyle.Fill;
             this.uEngineSTOP.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.uEngineSTOP.ForeColor = System.Drawing.Color.White;
-            this.uEngineSTOP.Location = new System.Drawing.Point(274, 353);
+            this.uEngineSTOP.Location = new System.Drawing.Point(0, 0);
             this.uEngineSTOP.Margin = new System.Windows.Forms.Padding(10);
             this.uEngineSTOP.Name = "uEngineSTOP";
-            this.uEngineSTOP.Size = new System.Drawing.Size(244, 59);
+            this.uEngineSTOP.Size = new System.Drawing.Size(271, 67);
             this.uEngineSTOP.TabIndex = 85;
             this.uEngineSTOP.Text = "ENGINE STOP/COOLING";
             this.uEngineSTOP.UseVisualStyleBackColor = false;
@@ -417,10 +418,10 @@ namespace ptPlugin1
             this.bEngineEmergencyStop.Dock = System.Windows.Forms.DockStyle.Fill;
             this.bEngineEmergencyStop.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bEngineEmergencyStop.ForeColor = System.Drawing.Color.White;
-            this.bEngineEmergencyStop.Location = new System.Drawing.Point(274, 432);
+            this.bEngineEmergencyStop.Location = new System.Drawing.Point(0, 0);
             this.bEngineEmergencyStop.Margin = new System.Windows.Forms.Padding(10);
             this.bEngineEmergencyStop.Name = "bEngineEmergencyStop";
-            this.bEngineEmergencyStop.Size = new System.Drawing.Size(244, 61);
+            this.bEngineEmergencyStop.Size = new System.Drawing.Size(271, 70);
             this.bEngineEmergencyStop.TabIndex = 84;
             this.bEngineEmergencyStop.Text = "EMERGENCY STOP";
             this.bEngineEmergencyStop.UseVisualStyleBackColor = false;
@@ -431,10 +432,10 @@ namespace ptPlugin1
             this.uEngineSTART.Dock = System.Windows.Forms.DockStyle.Fill;
             this.uEngineSTART.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.uEngineSTART.ForeColor = System.Drawing.Color.White;
-            this.uEngineSTART.Location = new System.Drawing.Point(274, 274);
+            this.uEngineSTART.Location = new System.Drawing.Point(0, 0);
             this.uEngineSTART.Margin = new System.Windows.Forms.Padding(10);
             this.uEngineSTART.Name = "uEngineSTART";
-            this.uEngineSTART.Size = new System.Drawing.Size(244, 59);
+            this.uEngineSTART.Size = new System.Drawing.Size(271, 67);
             this.uEngineSTART.TabIndex = 83;
             this.uEngineSTART.Text = "ENGINE START";
             this.uEngineSTART.UseVisualStyleBackColor = false;
@@ -445,14 +446,44 @@ namespace ptPlugin1
             this.bArm.Dock = System.Windows.Forms.DockStyle.Fill;
             this.bArm.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bArm.ForeColor = System.Drawing.Color.White;
-            this.bArm.Location = new System.Drawing.Point(10, 274);
+            this.bArm.Location = new System.Drawing.Point(10, 302);
             this.bArm.Margin = new System.Windows.Forms.Padding(10);
             this.bArm.Name = "bArm";
-            this.bArm.Size = new System.Drawing.Size(244, 59);
+            this.bArm.Size = new System.Drawing.Size(271, 67);
             this.bArm.TabIndex = 82;
             this.bArm.Text = "ARM/DISARM";
             this.bArm.UseVisualStyleBackColor = false;
             this.bArm.Click += new System.EventHandler(this.bArm_Click);
+            // 
+            // pStart
+            // 
+            this.pStart.Controls.Add(this.uEngineSTART);
+            this.pStart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pStart.Location = new System.Drawing.Point(301, 302);
+            this.pStart.Margin = new System.Windows.Forms.Padding(10);
+            this.pStart.Name = "pStart";
+            this.pStart.Size = new System.Drawing.Size(271, 67);
+            this.pStart.TabIndex = 86;
+            // 
+            // pEmergency
+            // 
+            this.pEmergency.Controls.Add(this.bEngineEmergencyStop);
+            this.pEmergency.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pEmergency.Location = new System.Drawing.Point(301, 476);
+            this.pEmergency.Margin = new System.Windows.Forms.Padding(10);
+            this.pEmergency.Name = "pEmergency";
+            this.pEmergency.Size = new System.Drawing.Size(271, 70);
+            this.pEmergency.TabIndex = 88;
+            // 
+            // pStop
+            // 
+            this.pStop.Controls.Add(this.uEngineSTOP);
+            this.pStop.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pStop.Location = new System.Drawing.Point(301, 389);
+            this.pStop.Margin = new System.Windows.Forms.Padding(10);
+            this.pStop.Name = "pStop";
+            this.pStop.Size = new System.Drawing.Size(271, 67);
+            this.pStop.TabIndex = 89;
             // 
             // engineControl
             // 
@@ -460,9 +491,12 @@ namespace ptPlugin1
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "engineControl";
-            this.Size = new System.Drawing.Size(528, 514);
+            this.Size = new System.Drawing.Size(582, 559);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            this.pStart.ResumeLayout(false);
+            this.pEmergency.ResumeLayout(false);
+            this.pStop.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -478,5 +512,8 @@ namespace ptPlugin1
         private MissionPlanner.Controls.utButton uEngineSTART;
         private System.Windows.Forms.Label lThrFuel;
         private System.Windows.Forms.Label lEngineStatus;
+        private System.Windows.Forms.Panel pStart;
+        private System.Windows.Forms.Panel pEmergency;
+        private System.Windows.Forms.Panel pStop;
     }
 }
