@@ -48,7 +48,8 @@ namespace ptPlugin1
         public TabPage connectionControlPage = new TabPage();
         public ConnectionStats connectionStats;
 
-
+        public TabPage batteryPage = new TabPage();
+        public batterypanel bp = new batterypanel();
 
 
 
@@ -95,10 +96,10 @@ namespace ptPlugin1
                 "SETUP",
                 "ENGINE",
                 "FUEL",
+                "BATT",
                 "PAY"+ Environment.NewLine +"LOAD",
                 "AIR"+ Environment.NewLine +"SPEED",
                 "EKF",
-                "",
                 "",
                 "",
                 "",
@@ -115,6 +116,7 @@ namespace ptPlugin1
                 "SETUP", 
                 "ENGINE",
                 "FUEL",
+                "BATT",
                 "PAYLD",
                 "AIRSPD",
                 "EKF",
@@ -122,7 +124,6 @@ namespace ptPlugin1
                 "DUMMY3",
                 "DUMMY4",
                 "DUMMY5",
-                "DUMMY6",
                 "START",
                 "PREFLGHT",
                 "MSG",
@@ -241,6 +242,20 @@ namespace ptPlugin1
             connectionStats.Location = new Point(0, 50);
             connectionControlPage.Controls.Add(connectionStats);
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(connectionControlPage);
+
+
+            batteryPage.Text = "Battery";
+            batteryPage.Name = "battTab";
+            bp.Location = new Point(0, 0);
+            bp.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            bp.Size = batteryPage.ClientSize;
+            batteryPage.Controls.Add(bp);
+            Host.MainForm.FlightData.tabControlactions.TabPages.Add(batteryPage);
+
+
+
+
+
 
             return true;     //If it is false plugin will not start (loop will not called)
         }

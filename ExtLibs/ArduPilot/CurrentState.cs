@@ -1087,6 +1087,21 @@ namespace MissionPlanner
                 _messageHighTime = DateTime.Now;
                 _messagehigh = value;
                 messageHighSeverity = MAVLink.MAV_SEVERITY.EMERGENCY;
+                //Prearm messages does not displayed
+                if (value.Contains("prearm")) return;
+
+                if (messages.Count >2)
+                {
+                    for (int i = messages.Count -2; i <messages.Count; i++)
+                    {
+                        if (value == messages[i].message) return;
+                    }
+                }
+
+
+
+
+                messages.Add((DateTime.Now, value, MAVLink.MAV_SEVERITY.CRITICAL));
             }
         }
 

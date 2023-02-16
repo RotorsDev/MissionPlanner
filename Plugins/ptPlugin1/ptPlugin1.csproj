@@ -98,6 +98,12 @@
     <Compile Include="annunciator.Designer.cs">
       <DependentUpon>annunciator.cs</DependentUpon>
     </Compile>
+    <Compile Include="batterypanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="batterypanel.Designer.cs">
+      <DependentUpon>batterypanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="dummyform.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -166,6 +172,9 @@
     <Content Include="wrench2.png" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="batterypanel.resx">
+      <DependentUpon>batterypanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="dummyform.resx">
       <DependentUpon>dummyform.cs</DependentUpon>
     </EmbeddedResource>

@@ -5015,12 +5015,13 @@ namespace MissionPlanner.GCSViews
 
             dropoutForm.Text = $"{sourceTP.Text} Tab Dropout";
             dropoutForm.Name = "X";
-            dropoutForm.FormClosed += DropoutForm_FormClosed;
+            dropoutForm.FormClosing += DropoutForm_FormClosed;
             dropoutForm.ResizeEnd += (s2, e2) => dropoutForm.SaveStartupLocation();
             dropoutForm.LocationChanged += (s3, e3) => dropoutForm.SaveStartupLocation();
             dropoutForm.FormBorderStyle = FormBorderStyle.Sizable;
             dropoutForm.Size = new Size(sourceTP.Width, sourceTP.Width);
             dropoutForm.RestoreStartupLocation();
+            dropoutForm.SaveStartupLocation();
             sourceTP.Tag = sourceTC.SelectedIndex;
 
             dropoutTab.Appearance = TabAppearance.FlatButtons;
@@ -5040,7 +5041,7 @@ namespace MissionPlanner.GCSViews
             dropoutForm.BringToFront();
         }
 
-        private void DropoutForm_FormClosed(object sender, FormClosedEventArgs e)
+        private void DropoutForm_FormClosed(object sender, FormClosingEventArgs e)
         {
             Form dropoutForm = sender as Form;
             TabControl sourceTC = dropoutForm.Controls[0] as TabControl;
