@@ -36,6 +36,9 @@ namespace ptPlugin1
 
         public TabPage colorMessagePage = new TabPage();
         public FastColoredTextBox fctb;
+        public DateTime lastDisplayedMessage = DateTime.MinValue;
+
+
 
         TextStyle infoStyle = new TextStyle(Brushes.White, null, FontStyle.Regular);
         TextStyle warningStyle = new TextStyle(Brushes.BurlyWood, null, FontStyle.Regular);
@@ -43,6 +46,7 @@ namespace ptPlugin1
 
 
         public TabPage connectionControlPage = new TabPage();
+        public ConnectionStats connectionStats;
 
 
 
@@ -72,7 +76,7 @@ namespace ptPlugin1
         public override bool Init()
 		//Init called when the plugin dll is loaded
         {
-            loopratehz = 1;  //Loop runs every second (The value is in Hertz, so 2 means every 500ms, 0.1f means every 10 second...) 
+            loopratehz = 3;  //Loop runs every second (The value is in Hertz, so 2 means every 500ms, 0.1f means every 10 second...) 
 
             return true;	 // If it is false then plugin will not load
         }
@@ -93,16 +97,16 @@ namespace ptPlugin1
                 "FUEL",
                 "PAY"+ Environment.NewLine +"LOAD",
                 "AIR"+ Environment.NewLine +"SPEED",
-                "DUMMY",
-                "MAG",
-                "DUMMY",
-                "DUMMY",
-                "PARA"+ Environment.NewLine +"CHUTE",
-                "PRE"+ Environment.NewLine +"FLIGHT",
-                "START",
+                "EKF",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "LAUNCH",
+                "PRE" + Environment.NewLine + "FLGHT",
                 "MSG",
-                "DUMMY",
-                "DUMMY" };
+                "COMMS" };
 
             string[] btnNames = new string[] { 
                 "FD",
@@ -113,16 +117,16 @@ namespace ptPlugin1
                 "FUEL",
                 "PAYLD",
                 "AIRSPD",
-                "DUMMY1",
-                "MAG",
+                "EKF",
                 "DUMMY2",
                 "DUMMY3",
-                "CHUTE",
-                "PRFLT",
-                "START",
-                "MSG",
                 "DUMMY4",
-                "DUMMY5" };
+                "DUMMY5",
+                "DUMMY6",
+                "START",
+                "PREFLGHT",
+                "MSG",
+                "COMMS" };
             aMain.setPanels(btnNames, btnLabels);
 
             //Setup initial button status
@@ -132,6 +136,8 @@ namespace ptPlugin1
             aMain.setStatus("SETUP", Stat.NOMINAL);
             aMain.setStatus("PAYL", Stat.NOMINAL);
             aMain.setStatus("ENGINE", Stat.NOMINAL);
+
+            aMain.setStatus("COMMS", Stat.ALERT);
 
 
 
@@ -168,6 +174,10 @@ namespace ptPlugin1
                     panel1.Controls.Add(aMain);
 
                 }
+            }
+            else
+            {
+                panel1.Controls.Add(aMain);
             }
 
 
@@ -206,7 +216,7 @@ namespace ptPlugin1
 
 
 
-            colorMessagePage.Text = "Messages";
+            colorMessagePage.Text = "ColorMessages";
             colorMessagePage.Name = "colorMsgTab";
             fctb = new FastColoredTextBoxNS.FastColoredTextBox();
             setupFCTB();
@@ -214,25 +224,23 @@ namespace ptPlugin1
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(colorMessagePage);
 
 
-            fctbAddLine("1Message with normal style\r\n", infoStyle);
-            fctbAddLine("2Message with normal style\r\n", infoStyle);
-            fctbAddLine("3Message with error style\r\n", errorStyle);
-            fctbAddLine("4Message with normal style\r\n", infoStyle);
-            fctbAddLine("5Message with normal style\r\n", infoStyle);
-            fctbAddLine("6Message with normal style\r\n", infoStyle);
-            fctbAddLine("7Message with warning style\r\n", warningStyle);
-            fctbAddLine("8Message with normal style\r\n", infoStyle);
-            fctbAddLine("9Message with normal style\r\n", infoStyle);
+            //fctbAddLine("1Message with normal style\r\n", infoStyle);
+
+
+            connectionControlPage.Text = "Comms";
+            connectionControlPage.Name = "commsTab";
 
             connectionControlPage.Controls.Add(MainV2._connectionControl);
             ToolStrip ts = new ToolStrip();
+            ts.BackColor = Color.Black;
             ts.Items.Add(MainV2.instance.MenuConnect);
-            ts.Location = new Point(0, 100);
+//            ts.Location = new Point(0, 100);
             connectionControlPage.Controls.Add(ts);
             MainV2._connectionControl.Location = new Point(0, 0);
+            connectionStats = new ConnectionStats(Host.comPort);
+            connectionStats.Location = new Point(0, 50);
+            connectionControlPage.Controls.Add(connectionStats);
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(connectionControlPage);
-
-
 
             return true;     //If it is false plugin will not start (loop will not called)
         }
@@ -256,8 +264,65 @@ namespace ptPlugin1
         public override bool Loop()
 		//Loop is called in regular intervalls (set by loopratehz)
         {
-            var messagetime = MainV2.comPort.MAV.cs.messages.LastOrDefault().time;
 
+            #region MessagesBox
+
+            TimeSpan Delta;
+            DateTime start = DateTime.Now;
+
+
+            //Message box update
+            DateTime lastIncomingMessage = MainV2.comPort.MAV.cs.messages.LastOrDefault().time;
+            if (lastIncomingMessage != lastDisplayedMessage)
+            {
+
+                fctb.BeginUpdate();
+                fctb.TextSource.CurrentTB = fctb;
+
+                MainV2.comPort.MAV.cs.messages.ForEach(x =>
+                {
+                    if (x.Item1 > lastDisplayedMessage)
+                    {
+
+                        TextStyle displayStyle;
+                        switch ((int)x.Item3)
+                        {
+                            case 0:
+                            case 1:
+                            case 2:
+                                {
+                                    displayStyle = errorStyle;
+                                    break;
+                                }
+                            case 3:
+                            case 4:
+                                {
+                                    displayStyle = warningStyle;
+                                    break;
+                                }
+                            default:
+                                {
+                                    displayStyle = infoStyle;
+                                    break;
+                                }
+                        }
+
+                        fctb.SelectionStart = 0;
+                        fctb.SelectionLength = 0;
+                        fctb.InsertText(x.Item1 + " : (" + x.Item3 + ") " + x.Item2 + "\r\n", displayStyle);
+                    }
+
+                });
+                fctb.EndUpdate();
+                lastDisplayedMessage = lastIncomingMessage;
+            }
+
+
+            DateTime now = DateTime.Now;
+            Delta = now - start;
+            Debug.WriteLine("fctb update time: " + (int)Delta.TotalMilliseconds + "ms");
+
+            #endregion
 
 
 
@@ -311,6 +376,18 @@ namespace ptPlugin1
                         if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
                         break;
                     }
+                case "COMMS":
+                    {
+                        TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["commsTab"];
+                        if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
+                        break;
+                    }
+                case "MSG":
+                    {
+                        TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["colorMsgTab"];
+                        if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
+                        break;
+                    }
                 default:
                     break;
             }
@@ -320,7 +397,6 @@ namespace ptPlugin1
         {
             annunciatorForm = new FloatingForm();
             annunciatorForm.Text = "Annunciator";
-            //annunciatorForm.Size = new Size(300, 450);
             annunciatorForm.RestoreStartupLocation();
             MainV2.instance.panel1.Controls.Remove(aMain);
             aMain.isSingleLine = false;
@@ -407,6 +483,7 @@ namespace ptPlugin1
             this.fctb.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             this.fctb.ShowLineNumbers = false;
             this.fctb.BackColor = Color.Black;
+            this.fctb.ShowScrollBars = true;
             
 
         }
