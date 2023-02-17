@@ -399,30 +399,33 @@ namespace ptPlugin1
 
                 System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
 
-                if (enc.GetString(s.name) == "servo1")
+
+                Console.WriteLine(enc.GetString(s.name) + " : " + s.value.ToString() );
+
+                if (enc.GetString(s.name).Contains("servo1"))
                 {
                     bp.setServo1Voltage(s.value);
                 }
 
-                if (enc.GetString(s.name) == "servo2")
+                if (enc.GetString(s.name).Contains("servo2"))
                 {
                     bp.setServo2Voltage(s.value);
                 }
 
-                if (enc.GetString(s.name) == "main")
+                if (enc.GetString(s.name).Contains("main"))
                 {
                     bp.setMainVoltage(s.value);
                 }
 
-                if (enc.GetString(s.name) == "payload")
+                if (enc.GetString(s.name).Contains("payload"))
                 {
                     bp.setPayloadVoltage(s.value);
                 }
 
-                if (enc.GetString(s.name) == "S")
+                if (s.name[0] == 'S')
                 {
                     //Set status pin TODO: Need to check 
-                    if (s.value == 1) plControl.setSafetyStatus(true);
+                    if (s.value == 0) plControl.setSafetyStatus(true);
                     else plControl.setSafetyStatus(false);
                 }
 

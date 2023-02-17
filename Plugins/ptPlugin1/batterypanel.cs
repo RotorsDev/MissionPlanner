@@ -34,76 +34,94 @@ namespace ptPlugin1
 
         public void setServo1Voltage(float v)
         {
-            servo1 = v;
-            gaugeServo1.Cap_Idx = 0;
-            gaugeServo1.CapText = v.ToString("F1") + " V";
 
-            if (v < 5) v = 5;
-            if (v > 10)v = 10;
+            MissionPlanner.MainV2.instance.BeginInvoke((MethodInvoker)(() =>
+            {
+                servo1 = v;
+                gaugeServo1.Cap_Idx = 0;
+                gaugeServo1.CapText = v.ToString("F1") + " V";
 
-            gaugeServo1.Value0 = v;
+                if (v < 5) v = 5;
+                if (v > 10) v = 10;
+
+                gaugeServo1.Value0 = v;
+            }));
         }
 
         public void setServo2Voltage(float v)
         {
-            servo2 = v;
-            gaugeServo2.Cap_Idx = 0;
-            gaugeServo2.CapText = v.ToString("F1") + " V";
+            MissionPlanner.MainV2.instance.BeginInvoke((MethodInvoker)(() =>
+            {
+                servo2 = v;
+                gaugeServo2.Cap_Idx = 0;
+                gaugeServo2.CapText = v.ToString("F1") + " V";
 
-            if (v < 5) v = 5;
-            if (v > 10) v = 10;
+                if (v < 5) v = 5;
+                if (v > 10) v = 10;
 
-            gaugeServo2.Value0 = v;
+                gaugeServo2.Value0 = v;
+            }));
         }
 
         public void setPayloadVoltage(float v)
         {
-            payload = v;
-            gaugePayload.Cap_Idx = 0;
-            gaugePayload.CapText = v.ToString("F1") + " V";
+            MissionPlanner.MainV2.instance.BeginInvoke((MethodInvoker)(() =>
+            {
+                payload = v;
+                gaugePayload.Cap_Idx = 0;
+                gaugePayload.CapText = v.ToString("F1") + " V";
 
-            if (v < 7.5) v = 7.5f;
-            if (v > 15) v = 15;
+                if (v < 7.5) v = 7.5f;
+                if (v > 15) v = 15;
 
-            gaugePayload.Value0 = v;
+                gaugePayload.Value0 = v;
+            }));
         }
 
         public void setMainVoltage(float v)
         {
-            main = v;
-            gaugeMain.Cap_Idx = 0;
-            gaugeMain.CapText = v.ToString("F1") + " V";
+            MissionPlanner.MainV2.instance.BeginInvoke((MethodInvoker)(() =>
+            {
+                main = v;
+                gaugeMain.Cap_Idx = 0;
+                gaugeMain.CapText = v.ToString("F1") + " V";
 
-            if (v < 10) v = 10f;
-            if (v > 20) v = 20;
+                if (v < 10) v = 10f;
+                if (v > 20) v = 20;
 
-            gaugeMain.Value0 = v;
+                gaugeMain.Value0 = v;
+            }));
         }
 
         public void setGcsVoltage(float v, PowerLineStatus lineStat)
         {
-            if (lineStat == PowerLineStatus.Online)
+
+            MissionPlanner.MainV2.instance.BeginInvoke((MethodInvoker)(() =>
             {
-                gaugeGCS.Cap_Idx = 1;
-                gaugeGCS.CapText = "GCS Ext power";
-                v = 100;
-            }
-            else
-            {
-                gaugeGCS.Cap_Idx = 1;
-                gaugeGCS.CapText = "GCS Batt";
 
-            }
+                if (lineStat == PowerLineStatus.Online)
+                {
+                    gaugeGCS.Cap_Idx = 1;
+                    gaugeGCS.CapText = "GCS Ext power";
+                    v = 100;
+                }
+                else
+                {
+                    gaugeGCS.Cap_Idx = 1;
+                    gaugeGCS.CapText = "GCS Batt";
 
-            gcs = v;
+                }
 
-            gaugeGCS.Cap_Idx = 0;
-            gaugeGCS.CapText = v.ToString("F0") + "%";
+                gcs = v;
 
-            if (v < 0) v = 0;
-            if (v > 100) v = 100;
+                gaugeGCS.Cap_Idx = 0;
+                gaugeGCS.CapText = v.ToString("F0") + "%";
 
-            gaugeGCS.Value0 = v;
+                if (v < 0) v = 0;
+                if (v > 100) v = 100;
+
+                gaugeGCS.Value0 = v;
+            }));
 
         }
 

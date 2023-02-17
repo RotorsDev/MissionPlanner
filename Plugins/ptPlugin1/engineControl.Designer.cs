@@ -31,17 +31,17 @@ namespace ptPlugin1
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(engineControl));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.pStart = new System.Windows.Forms.Panel();
             this.lThrFuel = new System.Windows.Forms.Label();
-            this.lEngineStatus = new System.Windows.Forms.Label();
             this.engineTempGauge = new AGaugeApp.AGauge();
             this.engineRpmGauge = new AGaugeApp.AGauge();
-            this.uEngineSTOP = new MissionPlanner.Controls.utButton();
-            this.bEngineEmergencyStop = new MissionPlanner.Controls.utButton();
-            this.uEngineSTART = new MissionPlanner.Controls.utButton();
-            this.bArm = new MissionPlanner.Controls.utButton();
-            this.pStart = new System.Windows.Forms.Panel();
+            this.lEngineStatus = new System.Windows.Forms.Label();
             this.pEmergency = new System.Windows.Forms.Panel();
             this.pStop = new System.Windows.Forms.Panel();
+            this.uEngineSTART = new MissionPlanner.Controls.utButton();
+            this.bArm = new MissionPlanner.Controls.utButton();
+            this.bEngineEmergencyStop = new MissionPlanner.Controls.utButton();
+            this.uEngineSTOP = new MissionPlanner.Controls.utButton();
             this.tableLayoutPanel1.SuspendLayout();
             this.pStart.SuspendLayout();
             this.pEmergency.SuspendLayout();
@@ -75,6 +75,17 @@ namespace ptPlugin1
             this.tableLayoutPanel1.Size = new System.Drawing.Size(582, 556);
             this.tableLayoutPanel1.TabIndex = 82;
             // 
+            // pStart
+            // 
+            this.pStart.Controls.Add(this.uEngineSTART);
+            this.pStart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pStart.Location = new System.Drawing.Point(291, 292);
+            this.pStart.Margin = new System.Windows.Forms.Padding(0);
+            this.pStart.Name = "pStart";
+            this.pStart.Padding = new System.Windows.Forms.Padding(10);
+            this.pStart.Size = new System.Drawing.Size(291, 87);
+            this.pStart.TabIndex = 86;
+            // 
             // lThrFuel
             // 
             this.lThrFuel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -88,17 +99,6 @@ namespace ptPlugin1
             this.lThrFuel.Size = new System.Drawing.Size(285, 90);
             this.lThrFuel.TabIndex = 87;
             this.lThrFuel.Text = "Throttle : 0%\r\nFuel Pump : 5.6v\r\nFuel Level : 123";
-            // 
-            // lEngineStatus
-            // 
-            this.lEngineStatus.AutoSize = true;
-            this.lEngineStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lEngineStatus.ForeColor = System.Drawing.Color.White;
-            this.lEngineStatus.Location = new System.Drawing.Point(3, 379);
-            this.lEngineStatus.Name = "lEngineStatus";
-            this.lEngineStatus.Size = new System.Drawing.Size(139, 48);
-            this.lEngineStatus.TabIndex = 86;
-            this.lEngineStatus.Text = "Engine Status\r\nEngine Error";
             // 
             // engineTempGauge
             // 
@@ -398,33 +398,38 @@ namespace ptPlugin1
             this.engineRpmGauge.Value2 = 0F;
             this.engineRpmGauge.Value3 = 40F;
             // 
-            // uEngineSTOP
+            // lEngineStatus
             // 
-            this.uEngineSTOP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.uEngineSTOP.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.uEngineSTOP.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.uEngineSTOP.ForeColor = System.Drawing.Color.White;
-            this.uEngineSTOP.Location = new System.Drawing.Point(0, 0);
-            this.uEngineSTOP.Margin = new System.Windows.Forms.Padding(10);
-            this.uEngineSTOP.Name = "uEngineSTOP";
-            this.uEngineSTOP.Size = new System.Drawing.Size(271, 67);
-            this.uEngineSTOP.TabIndex = 85;
-            this.uEngineSTOP.Text = "ENGINE STOP/COOLING";
-            this.uEngineSTOP.UseVisualStyleBackColor = false;
+            this.lEngineStatus.AutoSize = true;
+            this.lEngineStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lEngineStatus.ForeColor = System.Drawing.Color.White;
+            this.lEngineStatus.Location = new System.Drawing.Point(3, 379);
+            this.lEngineStatus.Name = "lEngineStatus";
+            this.lEngineStatus.Size = new System.Drawing.Size(139, 48);
+            this.lEngineStatus.TabIndex = 86;
+            this.lEngineStatus.Text = "Engine Status\r\nEngine Error";
             // 
-            // bEngineEmergencyStop
+            // pEmergency
             // 
-            this.bEngineEmergencyStop.BackColor = System.Drawing.Color.Red;
-            this.bEngineEmergencyStop.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.bEngineEmergencyStop.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bEngineEmergencyStop.ForeColor = System.Drawing.Color.White;
-            this.bEngineEmergencyStop.Location = new System.Drawing.Point(0, 0);
-            this.bEngineEmergencyStop.Margin = new System.Windows.Forms.Padding(10);
-            this.bEngineEmergencyStop.Name = "bEngineEmergencyStop";
-            this.bEngineEmergencyStop.Size = new System.Drawing.Size(271, 70);
-            this.bEngineEmergencyStop.TabIndex = 84;
-            this.bEngineEmergencyStop.Text = "EMERGENCY STOP";
-            this.bEngineEmergencyStop.UseVisualStyleBackColor = false;
+            this.pEmergency.Controls.Add(this.bEngineEmergencyStop);
+            this.pEmergency.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pEmergency.Location = new System.Drawing.Point(291, 466);
+            this.pEmergency.Margin = new System.Windows.Forms.Padding(0);
+            this.pEmergency.Name = "pEmergency";
+            this.pEmergency.Padding = new System.Windows.Forms.Padding(10);
+            this.pEmergency.Size = new System.Drawing.Size(291, 90);
+            this.pEmergency.TabIndex = 88;
+            // 
+            // pStop
+            // 
+            this.pStop.Controls.Add(this.uEngineSTOP);
+            this.pStop.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pStop.Location = new System.Drawing.Point(291, 379);
+            this.pStop.Margin = new System.Windows.Forms.Padding(0);
+            this.pStop.Name = "pStop";
+            this.pStop.Padding = new System.Windows.Forms.Padding(10);
+            this.pStop.Size = new System.Drawing.Size(291, 87);
+            this.pStop.TabIndex = 89;
             // 
             // uEngineSTART
             // 
@@ -432,9 +437,10 @@ namespace ptPlugin1
             this.uEngineSTART.Dock = System.Windows.Forms.DockStyle.Fill;
             this.uEngineSTART.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.uEngineSTART.ForeColor = System.Drawing.Color.White;
-            this.uEngineSTART.Location = new System.Drawing.Point(0, 0);
-            this.uEngineSTART.Margin = new System.Windows.Forms.Padding(10);
+            this.uEngineSTART.Location = new System.Drawing.Point(10, 10);
+            this.uEngineSTART.Margin = new System.Windows.Forms.Padding(0);
             this.uEngineSTART.Name = "uEngineSTART";
+            this.uEngineSTART.Padding = new System.Windows.Forms.Padding(10);
             this.uEngineSTART.Size = new System.Drawing.Size(271, 67);
             this.uEngineSTART.TabIndex = 83;
             this.uEngineSTART.Text = "ENGINE START";
@@ -455,35 +461,34 @@ namespace ptPlugin1
             this.bArm.UseVisualStyleBackColor = false;
             this.bArm.Click += new System.EventHandler(this.bArm_Click);
             // 
-            // pStart
+            // bEngineEmergencyStop
             // 
-            this.pStart.Controls.Add(this.uEngineSTART);
-            this.pStart.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pStart.Location = new System.Drawing.Point(301, 302);
-            this.pStart.Margin = new System.Windows.Forms.Padding(10);
-            this.pStart.Name = "pStart";
-            this.pStart.Size = new System.Drawing.Size(271, 67);
-            this.pStart.TabIndex = 86;
+            this.bEngineEmergencyStop.BackColor = System.Drawing.Color.Red;
+            this.bEngineEmergencyStop.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.bEngineEmergencyStop.FlatAppearance.BorderColor = System.Drawing.Color.Green;
+            this.bEngineEmergencyStop.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bEngineEmergencyStop.ForeColor = System.Drawing.Color.White;
+            this.bEngineEmergencyStop.Location = new System.Drawing.Point(10, 10);
+            this.bEngineEmergencyStop.Margin = new System.Windows.Forms.Padding(0);
+            this.bEngineEmergencyStop.Name = "bEngineEmergencyStop";
+            this.bEngineEmergencyStop.Size = new System.Drawing.Size(271, 70);
+            this.bEngineEmergencyStop.TabIndex = 84;
+            this.bEngineEmergencyStop.Text = "EMERGENCY STOP";
+            this.bEngineEmergencyStop.UseVisualStyleBackColor = false;
             // 
-            // pEmergency
+            // uEngineSTOP
             // 
-            this.pEmergency.Controls.Add(this.bEngineEmergencyStop);
-            this.pEmergency.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pEmergency.Location = new System.Drawing.Point(301, 476);
-            this.pEmergency.Margin = new System.Windows.Forms.Padding(10);
-            this.pEmergency.Name = "pEmergency";
-            this.pEmergency.Size = new System.Drawing.Size(271, 70);
-            this.pEmergency.TabIndex = 88;
-            // 
-            // pStop
-            // 
-            this.pStop.Controls.Add(this.uEngineSTOP);
-            this.pStop.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pStop.Location = new System.Drawing.Point(301, 389);
-            this.pStop.Margin = new System.Windows.Forms.Padding(10);
-            this.pStop.Name = "pStop";
-            this.pStop.Size = new System.Drawing.Size(271, 67);
-            this.pStop.TabIndex = 89;
+            this.uEngineSTOP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.uEngineSTOP.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.uEngineSTOP.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.uEngineSTOP.ForeColor = System.Drawing.Color.White;
+            this.uEngineSTOP.Location = new System.Drawing.Point(10, 10);
+            this.uEngineSTOP.Margin = new System.Windows.Forms.Padding(10);
+            this.uEngineSTOP.Name = "uEngineSTOP";
+            this.uEngineSTOP.Size = new System.Drawing.Size(271, 67);
+            this.uEngineSTOP.TabIndex = 85;
+            this.uEngineSTOP.Text = "ENGINE STOP/COOLING";
+            this.uEngineSTOP.UseVisualStyleBackColor = false;
             // 
             // engineControl
             // 

@@ -129,6 +129,198 @@
   <data name="tableLayoutPanel1.ColumnCount" type="System.Int32, mscorlib">
     <value>8</value>
   </data>
+  <data name="&gt;&gt;ekfposv.Name" xml:space="preserve">
+    <value>ekfposv</value>
+  </data>
+  <data name="&gt;&gt;ekfposv.Type" xml:space="preserve">
+    <value>MissionPlanner.Controls.VerticalProgressBar2, MissionPlanner.Controls, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
+  </data>
+  <data name="&gt;&gt;ekfposv.Parent" xml:space="preserve">
+    <value>tableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;ekfposv.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;ekfposh.Name" xml:space="preserve">
+    <value>ekfposh</value>
+  </data>
+  <data name="&gt;&gt;ekfposh.Type" xml:space="preserve">
+    <value>MissionPlanner.Controls.VerticalProgressBar2, MissionPlanner.Controls, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
+  </data>
+  <data name="&gt;&gt;ekfposh.Parent" xml:space="preserve">
+    <value>tableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;ekfposh.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;label1.Name" xml:space="preserve">
+    <value>label1</value>
+  </data>
+  <data name="&gt;&gt;label1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label1.Parent" xml:space="preserve">
+    <value>tableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;label1.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;label8.Name" xml:space="preserve">
+    <value>label8</value>
+  </data>
+  <data name="&gt;&gt;label8.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label8.Parent" xml:space="preserve">
+    <value>tableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;label8.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;ekfcompass.Name" xml:space="preserve">
+    <value>ekfcompass</value>
+  </data>
+  <data name="&gt;&gt;ekfcompass.Type" xml:space="preserve">
+    <value>MissionPlanner.Controls.VerticalProgressBar2, MissionPlanner.Controls, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
+  </data>
+  <data name="&gt;&gt;ekfcompass.Parent" xml:space="preserve">
+    <value>tableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;ekfcompass.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;ekfterrain.Name" xml:space="preserve">
+    <value>ekfterrain</value>
+  </data>
+  <data name="&gt;&gt;ekfterrain.Type" xml:space="preserve">
+    <value>MissionPlanner.Controls.VerticalProgressBar2, MissionPlanner.Controls, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
+  </data>
+  <data name="&gt;&gt;ekfterrain.Parent" xml:space="preserve">
+    <value>tableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;ekfterrain.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;label2.Name" xml:space="preserve">
+    <value>label2</value>
+  </data>
+  <data name="&gt;&gt;label2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label2.Parent" xml:space="preserve">
+    <value>tableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;label2.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="&gt;&gt;label3.Name" xml:space="preserve">
+    <value>label3</value>
+  </data>
+  <data name="&gt;&gt;label3.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label3.Parent" xml:space="preserve">
+    <value>tableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;label3.ZOrder" xml:space="preserve">
+    <value>8</value>
+  </data>
+  <data name="&gt;&gt;label4.Name" xml:space="preserve">
+    <value>label4</value>
+  </data>
+  <data name="&gt;&gt;label4.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label4.Parent" xml:space="preserve">
+    <value>tableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;label4.ZOrder" xml:space="preserve">
+    <value>9</value>
+  </data>
+  <data name="&gt;&gt;label5.Name" xml:space="preserve">
+    <value>label5</value>
+  </data>
+  <data name="&gt;&gt;label5.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label5.Parent" xml:space="preserve">
+    <value>tableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;label5.ZOrder" xml:space="preserve">
+    <value>10</value>
+  </data>
+  <data name="&gt;&gt;label6.Name" xml:space="preserve">
+    <value>label6</value>
+  </data>
+  <data name="&gt;&gt;label6.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label6.Parent" xml:space="preserve">
+    <value>tableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;label6.ZOrder" xml:space="preserve">
+    <value>11</value>
+  </data>
+  <data name="&gt;&gt;flowLayoutPanel1.Name" xml:space="preserve">
+    <value>flowLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;flowLayoutPanel1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.FlowLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;flowLayoutPanel1.Parent" xml:space="preserve">
+    <value>tableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;flowLayoutPanel1.ZOrder" xml:space="preserve">
+    <value>12</value>
+  </data>
+  <data name="tableLayoutPanel1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="tableLayoutPanel1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="tableLayoutPanel1.RowCount" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="tableLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>412, 265</value>
+  </data>
+  <data name="tableLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;tableLayoutPanel1.Name" xml:space="preserve">
+    <value>tableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;tableLayoutPanel1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tableLayoutPanel1.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;tableLayoutPanel1.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="tableLayoutPanel1.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="ekfposv" Row="1" RowSpan="4" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="ekfposh" Row="1" RowSpan="4" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="ekfvel" Row="1" RowSpan="4" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label1" Row="0" RowSpan="1" Column="1" ColumnSpan="5" /&gt;&lt;Control Name="label8" Row="1" RowSpan="1" Column="6" ColumnSpan="2" /&gt;&lt;Control Name="ekfcompass" Row="1" RowSpan="4" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="ekfterrain" Row="1" RowSpan="4" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="label2" Row="5" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label3" Row="5" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="label4" Row="5" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="label5" Row="5" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="label6" Row="5" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="flowLayoutPanel1" Row="2" RowSpan="3" Column="6" ColumnSpan="2" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Absolute,5,Percent,13.81215,Percent,13.81215,Percent,13.81215,Percent,13.81215,Percent,13.81215,Percent,15.46962,Percent,15.46962" /&gt;&lt;Rows Styles="Percent,16.66667,Percent,16.66667,Percent,16.66667,Percent,16.66667,Percent,16.66667,Percent,16.66667" /&gt;&lt;/TableLayoutSettings&gt;</value>
+  </data>
+  <data name="ekfvel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>50, 170</value>
+  </data>
+  <data name="ekfvel.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;ekfvel.Name" xml:space="preserve">
+    <value>ekfvel</value>
+  </data>
+  <data name="&gt;&gt;ekfvel.Type" xml:space="preserve">
+    <value>MissionPlanner.Controls.VerticalProgressBar2, MissionPlanner.Controls, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
+  </data>
+  <data name="&gt;&gt;ekfvel.Parent" xml:space="preserve">
+    <value>tableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;ekfvel.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
   <data name="ekfposv.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
   </data>
@@ -485,54 +677,6 @@
   </data>
   <data name="&gt;&gt;flowLayoutPanel1.ZOrder" xml:space="preserve">
     <value>12</value>
-  </data>
-  <data name="tableLayoutPanel1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
-  <data name="tableLayoutPanel1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
-  </data>
-  <data name="tableLayoutPanel1.RowCount" type="System.Int32, mscorlib">
-    <value>6</value>
-  </data>
-  <data name="tableLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>412, 265</value>
-  </data>
-  <data name="tableLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
-  </data>
-  <data name="&gt;&gt;tableLayoutPanel1.Name" xml:space="preserve">
-    <value>tableLayoutPanel1</value>
-  </data>
-  <data name="&gt;&gt;tableLayoutPanel1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;tableLayoutPanel1.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;tableLayoutPanel1.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="tableLayoutPanel1.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="ekfposv" Row="1" RowSpan="4" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="ekfposh" Row="1" RowSpan="4" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="ekfvel" Row="1" RowSpan="4" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label1" Row="0" RowSpan="1" Column="1" ColumnSpan="5" /&gt;&lt;Control Name="label8" Row="1" RowSpan="1" Column="6" ColumnSpan="2" /&gt;&lt;Control Name="ekfcompass" Row="1" RowSpan="4" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="ekfterrain" Row="1" RowSpan="4" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="label2" Row="5" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="label3" Row="5" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="label4" Row="5" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="label5" Row="5" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="label6" Row="5" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="flowLayoutPanel1" Row="2" RowSpan="3" Column="6" ColumnSpan="2" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Absolute,5,Percent,13.81215,Percent,13.81215,Percent,13.81215,Percent,13.81215,Percent,13.81215,Percent,15.46962,Percent,15.46962" /&gt;&lt;Rows Styles="Percent,16.66667,Percent,16.66667,Percent,16.66667,Percent,16.66667,Percent,16.66667,Percent,16.66667" /&gt;&lt;/TableLayoutSettings&gt;</value>
-  </data>
-  <data name="ekfvel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>50, 170</value>
-  </data>
-  <data name="ekfvel.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;ekfvel.Name" xml:space="preserve">
-    <value>ekfvel</value>
-  </data>
-  <data name="&gt;&gt;ekfvel.Type" xml:space="preserve">
-    <value>MissionPlanner.Controls.VerticalProgressBar2, MissionPlanner.Controls, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
-  </data>
-  <data name="&gt;&gt;ekfvel.Parent" xml:space="preserve">
-    <value>tableLayoutPanel1</value>
-  </data>
-  <data name="&gt;&gt;ekfvel.ZOrder" xml:space="preserve">
-    <value>2</value>
   </data>
   <metadata name="timer1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>

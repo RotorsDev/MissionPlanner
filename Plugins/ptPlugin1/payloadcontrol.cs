@@ -199,7 +199,11 @@ namespace MissionPlanner.Controls
 
         public void setSafetyStatus(bool status)
         {
-            bWarning.Visible = status;
+            MissionPlanner.MainV2.instance.BeginInvoke((MethodInvoker)(() =>
+            {
+
+                bWarning.Visible = status;
+            }));
         }
 
     }
