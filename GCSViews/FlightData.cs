@@ -5315,6 +5315,15 @@ namespace MissionPlanner.GCSViews
         private List<DropoutsStateItem> DropoutsState = new List<DropoutsStateItem>();
 
         /// <summary>
+        /// Gets the dropout state of a Control
+        /// </summary>
+        /// <param name="Name">Name of Control</param>
+        public bool GetDropoutState(string Name)
+        {
+            return DropoutsState.Where(DS => DS.Name == Name).FirstOrDefault().Dropped;
+        }
+
+        /// <summary>
         /// Changes the dropout state of a Control
         /// </summary>
         /// <param name="Name">Name of Control</param>

@@ -424,7 +424,7 @@ namespace ptPlugin1
 
                 if (s.name[0] == 'S')
                 {
-                    //Set status pin TODO: Need to check 
+                    //Set status pin TODO: Need to check
                     if (s.value == 0) plControl.setSafetyStatus(true);
                     else plControl.setSafetyStatus(false);
                 }
@@ -444,11 +444,11 @@ namespace ptPlugin1
                     MainV2.instance.MyView.ShowScreen("FlightData");
                     break;
                 case "FP":
-                    MainV2.instance.MyView.ShowScreen("FlightPlanner");
+                    if (!MainV2.instance.FlightData.GetDropoutState("FlightPlanner")) MainV2.instance.MyView.ShowScreen("FlightPlanner");
                     MainV2.instance.FlightPlanner.cmb_missiontype.SelectedIndex = 0;
                     break;
                 case "GF":
-                    MainV2.instance.MyView.ShowScreen("FlightPlanner");
+                    if (!MainV2.instance.FlightData.GetDropoutState("FlightPlanner")) MainV2.instance.MyView.ShowScreen("FlightPlanner");
                     MainV2.instance.FlightPlanner.cmb_missiontype.SelectedIndex = 1;
 
                     break;
