@@ -471,6 +471,7 @@ namespace ptPlugin1
                 if (s.fuel_consumed < 50) fuelStat = Stat.ALERT;
 
                 aMain.setStatus("ENGINE", engineStat);
+                aMain.setStatus("FUEL", fuelStat);
             }
 
 
