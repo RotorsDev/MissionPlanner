@@ -1054,6 +1054,14 @@ namespace MissionPlanner
 
         [DisplayText("Wind Velocity (speed)")][GroupText("Position")] public float wind_vel { get; set; }
 
+        [DisplayText("GND Wind vel")][GroupText("Position")] public float g_wind_vel { get; set; }
+        [DisplayText("GND Wind dir")] [GroupText("Position")] public float g_wind_dir { get; set; }
+        [DisplayText("GND Pressure")] [GroupText("Position")] public float g_press { get; set; }
+        [DisplayText("GND Humidity")] [GroupText("Position")] public float g_humidity { get; set; }
+        [DisplayText("GND Temp")] [GroupText("Position")] public float g_temp { get; set; }
+
+
+
         [GroupText("NAV")] public float targetaltd100 => targetalt / 100 % 10;
         [GroupText("NAV")]
         public float targetalt { get; private set; }

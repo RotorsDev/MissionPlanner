@@ -20,7 +20,7 @@ namespace ptPlugin1
     public class ptPlugin1 : Plugin
     {
 
-        annunciator aMain = new annunciator(17, new Size(130,40));
+        annunciator aMain = new annunciator(18, new Size(130,40));
         public static FloatingForm annunciatorForm = new FloatingForm();
 
 
@@ -109,6 +109,7 @@ namespace ptPlugin1
                 "PAY"+ Environment.NewLine +"LOAD",
                 "AIR"+ Environment.NewLine +"SPEED",
                 "EKF",
+                "WEATHER",
                 "LAND",
                 "LAUNCH",
                 "PRE" + Environment.NewLine + "FLGHT",
@@ -128,6 +129,7 @@ namespace ptPlugin1
                 "PAYLD",
                 "PITOT",
                 "EKF",
+                "WEATHER",
                 "LAND",
                 "START",
                 "PREFLGHT",
@@ -621,7 +623,12 @@ namespace ptPlugin1
                         if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
                         break;
                     }
-
+                case "WEATHER":
+                    {
+                        TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["tabWeather"];
+                        if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
+                        break;
+                    }
                 default:
                     break;
             }
