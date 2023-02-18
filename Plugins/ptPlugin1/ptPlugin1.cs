@@ -20,7 +20,7 @@ namespace ptPlugin1
     public class ptPlugin1 : Plugin
     {
 
-        annunciator aMain = new annunciator(18, new Size(130,40));
+        annunciator aMain = new annunciator(17, new Size(130,40));
         public static FloatingForm annunciatorForm = new FloatingForm();
 
 
@@ -103,8 +103,7 @@ namespace ptPlugin1
                 "PAY"+ Environment.NewLine +"LOAD",
                 "AIR"+ Environment.NewLine +"SPEED",
                 "EKF",
-                "",
-                "",
+                "LAND",
                 "LAUNCH",
                 "PRE" + Environment.NewLine + "FLGHT",
                 "ACTIONS",
@@ -123,8 +122,7 @@ namespace ptPlugin1
                 "PAYLD",
                 "AIRSPD",
                 "EKF",
-                "DUMMY2",
-                "DUMMY3",
+                "LAND",
                 "START",
                 "PREFLGHT",
                 "ACTIONS",

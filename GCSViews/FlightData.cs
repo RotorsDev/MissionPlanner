@@ -2777,6 +2777,7 @@ namespace MissionPlanner.GCSViews
             flightPlannerDropout.ResizeEnd += (s2, e2) => flightPlannerDropout.SaveStartupLocation();
             flightPlannerDropout.LocationChanged += (s3, e3) => flightPlannerDropout.SaveStartupLocation();
             flightPlannerDropout.RestoreStartupLocation();
+            flightPlannerDropout.SaveStartupLocation();
 
             MainSwitcher.Screen flightPlannerScreen = MainV2.View.screens.Where(s => s.Name == "FlightPlanner").FirstOrDefault();
             flightPlannerDropout.Controls.Add(flightPlannerScreen.Control);
@@ -5388,7 +5389,7 @@ namespace MissionPlanner.GCSViews
                     }
                     if (item.Name == "FlightPlanner")
                     {
-                        flightPlannerToolStripMenuItem_Click(null, EventArgs.Empty);
+                        flightPlannerDropoutToolStripMenuItem_Click(null, EventArgs.Empty);
                     }
                     if (item.Name == "ConnectionStats")
                     {
