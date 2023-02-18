@@ -12,13 +12,11 @@ namespace ptPlugin1
 {
     public partial class batterypanel : UserControl
     {
-        private float servo1 = 6.7f;
-        private float servo2 = 7;
-        private float payload = 11;
-        private float main = 14;
-        private float gcs = 28;
-
-
+        private float servo1 = 0f;
+        private float servo2 = 0;
+        private float payload = 0;
+        private float main = 0;
+        private float gcs = 0;
 
         public batterypanel()
         {

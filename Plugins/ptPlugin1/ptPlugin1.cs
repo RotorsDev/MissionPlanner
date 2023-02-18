@@ -59,6 +59,10 @@ namespace ptPlugin1
         public ekfStatControl ekfStat = new ekfStatControl();
 
 
+        public TabPage pitotPage = new TabPage();
+        public pitotControl pitot = new pitotControl();
+
+
         string actualPanel = "";
 
         public override string Name
@@ -120,7 +124,7 @@ namespace ptPlugin1
                 "FUEL",
                 "BATT",
                 "PAYLD",
-                "AIRSPD",
+                "PITOT",
                 "EKF",
                 "LAND",
                 "START",
@@ -245,11 +249,69 @@ namespace ptPlugin1
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(ekfPage);
 
 
+            pitotPage.Text = "Airspeed";
+            pitotPage.Name = "pitotTab";
+            pitotPage.Controls.Add(pitot);
+            pitot.Size = ekfPage.ClientSize;
+            pitot.Location = new Point(0, 0);
+            pitot.Dock = DockStyle.Fill;
+            pitot.calibrateClicked += Pitot_calibrateClicked;
+            Host.MainForm.FlightData.tabControlactions.TabPages.Add(pitotPage);
+
+
+
+
             //Setup mavlink receiving
             Host.comPort.OnPacketReceived += MavOnOnPacketReceivedHandler;
 
 
             return true;     //If it is false plugin will not start (loop will not called)
+        }
+
+        private void Pitot_calibrateClicked(object sender, EventArgs e)
+        {
+            if (!MainV2.comPort.MAV.cs.connected)
+            {
+                CustomMessageBox.Show("You have to connect first!", "Action", MessageBoxButtons.OK);
+                return;
+            }
+
+            if (MainV2.comPort.MAV.cs.armed)
+            {
+                CustomMessageBox.Show("You cannot do it while aircraft is armed!", "Action", MessageBoxButtons.OK);
+                return;
+
+            }
+
+            if (CustomMessageBox.Show("Are you sure you want to do Preflight Calibration ?", "Action", MessageBoxButtons.YesNo) == (int)DialogResult.Yes)
+            {
+                try
+                {
+                    ((Control)sender).Enabled = false;
+
+                    int param1 = 0;
+                    int param2 = 0;
+                    int param3 = 1;
+
+                    //baro/airspeed calibration, but no gyro !
+                    param3 = 1; // baro / airspeed
+                    var cmd = (MAVLink.MAV_CMD)Enum.Parse(typeof(MAVLink.MAV_CMD), "Preflight_Calibration".ToUpper());
+
+                    if (MainV2.comPort.doCommand(cmd, param1, param2, param3, 0, 0, 0, 0))
+                    {
+                    }
+                    else
+                    {
+                        CustomMessageBox.Show("Calibration Failed" + cmd, "ERROR");
+                    }
+                }
+                catch
+                {
+                    CustomMessageBox.Show("Calibration failed", "ERROR");
+                }
+
+                ((Control)sender).Enabled = true;
+            }
         }
 
         private void PlControl_setupClicked(object sender, EventArgs e)
@@ -388,6 +450,16 @@ namespace ptPlugin1
             }
 
 
+
+            //Pitot heating data
+            if ((MAVLink.MAVLINK_MSG_ID)linkMessage.msgid == MAVLink.MAVLINK_MSG_ID.GENERATOR_STATUS)
+            {
+                MAVLink.mavlink_generator_status_t s = linkMessage.ToStructure<MAVLink.mavlink_generator_status_t>();
+                pitot.setData(s.battery_current, s.load_current, s.power_generated, s.bus_voltage);
+
+            }
+
+
             //Named values (voltage and payload status
 
             if ((MAVLink.MAVLINK_MSG_ID)linkMessage.msgid == MAVLink.MAVLINK_MSG_ID.NAMED_VALUE_FLOAT)
@@ -398,7 +470,7 @@ namespace ptPlugin1
                 System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
 
 
-                Console.WriteLine(enc.GetString(s.name) + " : " + s.value.ToString() );
+                Console.WriteLine(enc.GetString(s.name) + " : " + s.value.ToString());
 
                 if (enc.GetString(s.name).Contains("servo1"))
                 {
@@ -503,6 +575,12 @@ namespace ptPlugin1
                 case "EKF":
                     {
                         TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["ekfTab"];
+                        if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
+                        break;
+                    }
+                case "PITOT":
+                    {
+                        TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["pitotTab"];
                         if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
                         break;
                     }

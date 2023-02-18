@@ -146,6 +146,12 @@
     <Compile Include="payloadSetupForm.Designer.cs">
       <DependentUpon>payloadSetupForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="pitotControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="pitotControl.Designer.cs">
+      <DependentUpon>pitotControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -198,6 +204,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="payloadSetupForm.resx">
       <DependentUpon>payloadSetupForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="pitotControl.resx">
+      <DependentUpon>pitotControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
