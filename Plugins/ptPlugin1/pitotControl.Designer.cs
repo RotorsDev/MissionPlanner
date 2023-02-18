@@ -40,9 +40,7 @@ namespace ptPlugin1
             // 
             // gaugePitotTemp
             // 
-            this.gaugePitotTemp.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.gaugePitotTemp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
             this.gaugePitotTemp.BackColor = System.Drawing.Color.Transparent;
             this.gaugePitotTemp.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("gaugePitotTemp.BackgroundImage")));
             this.gaugePitotTemp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
@@ -189,8 +187,7 @@ namespace ptPlugin1
             // 
             // gaugeAmbientTemp
             // 
-            this.gaugeAmbientTemp.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.gaugeAmbientTemp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
             this.gaugeAmbientTemp.BackColor = System.Drawing.Color.Transparent;
             this.gaugeAmbientTemp.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("gaugeAmbientTemp.BackgroundImage")));
             this.gaugeAmbientTemp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;

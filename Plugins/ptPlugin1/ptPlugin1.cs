@@ -62,6 +62,8 @@ namespace ptPlugin1
         public TabPage pitotPage = new TabPage();
         public pitotControl pitot = new pitotControl();
 
+        public TabPage fuelPage = new TabPage();
+        public fuelControl fuel = new fuelControl();
 
         string actualPanel = "";
 
@@ -258,6 +260,14 @@ namespace ptPlugin1
             pitot.calibrateClicked += Pitot_calibrateClicked;
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(pitotPage);
 
+            fuelPage.Text = "Fuel";
+            fuelPage.Name = "fuelTab";
+            fuelPage.Controls.Add(fuel);
+            fuel.Size = ekfPage.ClientSize;
+            fuel.Location = new Point(0, 0);
+            fuel.Dock = DockStyle.Fill;
+            Host.MainForm.FlightData.tabControlactions.TabPages.Add(fuelPage);
+
 
 
 
@@ -442,11 +452,25 @@ namespace ptPlugin1
             if ((MAVLink.MAVLINK_MSG_ID)linkMessage.msgid == MAVLink.MAVLINK_MSG_ID.EFI_STATUS)
             {
 
+                Stat engineStat = Stat.NOMINAL;
+                Stat fuelStat = Stat.NOMINAL;
+
+
                 MAVLink.mavlink_efi_status_t s = linkMessage.ToStructure<MAVLink.mavlink_efi_status_t>();
 
                 eCtrl.setRpmEgt(s.rpm, s.exhaust_gas_temperature);
                 eCtrl.setThrFuel(s.throttle_position, s.fuel_flow, s.fuel_consumed);
                 eCtrl.setStatus((byte)s.health, (byte)s.ecu_index);
+                fuel.setData(s.fuel_consumed, 0);
+
+
+                if (s.rpm < 31000) engineStat = Stat.ALERT;
+                if (s.exhaust_gas_temperature > 900) engineStat = Stat.ALERT;
+
+                if (s.fuel_consumed < 150) fuelStat = Stat.WARNING;
+                if (s.fuel_consumed < 50) fuelStat = Stat.ALERT;
+
+                aMain.setStatus("ENGINE", engineStat);
             }
 
 
@@ -584,6 +608,19 @@ namespace ptPlugin1
                         if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
                         break;
                     }
+                case "FUEL":
+                    {
+                        TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["fuelTab"];
+                        if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
+                        break;
+                    }
+                case "PREFLGHT":
+                    {
+                        TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["tabPagePreFlight"];
+                        if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
+                        break;
+                    }
+
                 default:
                     break;
             }
