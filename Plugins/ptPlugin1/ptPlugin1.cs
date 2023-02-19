@@ -45,7 +45,7 @@ namespace ptPlugin1
         public FastColoredTextBox fctb;
         public DateTime lastDisplayedMessage = DateTime.MinValue;
 
-
+        
 
         TextStyle infoStyle = new TextStyle(Brushes.White, null, FontStyle.Regular);
         TextStyle warningStyle = new TextStyle(Brushes.BurlyWood, null, FontStyle.Regular);
@@ -68,6 +68,13 @@ namespace ptPlugin1
 
         public TabPage fuelPage = new TabPage();
         public fuelControl fuel = new fuelControl();
+
+        public TabPage landingPage = new TabPage();
+        public landingControl lc = new landingControl();
+
+
+        public ToolStripMenuItem tsLandingPoint = new ToolStripMenuItem();
+
 
         string actualPanel = "";
 
@@ -109,6 +116,13 @@ namespace ptPlugin1
         public override bool Loaded()
 		//Loaded called after the plugin dll successfully loaded
         {
+
+            tsLandingPoint.Text = "Set Landing Point";
+            tsLandingPoint.Click += TsLandingPoint_Click;
+            Host.FDMenuMap.Items.Add(tsLandingPoint);
+            landingoverlay = new GMapOverlay("landing");
+
+
 
             Panel panel1 = Host.MainForm.Controls.Find("Panel1", true).FirstOrDefault() as Panel;
 
@@ -271,7 +285,7 @@ namespace ptPlugin1
             pitotPage.Text = "Airspeed";
             pitotPage.Name = "pitotTab";
             pitotPage.Controls.Add(pitot);
-            pitot.Size = ekfPage.ClientSize;
+            pitot.Size = pitotPage.ClientSize;
             pitot.Location = new Point(0, 0);
             pitot.Dock = DockStyle.Fill;
             pitot.calibrateClicked += Pitot_calibrateClicked;
@@ -280,10 +294,19 @@ namespace ptPlugin1
             fuelPage.Text = "Fuel";
             fuelPage.Name = "fuelTab";
             fuelPage.Controls.Add(fuel);
-            fuel.Size = ekfPage.ClientSize;
+            fuel.Size = fuelPage.ClientSize;
             fuel.Location = new Point(0, 0);
             fuel.Dock = DockStyle.Fill;
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(fuelPage);
+
+
+            landingPage.Text = "Landing";
+            landingPage.Name = "landingTab";
+            landingPage.Controls.Add(lc);
+            lc.Size = landingPage.ClientSize;
+            lc.Location = new Point(0, 0);
+            lc.Dock = DockStyle.Fill;
+            Host.MainForm.FlightData.tabControlactions.TabPages.Add(landingPage);
 
 
 
@@ -296,8 +319,8 @@ namespace ptPlugin1
 
             landingoverlay = new GMapOverlay("landing");
             landingpos = new GMapMarkerLanding(land_point1);
-            landingpos.Bearing = 45;
-            landingpos.Length = 100;
+            landingpos.Bearing = 0;
+            landingpos.Length = 1;
             landingoverlay.Markers.Add(landingpos);
             Host.FDGMapControl.Overlays.Add(landingoverlay);
 
@@ -306,6 +329,23 @@ namespace ptPlugin1
 
 
             return true;     //If it is false plugin will not start (loop will not called)
+        }
+
+        private void TsLandingPoint_Click(object sender, EventArgs e)
+        {
+            PointLatLngAlt lp = Host.FDMenuMapPosition;
+            lc.updateLandingPoint(lp);
+            landingoverlay.Markers.Clear();
+            landingpos = new GMapMarkerLanding(lp);
+            landingpos.Bearing = 0;
+            landingpos.Length = 1;
+            landingoverlay.Markers.Add(landingpos);
+            Host.FDGMapControl.Overlays.Add(landingoverlay);
+
+            
+
+
+
         }
 
         private void Pitot_calibrateClicked(object sender, EventArgs e)
@@ -654,6 +694,12 @@ namespace ptPlugin1
                 case "WEATHER":
                     {
                         TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["tabWeather"];
+                        if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
+                        break;
+                    }
+                case "LAND":
+                    {
+                        TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["landingTab"];
                         if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
                         break;
                     }
