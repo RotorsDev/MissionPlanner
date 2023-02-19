@@ -11,6 +11,10 @@ using MissionPlanner.Controls.PreFlight;
 using MissionPlanner.Controls;
 using System.Linq;
 using FastColoredTextBoxNS;
+using GMap.NET;
+using GMap.NET.WindowsForms;
+using GMap.NET.WindowsForms.Markers;
+using MissionPlanner.Maps;
 
 
 //By Bandi
@@ -66,6 +70,17 @@ namespace ptPlugin1
         public fuelControl fuel = new fuelControl();
 
         string actualPanel = "";
+
+
+
+        //DEV TEST AREA
+
+        PointLatLngAlt land_point1 = new PointLatLngAlt(-35.3626135316334,149.164488315582);
+        internal GMapMarkerLanding landingpos;
+        internal static GMapOverlay landingoverlay;
+        //**************
+
+
 
         public override string Name
         {
@@ -275,6 +290,19 @@ namespace ptPlugin1
 
             //Setup mavlink receiving
             Host.comPort.OnPacketReceived += MavOnOnPacketReceivedHandler;
+
+
+            //DEV TEST
+
+            landingoverlay = new GMapOverlay("landing");
+            landingpos = new GMapMarkerLanding(land_point1);
+            landingpos.Bearing = 45;
+            landingpos.Length = 100;
+            landingoverlay.Markers.Add(landingpos);
+            Host.FDGMapControl.Overlays.Add(landingoverlay);
+
+            //**********
+
 
 
             return true;     //If it is false plugin will not start (loop will not called)
