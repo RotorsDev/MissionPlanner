@@ -15,6 +15,12 @@ namespace ptPlugin1
 
 
         public event EventHandler armClicked;
+
+        public event EventHandler startClicked;
+        public event EventHandler stopClicked;
+        public event EventHandler emergencyClicked;
+
+
         public engineControl()
         {
             InitializeComponent();
@@ -24,6 +30,34 @@ namespace ptPlugin1
         protected virtual void OnArmClicked(EventArgs e)
         {
             EventHandler handler = this.armClicked;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+
+        protected virtual void OnStartClicked(EventArgs e)
+        {
+            EventHandler handler = this.startClicked;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        protected virtual void OnStopClicked(EventArgs e)
+        {
+            EventHandler handler = this.stopClicked;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        protected virtual void OnEmergencyClicked(EventArgs e)
+        {
+            EventHandler handler = this.emergencyClicked;
             if (handler != null)
             {
                 handler(this, e);
@@ -171,6 +205,22 @@ namespace ptPlugin1
         private void bArm_Click(object sender, EventArgs e)
         {
             this.OnArmClicked(EventArgs.Empty);
+        }
+
+        private void uEngineSTART_Click(object sender, EventArgs e)
+        {
+            this.OnStartClicked(EventArgs.Empty);
+        }
+
+        private void uEngineSTOP_Click(object sender, EventArgs e)
+        {
+
+            this.OnStopClicked(EventArgs.Empty);
+        }
+
+        private void bEngineEmergencyStop_Click(object sender, EventArgs e)
+        {
+            this.OnEmergencyClicked(EventArgs.Empty);
         }
     }
 }

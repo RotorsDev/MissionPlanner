@@ -82,8 +82,12 @@ namespace ptPlugin1
 
         //DEV TEST AREA
 
-        internal GMapMarkerLanding landingpos;
-        internal static GMapOverlay landingoverlay;
+        internal GMapMarker markerLanding;
+        internal GMapMarker markerWaiting;
+        internal GMapMarker markerTarget;
+
+        internal GMapRoute landingRoute;
+        internal static GMapOverlay landingOverlay;
         //**************
 
 
@@ -119,7 +123,7 @@ namespace ptPlugin1
             tsLandingPoint.Text = "Set Landing Point";
             tsLandingPoint.Click += TsLandingPoint_Click;
             Host.FDMenuMap.Items.Add(tsLandingPoint);
-            landingoverlay = new GMapOverlay("landing");
+            landingOverlay = new GMapOverlay("landing");
 
 
 
@@ -244,6 +248,11 @@ namespace ptPlugin1
             eCtrl.Size = new Size(engineControlPage.Width, engineControlPage.Height);
             engineControlPage.Controls.Add(eCtrl);
             eCtrl.armClicked += ECtrl_armClicked;
+
+            eCtrl.startClicked += ECtrl_startClicked;
+            eCtrl.stopClicked += ECtrl_stopClicked;
+            eCtrl.emergencyClicked += ECtrl_emergencyClicked;
+
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(engineControlPage);
 
             eCtrl.setEngineStatus("Ready to Start", "No error");
@@ -319,6 +328,21 @@ namespace ptPlugin1
             return true;     //If it is false plugin will not start (loop will not called)
         }
 
+        private void ECtrl_emergencyClicked(object sender, EventArgs e)
+        {
+            MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_SET_SERVO, (float)Convert.ToInt16(Host.config["throttlech","10"]), 1000, 0, 0, 0, 0, 0, false);
+        }
+
+        private void ECtrl_stopClicked(object sender, EventArgs e)
+        {
+            MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_SET_SERVO, (float)Convert.ToInt16(Host.config["throttlech", "10"]), 1500, 0, 0, 0, 0, 0, false);
+        }
+
+        private void ECtrl_startClicked(object sender, EventArgs e)
+        {
+            MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_SET_SERVO, (float)Convert.ToInt16(Host.config["throttlech", "10"]), 2000, 0, 0, 0, 0, 0, false);
+        }
+
         private void ECtrl_armClicked(object sender, EventArgs e)
         {
             
@@ -381,14 +405,27 @@ namespace ptPlugin1
         private void TsLandingPoint_Click(object sender, EventArgs e)
         {
             PointLatLngAlt lp = Host.FDMenuMapPosition;
-            lc.updateLandingPoint(lp);
-            landingoverlay.Markers.Clear();
-            landingpos = new GMapMarkerLanding(lp);
-            landingpos.Bearing = 0;
-            landingpos.Length = 1;
+            lc.updateLandingData(lp, 230, 8.0f);            //Todo get it from real wind data and add a possibility to land upwind
+            landingOverlay.Markers.Clear();
+            landingOverlay.Routes.Clear();
 
-            landingoverlay.Markers.Add(landingpos);
-            Host.FDGMapControl.Overlays.Add(landingoverlay);
+            markerWaiting = new GMarkerGoogle(lc.WaitingPoint, GMarkerGoogleType.lightblue_dot);
+            markerLanding = new GMarkerGoogle(lc.LandingPoint, GMarkerGoogleType.green_dot);
+            markerTarget = new GMarkerGoogle(lc.TargetPoint, GMarkerGoogleType.pink_dot);
+
+            landingRoute = new GMapRoute("landingline");
+            landingRoute.Points.Add(lc.WaitingPoint);
+            landingRoute.Points.Add(lc.LandingPoint);
+            landingRoute.Points.Add(lc.TargetPoint);
+
+
+
+            landingOverlay.Markers.Add(markerWaiting);
+            landingOverlay.Markers.Add(markerLanding);
+            landingOverlay.Markers.Add(markerTarget);
+            landingOverlay.Routes.Add(landingRoute);
+
+            Host.FDGMapControl.Overlays.Add(landingOverlay);
 
             
 
@@ -843,7 +880,12 @@ namespace ptPlugin1
             
 
         }
-
+        float wrap360(float noin)
+        {
+            if (noin < 0)
+                return noin + 360;
+            return noin;
+        }
 
 
     }

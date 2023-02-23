@@ -32,15 +32,15 @@ namespace ptPlugin1
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(engineControl));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.pStart = new System.Windows.Forms.Panel();
+            this.uEngineSTART = new MissionPlanner.Controls.utButton();
             this.lThrFuel = new System.Windows.Forms.Label();
             this.engineTempGauge = new AGaugeApp.AGauge();
             this.engineRpmGauge = new AGaugeApp.AGauge();
+            this.bArm = new MissionPlanner.Controls.utButton();
             this.lEngineStatus = new System.Windows.Forms.Label();
             this.pEmergency = new System.Windows.Forms.Panel();
-            this.pStop = new System.Windows.Forms.Panel();
-            this.uEngineSTART = new MissionPlanner.Controls.utButton();
-            this.bArm = new MissionPlanner.Controls.utButton();
             this.bEngineEmergencyStop = new MissionPlanner.Controls.utButton();
+            this.pStop = new System.Windows.Forms.Panel();
             this.uEngineSTOP = new MissionPlanner.Controls.utButton();
             this.tableLayoutPanel1.SuspendLayout();
             this.pStart.SuspendLayout();
@@ -85,6 +85,22 @@ namespace ptPlugin1
             this.pStart.Padding = new System.Windows.Forms.Padding(10);
             this.pStart.Size = new System.Drawing.Size(291, 87);
             this.pStart.TabIndex = 86;
+            // 
+            // uEngineSTART
+            // 
+            this.uEngineSTART.BackColor = System.Drawing.Color.Lime;
+            this.uEngineSTART.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.uEngineSTART.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.uEngineSTART.ForeColor = System.Drawing.Color.White;
+            this.uEngineSTART.Location = new System.Drawing.Point(10, 10);
+            this.uEngineSTART.Margin = new System.Windows.Forms.Padding(0);
+            this.uEngineSTART.Name = "uEngineSTART";
+            this.uEngineSTART.Padding = new System.Windows.Forms.Padding(10);
+            this.uEngineSTART.Size = new System.Drawing.Size(271, 67);
+            this.uEngineSTART.TabIndex = 83;
+            this.uEngineSTART.Text = "ENGINE START";
+            this.uEngineSTART.UseVisualStyleBackColor = false;
+            this.uEngineSTART.Click += new System.EventHandler(this.uEngineSTART_Click);
             // 
             // lThrFuel
             // 
@@ -398,6 +414,21 @@ namespace ptPlugin1
             this.engineRpmGauge.Value2 = 0F;
             this.engineRpmGauge.Value3 = 40F;
             // 
+            // bArm
+            // 
+            this.bArm.BackColor = System.Drawing.Color.Lime;
+            this.bArm.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.bArm.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bArm.ForeColor = System.Drawing.Color.White;
+            this.bArm.Location = new System.Drawing.Point(10, 302);
+            this.bArm.Margin = new System.Windows.Forms.Padding(10);
+            this.bArm.Name = "bArm";
+            this.bArm.Size = new System.Drawing.Size(271, 67);
+            this.bArm.TabIndex = 82;
+            this.bArm.Text = "ARM/DISARM";
+            this.bArm.UseVisualStyleBackColor = false;
+            this.bArm.Click += new System.EventHandler(this.bArm_Click);
+            // 
             // lEngineStatus
             // 
             this.lEngineStatus.AutoSize = true;
@@ -420,47 +451,6 @@ namespace ptPlugin1
             this.pEmergency.Size = new System.Drawing.Size(291, 90);
             this.pEmergency.TabIndex = 88;
             // 
-            // pStop
-            // 
-            this.pStop.Controls.Add(this.uEngineSTOP);
-            this.pStop.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pStop.Location = new System.Drawing.Point(291, 379);
-            this.pStop.Margin = new System.Windows.Forms.Padding(0);
-            this.pStop.Name = "pStop";
-            this.pStop.Padding = new System.Windows.Forms.Padding(10);
-            this.pStop.Size = new System.Drawing.Size(291, 87);
-            this.pStop.TabIndex = 89;
-            // 
-            // uEngineSTART
-            // 
-            this.uEngineSTART.BackColor = System.Drawing.Color.Lime;
-            this.uEngineSTART.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.uEngineSTART.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.uEngineSTART.ForeColor = System.Drawing.Color.White;
-            this.uEngineSTART.Location = new System.Drawing.Point(10, 10);
-            this.uEngineSTART.Margin = new System.Windows.Forms.Padding(0);
-            this.uEngineSTART.Name = "uEngineSTART";
-            this.uEngineSTART.Padding = new System.Windows.Forms.Padding(10);
-            this.uEngineSTART.Size = new System.Drawing.Size(271, 67);
-            this.uEngineSTART.TabIndex = 83;
-            this.uEngineSTART.Text = "ENGINE START";
-            this.uEngineSTART.UseVisualStyleBackColor = false;
-            // 
-            // bArm
-            // 
-            this.bArm.BackColor = System.Drawing.Color.Lime;
-            this.bArm.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.bArm.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bArm.ForeColor = System.Drawing.Color.White;
-            this.bArm.Location = new System.Drawing.Point(10, 302);
-            this.bArm.Margin = new System.Windows.Forms.Padding(10);
-            this.bArm.Name = "bArm";
-            this.bArm.Size = new System.Drawing.Size(271, 67);
-            this.bArm.TabIndex = 82;
-            this.bArm.Text = "ARM/DISARM";
-            this.bArm.UseVisualStyleBackColor = false;
-            this.bArm.Click += new System.EventHandler(this.bArm_Click);
-            // 
             // bEngineEmergencyStop
             // 
             this.bEngineEmergencyStop.BackColor = System.Drawing.Color.Red;
@@ -475,6 +465,18 @@ namespace ptPlugin1
             this.bEngineEmergencyStop.TabIndex = 84;
             this.bEngineEmergencyStop.Text = "EMERGENCY STOP";
             this.bEngineEmergencyStop.UseVisualStyleBackColor = false;
+            this.bEngineEmergencyStop.Click += new System.EventHandler(this.bEngineEmergencyStop_Click);
+            // 
+            // pStop
+            // 
+            this.pStop.Controls.Add(this.uEngineSTOP);
+            this.pStop.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pStop.Location = new System.Drawing.Point(291, 379);
+            this.pStop.Margin = new System.Windows.Forms.Padding(0);
+            this.pStop.Name = "pStop";
+            this.pStop.Padding = new System.Windows.Forms.Padding(10);
+            this.pStop.Size = new System.Drawing.Size(291, 87);
+            this.pStop.TabIndex = 89;
             // 
             // uEngineSTOP
             // 
@@ -489,6 +491,7 @@ namespace ptPlugin1
             this.uEngineSTOP.TabIndex = 85;
             this.uEngineSTOP.Text = "ENGINE STOP/COOLING";
             this.uEngineSTOP.UseVisualStyleBackColor = false;
+            this.uEngineSTOP.Click += new System.EventHandler(this.uEngineSTOP_Click);
             // 
             // engineControl
             // 
