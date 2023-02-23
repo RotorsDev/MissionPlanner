@@ -25,7 +25,7 @@ namespace ptPlugin1
     public class ptPlugin1 : Plugin
     {
 
-        annunciator aMain = new annunciator(18, new Size(130,40));
+        annunciator aMain = new annunciator(19, new Size(130,40));
         public static FloatingForm annunciatorForm = new FloatingForm();
 
 
@@ -132,6 +132,7 @@ namespace ptPlugin1
                 "FLIGHT" + Environment.NewLine +"PLAN",
                 "GEO"+ Environment.NewLine +"FENCE",
                 "SETUP",
+                "TUNING",
                 "ENGINE",
                 "FUEL",
                 "BATT",
@@ -151,7 +152,8 @@ namespace ptPlugin1
                 "FD",
                 "FP",
                 "GF",
-                "SETUP", 
+                "SETUP",
+                "TUNING", 
                 "ENGINE",
                 "FUEL",
                 "BATT",
@@ -614,11 +616,14 @@ namespace ptPlugin1
                     MainV2.instance.FlightPlanner.cmb_missiontype.SelectedIndex = 1;
 
                     break;
-
                 case "SETUP":
-                    MainV2.instance.MyView.ShowScreen("SWConfig");
-                    Console.WriteLine(MainV2.instance.FlightData.tabQuick);
+                    MainV2.instance.MyView.ShowScreen("HWConfig");
                     actualPanel = "SETUP";
+                    break;
+
+                case "TUNING":
+                    MainV2.instance.MyView.ShowScreen("SWConfig");
+                    actualPanel = "TUNING";
                     break;
 
                 case "PAYLD":
