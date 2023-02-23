@@ -27,6 +27,8 @@ namespace ptPlugin1
         public PointLatLngAlt WaitingPoint = new PointLatLngAlt();
         public PointLatLngAlt TargetPoint = new PointLatLngAlt();
 
+        public LandState state = LandState.None;
+
 
         public event EventHandler waitClicked;
         public event EventHandler landClicked;
@@ -131,6 +133,7 @@ namespace ptPlugin1
         private void Button_Click(object sender, EventArgs e)
         {
             WaitDistance = (int)mWaitDistance.NumericUpDown.Value;
+            state = LandState.None;
             updateLabels();
         }
 
@@ -140,8 +143,8 @@ namespace ptPlugin1
             l.Alt = LandingAlt;
             LandingPoint = l;
 
-            WaitingPoint = l.newpos(WindDir, WaitDistance);
-            TargetPoint = l.newpos(wrap360(WindDir-180), 2000);
+            WaitingPoint = l.newpos(wrap360(WindDir-180), WaitDistance);
+            TargetPoint = l.newpos(WindDir, 2000);
 
             lLandPoint.Text = l.Lat.ToString("F5") + "," + l.Lng.ToString("F5");
 

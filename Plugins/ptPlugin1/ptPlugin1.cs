@@ -16,11 +16,24 @@ using GMap.NET.WindowsForms;
 using GMap.NET.WindowsForms.Markers;
 using MissionPlanner.Maps;
 using System.Text;
+using System.Media;
+
+
 
 
 //By Bandi
 namespace ptPlugin1
 {
+    public enum LandState
+    {
+        None,
+        Waiting,
+        GoToLand,
+        CloseToLand,
+        Land
+    }
+
+
     [PreventTheming]
     public class ptPlugin1 : Plugin
     {
@@ -80,7 +93,6 @@ namespace ptPlugin1
 
 
 
-        //DEV TEST AREA
 
         internal GMapMarker markerLanding;
         internal GMapMarker markerWaiting;
@@ -88,8 +100,9 @@ namespace ptPlugin1
 
         internal GMapRoute landingRoute;
         internal static GMapOverlay landingOverlay;
-        //**************
 
+
+        
 
 
         public override string Name
@@ -337,18 +350,67 @@ namespace ptPlugin1
         private void calcLandPoint()
         {
 
-                var speed = Host.cs.airspeed;
-                PointLatLngAlt currentpos = new PointLatLngAlt(Host.cs.Location);
-                PointLatLngAlt openpos1 = currentpos.newpos(Host.cs.yaw, speed * lc.OpeningTime);
-                PointLatLngAlt openpos2 = openpos1.newpos(wrap360(lc.WindDirection-180), (10 * (Host.cs.alt/lc.SinkRate) * lc.WindDrag));
+            //Check status
+            if (lc.state == LandState.None) return;
+
+            //Switch from landingpoint to target point if we are within loiter radius + 200meter
+            if (lc.state == LandState.GoToLand)
+            {
+                if (Host.cs.Location.GetDistance(lc.LandingPoint) <= MainV2.comPort.MAV.param["WP_LOITER_RAD"].Value + 200)
+                {
+                    Locationwp gotohere = new Locationwp();
+
+                    gotohere.id = (ushort)MAVLink.MAV_CMD.WAYPOINT;
+                    gotohere.alt = (float)lc.TargetPoint.Alt; // back to m
+                    gotohere.lat = (lc.TargetPoint.Lat);
+                    gotohere.lng = (lc.TargetPoint.Lng);
+
+                    try
+                    {
+                        MainV2.comPort.setGuidedModeWP(gotohere);
+
+                    }
+                    catch { }
+                    lc.state = LandState.CloseToLand;
+                }
+
+            }
+
+
+            var speed = Host.cs.airspeed;
+            PointLatLngAlt currentpos = new PointLatLngAlt(Host.cs.Location);
+            PointLatLngAlt openpos1 = currentpos.newpos(Host.cs.yaw, speed * lc.OpeningTime);
+
+            float wd = 0;
+
+            if (!Convert.ToBoolean(Host.config["reverse_winddir", "false"]))
+            {
+
+                wd = wrap360(lc.WindDirection);
+            }
+            else
+            {
+
+                wd = lc.WindDirection;
+            }
+
+            PointLatLngAlt openpos2 = openpos1.newpos(wrap360(lc.WindDirection - 180), (Host.cs.g_wind_vel * (Host.cs.alt / lc.SinkRate) * lc.WindDrag));
+
+            GMarkerGoogle p1 = new GMarkerGoogle(openpos1, GMarkerGoogleType.white_small);
+            p1.Tag = "p1";
+
+            GMarkerGoogle p2 = new GMarkerGoogle(openpos2, GMarkerGoogleType.yellow_small);
+            p2.Tag = "p2";
 
 
 
-                GMarkerGoogle p1 = new GMarkerGoogle(openpos1, GMarkerGoogleType.white_small);
-                p1.Tag = "p1";
+            if (openpos2.GetDistance(lc.LandingPoint) <= 50 )
+            {
+                Host.cs.messageHigh = "OPEN OPEN OPEN";
+                SystemSounds.Exclamation.Play();
+                SystemSounds.Exclamation.Play();
 
-                GMarkerGoogle p2 = new GMarkerGoogle(openpos2, GMarkerGoogleType.yellow_small);
-                p2.Tag = "p2";
+            }
 
 
 
@@ -366,15 +428,14 @@ namespace ptPlugin1
                 landingOverlay.Markers.Add(p2);
                 Host.FDGMapControl.Refresh();
             }));
-        }
 
+        }
         private void Lc_setspeedClicked(object sender, EventArgs e)
         {
             try
             {
                 MainV2.comPort.doCommandAsync(MainV2.comPort.MAV.sysid, MainV2.comPort.MAV.compid,
                         MAVLink.MAV_CMD.DO_CHANGE_SPEED, 0, (float)lc.LandingSpeed, 0, 0, 0, 0, 0);
-                
             }
             catch
             {
@@ -386,16 +447,24 @@ namespace ptPlugin1
         {
 
             //Todo Check valid point
+            if (Host.cs.Location.GetDistance(lc.TargetPoint) > 8000)
+            {
+                CustomMessageBox.Show("Target point is more tha 8Km away!", "ERROR");
+                return;
+            }
+
+
             Locationwp gotohere = new Locationwp();
 
             gotohere.id = (ushort)MAVLink.MAV_CMD.WAYPOINT;
-            gotohere.alt = (float)lc.TargetPoint.Alt; // back to m
-            gotohere.lat = (lc.TargetPoint.Lat);
-            gotohere.lng = (lc.TargetPoint.Lng);
+            gotohere.alt = (float)lc.LandingPoint.Alt; // back to m
+            gotohere.lat = (lc.LandingPoint.Lat);
+            gotohere.lng = (lc.LandingPoint.Lng);
 
             try
             {
                 MainV2.comPort.setGuidedModeWP(gotohere);
+                lc.state = LandState.GoToLand;
             }
             catch (Exception ex)
             {
@@ -406,6 +475,14 @@ namespace ptPlugin1
         private void Lc_waitClicked(object sender, EventArgs e)
         {
             //Todo Check valid point
+
+            if (Host.cs.Location.GetDistance(lc.WaitingPoint) > 8000)
+            {
+                CustomMessageBox.Show("Waiting point is more tha 8Km away!", "ERROR");
+                return;
+            }
+
+
             Locationwp gotohere = new Locationwp();
 
             gotohere.id = (ushort)MAVLink.MAV_CMD.WAYPOINT;
@@ -428,17 +505,17 @@ namespace ptPlugin1
 
         private void ECtrl_emergencyClicked(object sender, EventArgs e)
         {
-            MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_SET_SERVO, (float)Convert.ToInt16(Host.config["throttlech","10"]), 1000, 0, 0, 0, 0, 0, false);
+            MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_SET_SERVO, (float)Convert.ToInt16(Host.config["jetcontrolch","10"]), 1000, 0, 0, 0, 0, 0, false);
         }
 
         private void ECtrl_stopClicked(object sender, EventArgs e)
         {
-            MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_SET_SERVO, (float)Convert.ToInt16(Host.config["throttlech", "10"]), 1500, 0, 0, 0, 0, 0, false);
+            MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_SET_SERVO, (float)Convert.ToInt16(Host.config["jetcontrolch", "10"]), 1500, 0, 0, 0, 0, 0, false);
         }
 
         private void ECtrl_startClicked(object sender, EventArgs e)
         {
-            MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_SET_SERVO, (float)Convert.ToInt16(Host.config["throttlech", "10"]), 2000, 0, 0, 0, 0, 0, false);
+            MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_SET_SERVO, (float)Convert.ToInt16(Host.config["jetcontrolch", "10"]), 2000, 0, 0, 0, 0, 0, false);
         }
 
         private void ECtrl_armClicked(object sender, EventArgs e)
@@ -503,7 +580,18 @@ namespace ptPlugin1
         private void TsLandingPoint_Click(object sender, EventArgs e)
         {
             PointLatLngAlt lp = Host.FDMenuMapPosition;
-            lc.updateLandingData(lp, Host.cs.g_wind_dir, Host.cs.g_wind_vel);            //Todo get it from real wind data and add a possibility to land upwind
+
+            if (!Convert.ToBoolean(Host.config["reverse_winddir", "false"]))
+            {
+
+                lc.updateLandingData(lp, Host.cs.g_wind_dir, Host.cs.g_wind_vel);
+            }
+            else
+            {
+                lc.updateLandingData(lp, wrap360(Host.cs.g_wind_dir - 180), Host.cs.g_wind_vel);
+
+            }
+
             landingOverlay.Markers.Clear();
             landingOverlay.Routes.Clear();
 
@@ -519,8 +607,6 @@ namespace ptPlugin1
             landingRoute.Points.Add(lc.LandingPoint);
             landingRoute.Points.Add(lc.TargetPoint);
 
-            
-
             landingOverlay.Markers.Add(markerWaiting);
             landingOverlay.Markers.Add(markerLanding);
             landingOverlay.Markers.Add(markerTarget);
@@ -528,9 +614,6 @@ namespace ptPlugin1
 
             Host.FDGMapControl.Overlays.Add(landingOverlay);
             Host.FDGMapControl.Invalidate();
-
-            
-
 
 
         }

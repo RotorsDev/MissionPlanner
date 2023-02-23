@@ -317,7 +317,7 @@ namespace ptPlugin1
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(102, 16);
             this.label1.TabIndex = 5;
-            this.label1.Text = "Wait distance";
+            this.label1.Text = "Wait distance/reset";
             // 
             // label2
             // 
