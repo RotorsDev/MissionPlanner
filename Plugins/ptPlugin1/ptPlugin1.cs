@@ -15,6 +15,7 @@ using GMap.NET;
 using GMap.NET.WindowsForms;
 using GMap.NET.WindowsForms.Markers;
 using MissionPlanner.Maps;
+using System.Text;
 
 
 //By Bandi
@@ -222,6 +223,7 @@ namespace ptPlugin1
             plControl.Location = new Point(0, 0);
             plControl.Size = new Size(payloadControlpage.Width, payloadControlpage.Height);
             plControl.setupClicked += PlControl_setupClicked;
+            plControl.igniteClicked += PlControl_igniteClicked;
             payloadControlpage.Controls.Add(plControl);
             plControl.redrawControls();
             plControl.setSafetyStatus(false);
@@ -313,6 +315,16 @@ namespace ptPlugin1
             //Setup mavlink receiving
             Host.comPort.OnPacketReceived += MavOnOnPacketReceivedHandler;
             return true;     //If it is false plugin will not start (loop will not called)
+        }
+
+        private void PlControl_igniteClicked(object sender, EventArgs e)
+        {
+
+            byte[] c = Encoding.Default.GetBytes("P");
+            MainV2.comPort.sendPacket(new MAVLink.mavlink_named_value_float_t() { name = c, time_boot_ms = 0, value = (float)plControl.igniteMask }, MainV2.comPort.sysidcurrent, MainV2.comPort.compidcurrent);
+
+            Console.WriteLine("Payload ignite:{0}", plControl.igniteMask);
+
         }
 
         private void TsLandingPoint_Click(object sender, EventArgs e)
