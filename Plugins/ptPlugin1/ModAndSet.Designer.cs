@@ -73,11 +73,11 @@ namespace ptPlugin1
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.lUnit);
             this.splitContainer1.Panel1.Controls.Add(this.numericUpDown1);
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.lUnit);
             this.splitContainer1.Panel2.Controls.Add(this.myButton1);
             // 
             // lUnit
@@ -92,8 +92,8 @@ namespace ptPlugin1
             resources.ApplyResources(this, "$this");
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);

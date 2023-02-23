@@ -318,7 +318,12 @@ namespace ptPlugin1
             lc.Size = landingPage.ClientSize;
             lc.Location = new Point(0, 0);
             lc.Dock = DockStyle.Fill;
+            lc.waitClicked += Lc_waitClicked;
+            lc.landClicked += Lc_landClicked;
+            lc.setspeedClicked += Lc_setspeedClicked;
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(landingPage);
+
+            
 
 
 
@@ -326,6 +331,99 @@ namespace ptPlugin1
             //Setup mavlink receiving
             Host.comPort.OnPacketReceived += MavOnOnPacketReceivedHandler;
             return true;     //If it is false plugin will not start (loop will not called)
+        }
+
+
+        private void calcLandPoint()
+        {
+
+                var speed = Host.cs.airspeed;
+                PointLatLngAlt currentpos = new PointLatLngAlt(Host.cs.Location);
+                PointLatLngAlt openpos1 = currentpos.newpos(Host.cs.yaw, speed * lc.OpeningTime);
+                PointLatLngAlt openpos2 = openpos1.newpos(wrap360(lc.WindDirection-180), (10 * (Host.cs.alt/lc.SinkRate) * lc.WindDrag));
+
+
+
+                GMarkerGoogle p1 = new GMarkerGoogle(openpos1, GMarkerGoogleType.white_small);
+                p1.Tag = "p1";
+
+                GMarkerGoogle p2 = new GMarkerGoogle(openpos2, GMarkerGoogleType.yellow_small);
+                p2.Tag = "p2";
+
+
+
+            MainV2.instance.BeginInvoke((MethodInvoker)(() =>
+            {
+
+                try
+                {
+                    landingOverlay.Markers.RemoveAt(3);
+                    landingOverlay.Markers.RemoveAt(3);
+                }
+                catch { }
+
+                landingOverlay.Markers.Add(p1);
+                landingOverlay.Markers.Add(p2);
+                Host.FDGMapControl.Refresh();
+            }));
+        }
+
+        private void Lc_setspeedClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                MainV2.comPort.doCommandAsync(MainV2.comPort.MAV.sysid, MainV2.comPort.MAV.compid,
+                        MAVLink.MAV_CMD.DO_CHANGE_SPEED, 0, (float)lc.LandingSpeed, 0, 0, 0, 0, 0);
+                
+            }
+            catch
+            {
+                CustomMessageBox.Show("Unable to set speed", "Error");
+            }
+        }
+
+        private void Lc_landClicked(object sender, EventArgs e)
+        {
+
+            //Todo Check valid point
+            Locationwp gotohere = new Locationwp();
+
+            gotohere.id = (ushort)MAVLink.MAV_CMD.WAYPOINT;
+            gotohere.alt = (float)lc.TargetPoint.Alt; // back to m
+            gotohere.lat = (lc.TargetPoint.Lat);
+            gotohere.lng = (lc.TargetPoint.Lng);
+
+            try
+            {
+                MainV2.comPort.setGuidedModeWP(gotohere);
+            }
+            catch (Exception ex)
+            {
+                CustomMessageBox.Show("Unable go to Landing point" + ex.Message, "ERROR");
+            }
+        }
+
+        private void Lc_waitClicked(object sender, EventArgs e)
+        {
+            //Todo Check valid point
+            Locationwp gotohere = new Locationwp();
+
+            gotohere.id = (ushort)MAVLink.MAV_CMD.WAYPOINT;
+            gotohere.alt = (float)lc.WaitingPoint.Alt;  // back to m
+            gotohere.lat = (lc.WaitingPoint.Lat);
+            gotohere.lng = (lc.WaitingPoint.Lng);
+
+            try
+            {
+                MainV2.comPort.setGuidedModeWP(gotohere);
+            }
+            catch (Exception ex)
+            {
+                CustomMessageBox.Show("Unable go to Waiting point" + ex.Message, "ERROR");
+            }
+
+
+
         }
 
         private void ECtrl_emergencyClicked(object sender, EventArgs e)
@@ -405,20 +503,23 @@ namespace ptPlugin1
         private void TsLandingPoint_Click(object sender, EventArgs e)
         {
             PointLatLngAlt lp = Host.FDMenuMapPosition;
-            lc.updateLandingData(lp, 230, 8.0f);            //Todo get it from real wind data and add a possibility to land upwind
+            lc.updateLandingData(lp, Host.cs.g_wind_dir, Host.cs.g_wind_vel);            //Todo get it from real wind data and add a possibility to land upwind
             landingOverlay.Markers.Clear();
             landingOverlay.Routes.Clear();
 
             markerWaiting = new GMarkerGoogle(lc.WaitingPoint, GMarkerGoogleType.lightblue_dot);
+            markerWaiting.ToolTipText = "Waiting Point";
             markerLanding = new GMarkerGoogle(lc.LandingPoint, GMarkerGoogleType.green_dot);
+            markerLanding.ToolTipText = "Landing Point";
             markerTarget = new GMarkerGoogle(lc.TargetPoint, GMarkerGoogleType.pink_dot);
+            markerTarget.ToolTipText = "FlyOver";
 
             landingRoute = new GMapRoute("landingline");
             landingRoute.Points.Add(lc.WaitingPoint);
             landingRoute.Points.Add(lc.LandingPoint);
             landingRoute.Points.Add(lc.TargetPoint);
 
-
+            
 
             landingOverlay.Markers.Add(markerWaiting);
             landingOverlay.Markers.Add(markerLanding);
@@ -426,6 +527,7 @@ namespace ptPlugin1
             landingOverlay.Routes.Add(landingRoute);
 
             Host.FDGMapControl.Overlays.Add(landingOverlay);
+            Host.FDGMapControl.Invalidate();
 
             
 
@@ -582,6 +684,7 @@ namespace ptPlugin1
 
             #endregion
 
+            calcLandPoint();
 
             return true;	//Return value is not used
         }
