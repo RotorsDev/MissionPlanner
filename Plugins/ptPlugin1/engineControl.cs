@@ -12,11 +12,23 @@ namespace ptPlugin1
 {
     public partial class engineControl : UserControl
     {
+
+
+        public event EventHandler armClicked;
         public engineControl()
         {
             InitializeComponent();
         }
 
+
+        protected virtual void OnArmClicked(EventArgs e)
+        {
+            EventHandler handler = this.armClicked;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
 
         public void setEngineStatus(string status, string error)
         {
@@ -158,13 +170,7 @@ namespace ptPlugin1
 
         private void bArm_Click(object sender, EventArgs e)
         {
+            this.OnArmClicked(EventArgs.Empty);
         }
-
-
-
-
-
-
-
     }
 }

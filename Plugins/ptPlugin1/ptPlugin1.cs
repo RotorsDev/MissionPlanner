@@ -41,7 +41,6 @@ namespace ptPlugin1
         public engineControl eCtrl = new engineControl();
 
 
-
         public TabPage colorMessagePage = new TabPage();
         public FastColoredTextBox fctb;
         public DateTime lastDisplayedMessage = DateTime.MinValue;
@@ -244,6 +243,7 @@ namespace ptPlugin1
             eCtrl.Location = new Point(0, 0);
             eCtrl.Size = new Size(engineControlPage.Width, engineControlPage.Height);
             engineControlPage.Controls.Add(eCtrl);
+            eCtrl.armClicked += ECtrl_armClicked;
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(engineControlPage);
 
             eCtrl.setEngineStatus("Ready to Start", "No error");
@@ -317,6 +317,55 @@ namespace ptPlugin1
             //Setup mavlink receiving
             Host.comPort.OnPacketReceived += MavOnOnPacketReceivedHandler;
             return true;     //If it is false plugin will not start (loop will not called)
+        }
+
+        private void ECtrl_armClicked(object sender, EventArgs e)
+        {
+            
+            if (!Host.cs.connected)
+                return;
+
+            // arm the MAV
+            try
+            {
+                var isitarmed = Host.comPort.MAV.cs.armed;
+                var action = Host.comPort.MAV.cs.armed ? "Disarm" : "Arm";
+
+                if (isitarmed)
+                    if (CustomMessageBox.Show("Are you sure you want to " + action, action,
+                            CustomMessageBox.MessageBoxButtons.YesNo) !=
+                        CustomMessageBox.DialogResult.Yes)
+                        return;
+                StringBuilder sb = new StringBuilder();
+                var sub = Host.comPort.SubscribeToPacketType(MAVLink.MAVLINK_MSG_ID.STATUSTEXT, message =>
+                {
+                    sb.AppendLine(Encoding.ASCII.GetString(((MAVLink.mavlink_statustext_t)message.data).text)
+                        .TrimEnd('\0'));
+                    return true;
+                }, (byte)Host.comPort.sysidcurrent, (byte)MainV2.comPort.compidcurrent);
+                bool ans = Host.comPort.doARM(!isitarmed);
+                Host.comPort.UnSubscribeToPacketType(sub);
+                if (ans == false)
+                {
+                    if (CustomMessageBox.Show(
+                            action + " failed.\n" + sb.ToString() + "\nForce " + action +
+                            " can bypass safety checks,\nwhich can lead to the vehicle crashing\nand causing serious injuries.\n\nDo you wish to Force " +
+                            action + "?", "Error", CustomMessageBox.MessageBoxButtons.YesNo,
+                            CustomMessageBox.MessageBoxIcon.Exclamation, "Force " + action, "Cancel") ==
+                        CustomMessageBox.DialogResult.Yes)
+                    {
+                        ans = Host.comPort.doARM(!isitarmed, true);
+                        if (ans == false)
+                        {
+                            CustomMessageBox.Show("ARM request rejected by MAV", "Error");
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                CustomMessageBox.Show("No response for the ARM command", "Error");
+            }
         }
 
         private void PlControl_igniteClicked(object sender, EventArgs e)
@@ -709,6 +758,8 @@ namespace ptPlugin1
                     break;
             }
         }
+
+
 
         private void annunciator1_undock(object sender, EventArgs e)
         {

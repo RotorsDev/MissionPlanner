@@ -76,7 +76,7 @@ namespace MissionPlanner.Controls
                 {
                     if (from.pos == to.pos)
                     {
-                        to.state = from.state;
+                        to.state = PayloadState.ready;
                         to.type = from.type;
                     }
                 }
