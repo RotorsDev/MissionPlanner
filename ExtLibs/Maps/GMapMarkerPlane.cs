@@ -77,7 +77,7 @@ namespace MissionPlanner.Maps
             var temp = g.Transform;
             g.TranslateTransform(LocalPosition.X, LocalPosition.Y);
 
-            //g.RotateTransform(-Overlay.Control.Bearing);
+            g.RotateTransform(-Overlay.Control.Bearing);
 
             // anti NaN
             try

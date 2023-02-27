@@ -1480,20 +1480,18 @@ namespace GMap.NET.WindowsForms
                         e.TextRenderingHint = TextRenderingHint.AntiAlias;
                         e.SmoothingMode = SmoothingMode.AntiAlias;
 
-                        var center = new GPoint(Width / 2, Height / 2);
-                        var delta = center;
-                        delta.OffsetNegative(Core.renderOffset);
-                        var pos = center;
-                        pos.OffsetNegative(delta);
-
+                        e.TranslateTransform((float)(Core.Width / 2.0), (float)(Core.Height / 2.0));
                         e.RotateTransform(-Bearing);
+                        e.TranslateTransform((float)(-Core.Width / 2.0), (float)(-Core.Height / 2.0));
 
-                        e.TranslateTransform(pos.X, pos.Y, MatrixOrder.Append);
+                        e.TranslateTransform(Core.renderOffset.X, Core.renderOffset.Y);
 
                         DrawMap(e);
-                        e.ResetTransform();
 
-                        e.TranslateTransform(pos.X, pos.Y, MatrixOrder.Append);
+                        e.ResetTransform();
+                        e.TranslateTransform(Core.renderOffset.X, Core.renderOffset.Y);
+
+                        OnPaintOverlays(e);
 
                         #endregion
                     }
