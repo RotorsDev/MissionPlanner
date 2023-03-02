@@ -58,16 +58,16 @@ namespace MapRotate
             {
                 maprotation = result;
             }
-        }
 
-        public override bool Loop()
-        {
             MainV2.instance.BeginInvoke((MethodInvoker)(() =>
             {
                 Host.FDGMapControl.Bearing = maprotation;
                 Host.FPGMapControl.Bearing = maprotation;
             }));
+        }
 
+        public override bool Loop()
+        {
             return true;
         }
 
