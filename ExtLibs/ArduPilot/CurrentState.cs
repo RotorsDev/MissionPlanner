@@ -1106,9 +1106,6 @@ namespace MissionPlanner
                     }
                 }
 
-
-
-
                 messages.Add((DateTime.Now, value, MAVLink.MAV_SEVERITY.CRITICAL));
             }
         }

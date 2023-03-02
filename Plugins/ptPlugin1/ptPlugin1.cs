@@ -195,7 +195,7 @@ namespace ptPlugin1
 
             aMain.Visible = true;
             aMain.Refresh();
-
+            
             MainV2.instance.BeginInvoke((MethodInvoker)(() =>
             {
 

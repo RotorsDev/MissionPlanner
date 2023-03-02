@@ -751,10 +751,10 @@ namespace MissionPlanner
 
             log.Info("Th Name " + Thread?.Name);
 
-            var dr =
-                CustomMessageBox.Show("An error has occurred\n" + ex.ToString() + "\n\nReport this Error???",
-                    "Send Error", MessageBoxButtons.YesNo);
-            if ((int) DialogResult.Yes == dr)
+            //var dr = DialogResult.Yes;
+                //CustomMessageBox.Show("An error has occurred\n" + ex.ToString() + "\n\nReport this Error???",
+                //    "Send Error", MessageBoxButtons.YesNo);
+            if (true)
             {
                 try
                 {
@@ -763,15 +763,6 @@ namespace MissionPlanner
                         data += String.Format("-> {0}: {1}", de.Key, de.Value);
 
                     string message = "";
-
-                    try
-                    {
-                        Controls.InputBox.Show("Message", "Please enter a message about this error if you can.",
-                            ref message);
-                    }
-                    catch
-                    {
-                    }
 
                     string processinfo = "";
 
@@ -820,7 +811,10 @@ namespace MissionPlanner
                                       + "\ndata " + data
                                       + "\nmessage " + message.Replace('&', ' ').Replace('=', ' ')
                                       + "\n\n" + processinfo;
-                    _ = Download.PostAsync("http://vps.oborne.me/mail.php", postData).ConfigureAwait(false);
+
+
+                    File.WriteAllText(Settings.GetUserDataDirectory() + "errorlog" + DateTime.Now.ToString(), postData);
+
                 }
                 catch (Exception exp)
                 {
