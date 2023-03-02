@@ -714,6 +714,7 @@ namespace ptPlugin1
             if (lastIncomingMessage != lastDisplayedMessage)
             {
 
+
                 fctb.BeginUpdate();
                 fctb.TextSource.CurrentTB = fctb;
 
@@ -1063,8 +1064,11 @@ namespace ptPlugin1
             this.fctb.ShowLineNumbers = false;
             this.fctb.BackColor = Color.Black;
             this.fctb.ShowScrollBars = true;
+            this.fctb.BeginUpdate();
+            this.fctb.TextSource.CurrentTB = fctb;
+            this.fctb.AppendText("Messages starting", infoStyle);
+            this.fctb.EndUpdate();
             
-
         }
         float wrap360(float noin)
         {
