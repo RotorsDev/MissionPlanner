@@ -344,7 +344,15 @@ namespace UDPWeatherStation
 
                     item.Value *= item.Multiplier; // Apply multiplier
                     item.Value += item.Offset; // Apply offset
-
+		    
+		    if (item.Name.Contains("heading") || item.Name.Contains("direction")) // Constrain degrees to 0-360
+                    {
+                        if (item.Value < 0)
+                            item.Value += 360;
+                        else if (item.Value >= 360)
+                            item.Value -= 360;
+                    }
+		    
                     // Write values for protar
                     switch (item.Name)
                     {
