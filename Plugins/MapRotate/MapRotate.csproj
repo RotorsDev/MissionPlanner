@@ -90,6 +90,18 @@
       <Project>{1378a66c-38e4-46f5-a05f-dc04ef7d4d16}</Project>
       <Name>MissionPlanner.Utilities</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ExtLibs\GMap.NET.Drawing\GMap.NET.Drawing.csproj">
+      <Project>{D773ACCD-9C2D-4E94-A967-FAA7EA2D21CB}</Project>
+      <Name>GMap.NET.Drawing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ExtLibs\Maps\MissionPlanner.Maps.csproj">
+      <Project>{6C4FF9C3-7AFF-4274-B8FC-4A93A1FAADEA}</Project>
+      <Name>MissionPlanner.Maps</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ExtLibs\MissionPlanner.Drawing\MissionPlanner.Drawing.csproj">
+      <Project>{6974D22C-EDE6-4BB2-AAD2-FF23ED6EC165}</Project>
+      <Name>MissionPlanner.Drawing</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MapRotate.cs" />
