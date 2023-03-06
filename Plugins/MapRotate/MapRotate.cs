@@ -17,23 +17,23 @@ using System.Drawing;
 
 namespace GMap.NET.WindowsForms
 {
-    public class GMapMarkerCatapult : GMapMarker
-    {
-        public PointLatLng Location { get; set; }
-        public int Heading { get; set; }
+    //public class GMapMarkerCatapult : GMapMarker
+    //{
+    //    public PointLatLng Location { get; set; }
+    //    public int Heading { get; set; }
 
 
-        public GMapMarkerCatapult(PointLatLng p, int heading) : base(p)
-        {
-            this.Location = p;
-            this.Heading = heading;
-        }
+    //    public GMapMarkerCatapult(PointLatLng p, int heading) : base(p)
+    //    {
+    //        this.Location = p;
+    //        this.Heading = heading;
+    //    }
 
-        public override void OnRender(System.IGraphics g)
-        {
-            base.OnRender(g);
-        }
-    }
+    //    public override void OnRender(System.IGraphics g)
+    //    {
+    //        base.OnRender(g);
+    //    }
+    //}
 
 }
 

@@ -3309,7 +3309,7 @@ namespace MissionPlanner
             // tfr went dead on 30-9-2020
             //ThreadPool.QueueUserWorkItem(BGgetTFR);
 
-            //ThreadPool.QueueUserWorkItem(BGNoFly);
+            ThreadPool.QueueUserWorkItem(BGNoFly);
 
             //ThreadPool.QueueUserWorkItem(BGGetKIndex);
 
@@ -3854,6 +3854,20 @@ namespace MissionPlanner
                 }
             }
         }
+
+        private void BGNoFly(object state)
+        {
+            try
+            {
+                NoFly.NoFly.Scan();
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+            }
+        }
+
+
 
         private Dictionary<string, string> ProcessCommandLine(string[] args)
         {
