@@ -406,6 +406,7 @@ namespace UDPWeatherStation
                 graphics.RotateTransform(newAngle);
                 graphics.TranslateTransform(-(rotatedBmp.Width / 2), -(rotatedBmp.Height / 2));
                 graphics.DrawImage(imageOriginal, new PointF(0, 0));
+                pBoxArrow.Image = rotatedBmp;
 
                 // Change control visibility & refresh
                 disconnectedLabel.Hide();
