@@ -14,28 +14,7 @@ using MissionPlanner.Maps;
 using GMap.NET;
 using GMap.NET.WindowsForms;
 using System.Drawing;
-
-namespace GMap.NET.WindowsForms
-{
-    //public class GMapMarkerCatapult : GMapMarker
-    //{
-    //    public PointLatLng Location { get; set; }
-    //    public int Heading { get; set; }
-
-
-    //    public GMapMarkerCatapult(PointLatLng p, int heading) : base(p)
-    //    {
-    //        this.Location = p;
-    //        this.Heading = heading;
-    //    }
-
-    //    public override void OnRender(System.IGraphics g)
-    //    {
-    //        base.OnRender(g);
-    //    }
-    //}
-
-}
+using System.Globalization;
 
 namespace MapRotate
 {
@@ -43,6 +22,13 @@ namespace MapRotate
 
     public class MapRotate : Plugin
     {
+
+        internal GMapMarkerArrow markerFDcatapult;
+        internal GMapMarkerArrow markerFPcatapult;
+
+        internal static GMapOverlay catapultFDOverlay;
+        internal static GMapOverlay catapultFPOverlay;
+
         public int maprotation = 0;
         public PointLatLngAlt catapultLocation;
        
@@ -64,6 +50,9 @@ namespace MapRotate
         //[DebuggerHidden]
         public override bool Init()
         {
+            catapultFDOverlay = new GMapOverlay();
+            catapultFPOverlay = new GMapOverlay();
+
             loopratehz = 1;
             return true;
         }
@@ -78,7 +67,8 @@ namespace MapRotate
 
             ToolStripMenuItem setCatapultLocationMenuItem = new ToolStripMenuItem() { Text = "Set Catapult Location" };
             setCatapultLocationMenuItem.Click += SetCatapultLocationMenuItem_Click;
-
+            Host.FPMenuMap.Items.Add(setCatapultLocationMenuItem);
+            Host.FDMenuMap.Items.Add(setCatapultLocationMenuItem);
 
 
             return true;
@@ -86,9 +76,43 @@ namespace MapRotate
 
         private void SetCatapultLocationMenuItem_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+
+            var location = "";
+            location = Host.FDMenuMapPosition.Lat.ToString() + ";" + Host.FDMenuMapPosition.Lng.ToString() + ";0";
+            InputBox.Show("Enter Catpult Coords", "Please enter the coords 'lat;long;bearing'", ref location);
+            var split = location.Split(';');
+
+            if (split.Length == 3)
+            {
+                var lat = float.Parse(split[0], CultureInfo.InvariantCulture);
+                var lng = float.Parse(split[1], CultureInfo.InvariantCulture);
+                var bearing = float.Parse(split[2], CultureInfo.InvariantCulture);
+
+                markerFDcatapult = new GMapMarkerArrow(new PointLatLng(lat, lng), bearing);
+                markerFPcatapult = new GMapMarkerArrow(new PointLatLng(lat, lng), bearing);
+
+
+                catapultFDOverlay.Markers.Clear();
+                catapultFPOverlay.Markers.Clear();
+
+                catapultLocation = Host.FDMenuMapPosition;
+
+                catapultFDOverlay.Markers.Add(markerFDcatapult);
+                catapultFPOverlay.Markers.Add(markerFPcatapult);
+
+                Host.FDGMapControl.Overlays.Add(catapultFDOverlay);
+                Host.FPGMapControl.Overlays.Add(catapultFPOverlay);
+
+                Host.FDGMapControl.Refresh();
+            }
+            else
+            {
+                CustomMessageBox.Show("Invalid position!");
+            }
+
         }
 
+        
         private void setRotate_Click(object sender, EventArgs e)
         {
             string txt = "";
