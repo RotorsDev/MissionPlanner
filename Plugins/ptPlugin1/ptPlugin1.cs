@@ -27,7 +27,10 @@ namespace ptPlugin1
     public enum LandState
     {
         None,
-        Waiting,
+        Ready,
+        GoToWaiting,
+        WaitForSpeed,
+        WaitForTangent,
         GoToLand,
         CloseToLand,
         Land
@@ -101,7 +104,7 @@ namespace ptPlugin1
         internal GMapRoute landingRoute;
         internal static GMapOverlay landingOverlay;
 
-
+        public LandState landState = LandState.None;
         
 
 
@@ -347,11 +350,177 @@ namespace ptPlugin1
         }
 
 
-        private void calcLandPoint()
+        public override bool Loop()
+        //Loop is called in regular intervalls (set by loopratehz)
         {
+
+            {
+                var lq = Host.cs.linkqualitygcs;
+                if (lq >= 95) aMain.setStatus("COMMS", Stat.NOMINAL);
+                else if (lq < 95 && lq > 70) aMain.setStatus("COMMS", Stat.WARNING);
+                else aMain.setStatus("COMMS", Stat.ALERT);
+            }
+
+            {
+                var bs = bp.getGenericStatus();
+                switch (bs)
+                {
+                    case 0:
+                        aMain.setStatus("BATT", Stat.NOMINAL);
+                        break;
+                    case 1:
+                        aMain.setStatus("BATT", Stat.WARNING);
+                        break;
+                    case 2:
+                        aMain.setStatus("BATT", Stat.ALERT);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            #region MessagesBox
+
+            //Message box update
+
+            DateTime lastIncomingMessage = MainV2.comPort.MAV.cs.messages.LastOrDefault().time;
+            if (lastIncomingMessage != lastDisplayedMessage)
+            {
+
+
+                fctb.BeginUpdate();
+                fctb.TextSource.CurrentTB = fctb;
+
+                MainV2.comPort.MAV.cs.messages.ForEach(x =>
+                {
+                    if (x.Item1 > lastDisplayedMessage)
+                    {
+
+                        TextStyle displayStyle;
+                        switch ((int)x.Item3)
+                        {
+                            case 0:
+                            case 1:
+                            case 2:
+                                {
+                                    displayStyle = errorStyle;
+                                    aMain.setStatus("MSG", Stat.ALERT);
+                                    break;
+                                }
+                            case 3:
+                            case 4:
+                                {
+                                    displayStyle = warningStyle;
+                                    aMain.setStatus("MSG", Stat.WARNING);
+                                    break;
+                                }
+                            default:
+                                {
+                                    displayStyle = infoStyle;
+                                    break;
+                                }
+                        }
+
+                        fctb.SelectionStart = 0;
+                        fctb.InsertText(x.Item1 + " : (" + x.Item3 + ") " + x.Item2 + "\r\n", displayStyle);
+                    }
+
+                });
+                fctb.EndUpdate();
+                lastDisplayedMessage = lastIncomingMessage;
+            }
+
+            #endregion
+
+
+            #region BatteryVoltages
+
+            PowerStatus pwr = SystemInformation.PowerStatus;
+            bp.setGcsVoltage(pwr.BatteryLifePercent, pwr.PowerLineStatus);
+
+
+            #endregion
+
+            doLanding();
+
+            return true;	//Return value is not used
+        }
+
+        public override bool Exit()
+        //Exit called when plugin is terminated (usually when Mission Planner is exiting)
+        {
+
+
+            //Save position, we need to do it since formclose is not called in plugins
+
+            annunciatorForm?.SaveStartupLocation();
+            return true;	//Return value is not used
+        }
+
+
+
+
+        private void doLanding()
+        {
+            //This will handle the landing process
 
             //Check status
             if (lc.state == LandState.None) return;
+
+            if (lc.state == LandState.GoToWaiting)
+            {
+                //Wait until we started loitering around the waiting point (+50meter need to check for discrepancies between loiter radius and actual radius
+                Console.WriteLine(Host.cs.Location.GetDistance(lc.WaitingPoint));
+                if (Host.cs.Location.GetDistance(lc.WaitingPoint) <= MainV2.comPort.MAV.param["WP_LOITER_RAD"].Value + 50)
+                {
+                    lc.state = LandState.WaitForSpeed;
+                    try
+                    {
+                        MainV2.comPort.doCommandAsync(MainV2.comPort.MAV.sysid, MainV2.comPort.MAV.compid,
+                                MAVLink.MAV_CMD.DO_CHANGE_SPEED, 0, (float)lc.LandingSpeed, 0, 0, 0, 0, 0);
+                    }
+                    catch
+                    {
+                        lc.state = LandState.None;
+                        CustomMessageBox.Show("Unable to set speed", "Error");
+                    }
+                }
+            }
+
+            if (lc.state == LandState.WaitForSpeed)
+            {
+                if (Host.cs.airspeed <= lc.LandingSpeed + 2)
+                {
+                    lc.state = LandState.WaitForTangent;
+                }
+            }
+               
+            if (lc.state == LandState.WaitForTangent)
+            {
+                if (Math.Abs(lc.WindDirection - Host.cs.yaw) < 3)
+                {
+
+                    lc.state = LandState.GoToLand;
+                    Locationwp gotohere = new Locationwp();
+
+                    gotohere.id = (ushort)MAVLink.MAV_CMD.WAYPOINT;
+                    gotohere.alt = (float)lc.LandingPoint.Alt; // back to m
+                    gotohere.lat = (lc.LandingPoint.Lat);
+                    gotohere.lng = (lc.LandingPoint.Lng);
+
+                    try
+                    {
+                        MainV2.comPort.setGuidedModeWP(gotohere);
+                        lc.state = LandState.GoToLand;
+                    }
+                    catch (Exception ex)
+                    {
+                        CustomMessageBox.Show("Unable go to Landing point" + ex.Message, "ERROR");
+                        lc.state = LandState.None;
+                    }
+
+                }
+            }
 
             //Switch from landingpoint to target point if we are within loiter radius + 200meter
             if (lc.state == LandState.GoToLand)
@@ -373,7 +542,6 @@ namespace ptPlugin1
                     catch { }
                     lc.state = LandState.CloseToLand;
                 }
-
             }
 
 
@@ -475,13 +643,13 @@ namespace ptPlugin1
         private void Lc_waitClicked(object sender, EventArgs e)
         {
             //Todo Check valid point
-
             if (Host.cs.Location.GetDistance(lc.WaitingPoint) > 8000)
             {
                 CustomMessageBox.Show("Waiting point is more tha 8Km away!", "ERROR");
                 return;
             }
 
+            lc.state = LandState.GoToWaiting;
 
             Locationwp gotohere = new Locationwp();
 
@@ -497,6 +665,7 @@ namespace ptPlugin1
             catch (Exception ex)
             {
                 CustomMessageBox.Show("Unable go to Waiting point" + ex.Message, "ERROR");
+                lc.state = LandState.None;
             }
 
 
@@ -577,6 +746,7 @@ namespace ptPlugin1
 
         }
 
+        //set landing point an init landing sequence
         private void TsLandingPoint_Click(object sender, EventArgs e)
         {
             PointLatLngAlt lp = Host.FDMenuMapPosition;
@@ -584,12 +754,11 @@ namespace ptPlugin1
             if (!Convert.ToBoolean(Host.config["reverse_winddir", "false"]))
             {
 
-                lc.updateLandingData(lp, Host.cs.g_wind_dir, Host.cs.g_wind_vel);
+                lc.updateLandingData(lp, Host.cs.g_wind_dir, Host.cs.g_wind_vel, (int)MainV2.comPort.MAV.param["WP_LOITER_RAD"].Value);
             }
             else
             {
-                lc.updateLandingData(lp, wrap360(Host.cs.g_wind_dir - 180), Host.cs.g_wind_vel);
-
+                lc.updateLandingData(lp, wrap360(Host.cs.g_wind_dir - 180), Host.cs.g_wind_vel, (int)MainV2.comPort.MAV.param["WP_LOITER_RAD"].Value);
             }
 
             landingOverlay.Markers.Clear();
@@ -603,7 +772,7 @@ namespace ptPlugin1
             markerTarget.ToolTipText = "FlyOver";
 
             landingRoute = new GMapRoute("landingline");
-            landingRoute.Points.Add(lc.WaitingPoint);
+            landingRoute.Points.Add(lc.WaitingPointTangent);
             landingRoute.Points.Add(lc.LandingPoint);
             landingRoute.Points.Add(lc.TargetPoint);
 
@@ -678,110 +847,6 @@ namespace ptPlugin1
             plControl.setupEnabled(true);
             plControl.updateAll(fPs.payloadStatus);
             plControl.redrawControls();
-        }
-
-        public override bool Loop()
-		//Loop is called in regular intervalls (set by loopratehz)
-        {
-
-            {
-                var lq = Host.cs.linkqualitygcs;
-                if (lq >= 95) aMain.setStatus("COMMS", Stat.NOMINAL);
-                else if (lq < 95 && lq > 70) aMain.setStatus("COMMS", Stat.WARNING);
-                else aMain.setStatus("COMMS", Stat.ALERT);
-            }
-
-            {
-                var bs = bp.getGenericStatus();
-                switch (bs)
-                {
-                    case 0: aMain.setStatus("BATT", Stat.NOMINAL);
-                        break;
-                    case 1: aMain.setStatus("BATT", Stat.WARNING);
-                        break;
-                    case 2: aMain.setStatus("BATT", Stat.ALERT);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            #region MessagesBox
-
-            //Message box update
-            
-            DateTime lastIncomingMessage = MainV2.comPort.MAV.cs.messages.LastOrDefault().time;
-            if (lastIncomingMessage != lastDisplayedMessage)
-            {
-
-
-                fctb.BeginUpdate();
-                fctb.TextSource.CurrentTB = fctb;
-
-                MainV2.comPort.MAV.cs.messages.ForEach(x =>
-                {
-                    if (x.Item1 > lastDisplayedMessage)
-                    {
-
-                        TextStyle displayStyle;
-                        switch ((int)x.Item3)
-                        {
-                            case 0:
-                            case 1:
-                            case 2:
-                                {
-                                    displayStyle = errorStyle;
-                                    aMain.setStatus("MSG", Stat.ALERT);
-                                    break;
-                                }
-                            case 3:
-                            case 4:
-                                {
-                                    displayStyle = warningStyle;
-                                    aMain.setStatus("MSG", Stat.WARNING);
-                                    break;
-                                }
-                            default:
-                                {
-                                    displayStyle = infoStyle;
-                                    break;
-                                }
-                        }
-
-                        fctb.SelectionStart = 0;
-                        fctb.InsertText(x.Item1 + " : (" + x.Item3 + ") " + x.Item2 + "\r\n", displayStyle);
-                    }
-
-                });
-                fctb.EndUpdate();
-                lastDisplayedMessage = lastIncomingMessage;
-            }
-
-            #endregion
-
-
-            #region BatteryVoltages
-
-            PowerStatus pwr = SystemInformation.PowerStatus;
-            bp.setGcsVoltage(pwr.BatteryLifePercent, pwr.PowerLineStatus);
-
-
-            #endregion
-
-            calcLandPoint();
-
-            return true;	//Return value is not used
-        }
-
-        public override bool Exit()
-		//Exit called when plugin is terminated (usually when Mission Planner is exiting)
-        {
-
-
-            //Save position, we need to do it since formclose is not called in plugins
-
-            annunciatorForm?.SaveStartupLocation();
-            return true;	//Return value is not used
         }
 
 

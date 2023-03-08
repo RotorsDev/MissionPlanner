@@ -26,6 +26,7 @@ namespace ptPlugin1
         public PointLatLngAlt LandingPoint = new PointLatLngAlt();
         public PointLatLngAlt WaitingPoint = new PointLatLngAlt();
         public PointLatLngAlt TargetPoint = new PointLatLngAlt();
+        public PointLatLngAlt WaitingPointTangent = new PointLatLngAlt();
 
         public LandState state = LandState.None;
 
@@ -137,17 +138,17 @@ namespace ptPlugin1
             updateLabels();
         }
 
-        public void updateLandingData(PointLatLngAlt l, float WindDir, float WindSpeed)
+        public void updateLandingData(PointLatLngAlt l, float WindDir, float WindSpeed, int LoiterRadius)
         {
+            WindDir = 49;
 
             l.Alt = LandingAlt;
             LandingPoint = l;
 
-            WaitingPoint = l.newpos(wrap360(WindDir-180), WaitDistance);
+            WaitingPointTangent = l.newpos(wrap360(WindDir-180), WaitDistance);
+            WaitingPoint = WaitingPointTangent.newpos(wrap360(WindDir + 90), LoiterRadius + 30);
             TargetPoint = l.newpos(WindDir, 2000);
-
             lLandPoint.Text = l.Lat.ToString("F5") + "," + l.Lng.ToString("F5");
-
             WindDirection = WindDir;
 
 
