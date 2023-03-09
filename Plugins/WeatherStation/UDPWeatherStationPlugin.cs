@@ -57,6 +57,8 @@ namespace UDPWeatherStation
         private bool neverConnected;
 
         private string ConfigSaveKey = "RACWeatherStationTuningValues";
+        private string ConfigVersionKey = "RACWeatherStationVersion";
+        private int ConfigVersion = 2;
         internal class TuningItem
         {
             public string Name { get; set; }
@@ -79,7 +81,7 @@ namespace UDPWeatherStation
 
         public override string Version
         {
-            get { return "0.2.1"; }
+            get { return "0.3.0"; }
         }
 
         public override string Author
@@ -121,7 +123,7 @@ namespace UDPWeatherStation
                 flowPanel.Resize += FlowPanel_Resize;
                 tabPage.Controls.Add(flowPanel);
 
-                // Setup disonnected message label
+                // Setup disconnected message label
                 disconnectedLabel = new Label();
                 disconnectedLabel.Name = "labelDisconnected";
                 disconnectedLabel.Text = "disconnected";
@@ -155,7 +157,11 @@ namespace UDPWeatherStation
                 };
 
                 // Value multipliers
-                if (Settings.Instance.ContainsKey(ConfigSaveKey))
+                if (Settings.Instance.ContainsKey(ConfigSaveKey) // There are values
+                    &&
+                    Settings.Instance.ContainsKey(ConfigVersionKey) // There is a version number
+                    &&
+                    int.Parse(Settings.Instance[ConfigVersionKey]) == ConfigVersion) // Version number is correct
                 {
                     // Load saved tuning values
                     List<TuningItem> saved = Settings.Instance[ConfigSaveKey].FromJSON<List<TuningItem>>();
@@ -167,9 +173,7 @@ namespace UDPWeatherStation
                         tableItem.Visible = savedItem.Visible;
                     }
                 }
-                else
-                {
-                    // Save current multipliers
+                // Save values and version number
                     List<TuningItem> toSave = new List<TuningItem>();
                     foreach (var tableItem in tableConfig)
                     {
@@ -182,8 +186,8 @@ namespace UDPWeatherStation
                         });
                     }
                     Settings.Instance[ConfigSaveKey] = toSave.ToJSON();
+                    Settings.Instance[ConfigVersionKey] = "" + ConfigVersion;
                     Settings.Instance.Save();
-                }
 
                 // Create control
                 weatherTable = new TableLayoutPanel();
@@ -270,7 +274,7 @@ namespace UDPWeatherStation
         }
 
         public override bool Loop()
-        // Loop is called in regular intervalls (set by loopratehz)
+		// Loop is called in regular intervals (set by loopratehz)
         {
             if (DateTime.Now.Subtract(lastWeatherUpdate) > connectionTimeout)
                 DisplayDisconnectedMessage();
@@ -402,7 +406,7 @@ namespace UDPWeatherStation
                 rotatedBmp.SetResolution(imageOriginal.HorizontalResolution, imageOriginal.VerticalResolution);
                 Graphics graphics = Graphics.FromImage(rotatedBmp);
                 graphics.TranslateTransform(rotatedBmp.Width / 2, rotatedBmp.Height / 2);
-                float newAngle = (float)tableConfig.Where(x => x.Name == "Wind direction").FirstOrDefault().Value; // Arrow points where the wind is blowing to
+                float newAngle = (float)tableConfig.Where(x => x.Name == "Wind direction").FirstOrDefault().Value; // Arrow points where the wind is blowing from
                 graphics.RotateTransform(newAngle);
                 graphics.TranslateTransform(-(rotatedBmp.Width / 2), -(rotatedBmp.Height / 2));
                 graphics.DrawImage(imageOriginal, new PointF(0, 0));
@@ -423,7 +427,7 @@ namespace UDPWeatherStation
         {
             MainV2.instance.BeginInvoke((MethodInvoker)(() =>
             {
-                // Update disnonnected message label
+                // Update disconnected message label
                 string msg = "Weather station disconnected";
                 if (neverConnected) // Hide arrow and table if no initial data
                 {
