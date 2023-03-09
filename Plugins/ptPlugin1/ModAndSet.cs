@@ -1,4 +1,5 @@
 ﻿using MissionPlanner.Controls;
+using MissionPlanner.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,9 +12,11 @@ using System.Windows.Forms;
 
 namespace ptPlugin1
 {
+    [PreventTheming]
     public partial class ModandSet : UserControl
     {
         [System.ComponentModel.Browsable(false)]
+        [PreventTheming]
         public NumericUpDown NumericUpDown
         {
             get { return numericUpDown1; }

@@ -12,6 +12,7 @@ using MissionPlanner.Utilities;
 
 namespace ptPlugin1
 {
+    [PreventTheming]
     public partial class landingControl : UserControl
     {
 
@@ -22,6 +23,7 @@ namespace ptPlugin1
         public int LandingAlt = 100;
         public float WindDrag = 0.9f;
         public float WindDirection = 0;
+        public ChuteState chute = ChuteState.AutoOpenDisabled;
 
         public PointLatLngAlt LandingPoint = new PointLatLngAlt();
         public PointLatLngAlt WaitingPoint = new PointLatLngAlt();
@@ -31,9 +33,21 @@ namespace ptPlugin1
         public LandState state = LandState.None;
 
 
-        public event EventHandler waitClicked;
+        public event EventHandler StartLandingClicked;
         public event EventHandler landClicked;
         public event EventHandler setspeedClicked;
+        public event EventHandler setCruiseSpeedClicked;
+        public event EventHandler abortLandingClicked;
+
+        protected virtual void OnAbortLandingClicked(EventArgs e)
+        {
+            EventHandler handler = this.abortLandingClicked;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
 
         protected virtual void OnSpeedClicked(EventArgs e)
         {
@@ -44,9 +58,18 @@ namespace ptPlugin1
             }
         }
 
-        protected virtual void OnWaitClicked(EventArgs e)
+        protected virtual void OnsetCruiseSpeedClicked(EventArgs e)
         {
-            EventHandler handler = this.waitClicked;
+            EventHandler handler = this.setCruiseSpeedClicked;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        protected virtual void OnStartLandingClicked(EventArgs e)
+        {
+            EventHandler handler = this.StartLandingClicked;
             if (handler != null)
             {
                 handler(this, e);
@@ -63,6 +86,54 @@ namespace ptPlugin1
         }
         public void updateLabels()
         {
+
+            //instead of labels, we update the color of the label
+            if (mWaitDistance.NumericUpDown.Value != WaitDistance)
+                mWaitDistance.NumericUpDown.BackColor = Color.Red;
+            else
+                mWaitDistance.NumericUpDown.BackColor = Color.Green;
+
+            if (mLandSpeed.NumericUpDown.Value != LandingSpeed)
+                mLandSpeed.NumericUpDown.BackColor = Color.Red;
+            else
+                mLandSpeed.NumericUpDown.BackColor = Color.Green;
+
+            if (mOPeningTime.NumericUpDown.Value != (int)(OpeningTime*10))
+                mOPeningTime.NumericUpDown.BackColor = Color.Red;
+            else
+                mOPeningTime.NumericUpDown.BackColor = Color.Green;
+
+            if (mSInkRate.NumericUpDown.Value != (int)(SinkRate * 10))
+                mSInkRate.NumericUpDown.BackColor = Color.Red;
+            else
+                mSInkRate.NumericUpDown.BackColor = Color.Green;
+
+            if (mLandingAlt.NumericUpDown.Value != LandingAlt)
+                mLandingAlt.NumericUpDown.BackColor = Color.Red;
+            else
+                mLandingAlt.NumericUpDown.BackColor = Color.Green;
+
+            if (mWindDrag.NumericUpDown.Value != (int)(WindDrag * 10))
+                mWindDrag.NumericUpDown.BackColor = Color.Red;
+            else
+                mWindDrag.NumericUpDown.BackColor = Color.Green;
+
+
+            if (chute == ChuteState.AutoOpenDisabled)
+            {
+                buttonEnableChuteOpen.Text = "ENABLE Auto Chute open";
+                lLeftStatus.Text = "Auto Chute Open DISABLED";
+                lLeftStatus.BackColor = Color.Red;
+            }
+            else
+            {
+                buttonEnableChuteOpen.Text = "DISABLE Auto Chute open";
+                lLeftStatus.Text = "Auto Chute Open ENABLED";
+                lLeftStatus.BackColor = Color.Green;
+            }
+
+            lRightStatus.Text = state.ToString();
+
             //Update labels as well
             lWaitDist.Text = WaitDistance.ToString();
             lLandingSpeed.Text = LandingSpeed.ToString();
@@ -91,47 +162,62 @@ namespace ptPlugin1
             //Update labels as well
             updateLabels();
 
+            mWaitDistance.Button.Click += bWaitDistanceSet_clicked;
+            mLandingAlt.Button.Click += bLandingAltSet_clicked;
+            mLandSpeed.Button.Click += bLandingSpeedSet_clicked;
+            mOPeningTime.Button.Click += bOpeningTimeSet_clicked;
+            mSInkRate.Button.Click += bSinkRateSet_clicked;
+            mWindDrag.Button.Click += bWindDragSet_clicked;
 
-            mWaitDistance.Button.Click += Button_Click;
-            mLandingAlt.Button.Click += Button_Click1;
-            mLandSpeed.Button.Click += Button_Click2;
-            mOPeningTime.Button.Click += Button_Click3;
-            mSInkRate.Button.Click += Button_Click4;
-            mWindDrag.Button.Click += Button_Click5;
+            mWaitDistance.NumericUpDown.ValueChanged += NumericUpDown_ValueChanged;
+            mLandingAlt.NumericUpDown.ValueChanged += NumericUpDown_ValueChanged;
+            mLandSpeed.NumericUpDown.ValueChanged += NumericUpDown_ValueChanged;
+            mOPeningTime.NumericUpDown.ValueChanged += NumericUpDown_ValueChanged;
+            mSInkRate.NumericUpDown.ValueChanged += NumericUpDown_ValueChanged;
+            mWindDrag.NumericUpDown.ValueChanged += NumericUpDown_ValueChanged;
+
+
+
 
         }
 
-        private void Button_Click5(object sender, EventArgs e)
+        private void NumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            var s = sender as NumericUpDown;
+            s.BackColor = Color.Red;
+        }
+
+        private void bWindDragSet_clicked(object sender, EventArgs e)
         {
             WindDrag = ((float)mWindDrag.NumericUpDown.Value) / 10;
             updateLabels();
         }
 
-        private void Button_Click4(object sender, EventArgs e)
+        private void bSinkRateSet_clicked(object sender, EventArgs e)
         {
             SinkRate = ((float)mSInkRate.NumericUpDown.Value) / 10;
             updateLabels();
         }
 
-        private void Button_Click3(object sender, EventArgs e)
+        private void bOpeningTimeSet_clicked(object sender, EventArgs e)
         {
             OpeningTime = ((float)mOPeningTime.NumericUpDown.Value) / 10;
             updateLabels();
         }
 
-        private void Button_Click2(object sender, EventArgs e)
+        private void bLandingSpeedSet_clicked(object sender, EventArgs e)
         {
             LandingSpeed = (int)mLandSpeed.NumericUpDown.Value;
             updateLabels();
         }
 
-        private void Button_Click1(object sender, EventArgs e)
+        private void bLandingAltSet_clicked(object sender, EventArgs e)
         {
             LandingAlt = (int)mLandingAlt.NumericUpDown.Value;
             updateLabels();
         }
 
-        private void Button_Click(object sender, EventArgs e)
+        private void bWaitDistanceSet_clicked(object sender, EventArgs e)
         {
             WaitDistance = (int)mWaitDistance.NumericUpDown.Value;
             state = LandState.None;
@@ -140,8 +226,6 @@ namespace ptPlugin1
 
         public void updateLandingData(PointLatLngAlt l, float WindDir, float WindSpeed, int LoiterRadius)
         {
-            WindDir = 49;
-
             l.Alt = LandingAlt;
             LandingPoint = l;
 
@@ -165,19 +249,41 @@ namespace ptPlugin1
 
         }
 
-        private void myButton1_Click(object sender, EventArgs e)
+        private void bStartLanding_Click(object sender, EventArgs e)
         {
-            this.OnWaitClicked(EventArgs.Empty);
+            this.OnStartLandingClicked(EventArgs.Empty);
         }
 
-        private void myButton2_Click(object sender, EventArgs e)
+        private void bEnableDisableChuteOpen_clicked(object sender, EventArgs e)
         {
-            this.OnLandClicked(EventArgs.Empty);
+            
+            if (chute == ChuteState.AutoOpenDisabled)
+            {
+                chute = ChuteState.AutoOpenEnabled;
+            }
+            else
+            {
+                chute = ChuteState.AutoOpenDisabled;
+            }
+
+            updateLabels();
         }
 
         private void bSetLandingSpeed_Click(object sender, EventArgs e)
         {
             this.OnSpeedClicked(EventArgs.Empty);
+        }
+
+        private void bAbortLanding_Click(object sender, EventArgs e)
+        {
+            state = LandState.None;
+            updateLabels();
+            this.OnAbortLandingClicked(EventArgs.Empty);
+        }
+
+        private void bSetCruiseSpeed_Click(object sender, EventArgs e)
+        {
+            this.OnsetCruiseSpeedClicked(EventArgs.Empty);
         }
     }
 }

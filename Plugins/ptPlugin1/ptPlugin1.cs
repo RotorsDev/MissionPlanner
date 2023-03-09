@@ -17,6 +17,7 @@ using GMap.NET.WindowsForms.Markers;
 using MissionPlanner.Maps;
 using System.Text;
 using System.Media;
+using ClipperLib;
 
 
 
@@ -34,6 +35,12 @@ namespace ptPlugin1
         GoToLand,
         CloseToLand,
         Land
+    }
+
+    public enum ChuteState
+    {
+        AutoOpenDisabled,
+        AutoOpenEnabled
     }
 
 
@@ -108,6 +115,9 @@ namespace ptPlugin1
         
 
 
+        DateTime lastNonCriticalUpdate = DateTime.MinValue;
+
+
         public override string Name
         {
             get { return "ptPlugin1"; }
@@ -127,7 +137,7 @@ namespace ptPlugin1
         public override bool Init()
 		//Init called when the plugin dll is loaded
         {
-            loopratehz = 2;  //Loop runs every second (The value is in Hertz, so 2 means every 500ms, 0.1f means every 10 second...) 
+            loopratehz = 5;  //Loop runs every second (The value is in Hertz, so 2 means every 500ms, 0.1f means every 10 second...) 
 
             return true;	 // If it is false then plugin will not load
         }
@@ -334,9 +344,11 @@ namespace ptPlugin1
             lc.Size = landingPage.ClientSize;
             lc.Location = new Point(0, 0);
             lc.Dock = DockStyle.Fill;
-            lc.waitClicked += Lc_waitClicked;
+            lc.StartLandingClicked += Lc_waitClicked;
             lc.landClicked += Lc_landClicked;
             lc.setspeedClicked += Lc_setspeedClicked;
+            lc.setCruiseSpeedClicked += Lc_setCruiseSpeedClicked;
+            lc.abortLandingClicked += Lc_abortLandingClicked;
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(landingPage);
 
             
@@ -349,99 +361,137 @@ namespace ptPlugin1
             return true;     //If it is false plugin will not start (loop will not called)
         }
 
+        private void Lc_abortLandingClicked(object sender, EventArgs e)
+        {
+            //Clean up markers
+            try
+            {
+                landingOverlay.Markers.RemoveAt(3);
+                landingOverlay.Markers.RemoveAt(3);
+            }
+            catch { }
+        }
+
+        private void Lc_setCruiseSpeedClicked(object sender, EventArgs e)
+        {
+
+            if (Host.cs.connected)
+            {
+
+                var speed = MainV2.comPort.MAV.param["TRIM_ARSPD_CM"].Value / 100;
+                if (speed <= 0) return;
+                try
+                {
+                    MainV2.comPort.doCommandAsync(MainV2.comPort.MAV.sysid, MainV2.comPort.MAV.compid,
+                            MAVLink.MAV_CMD.DO_CHANGE_SPEED, 0, (float)speed, 0, 0, 0, 0, 0);
+                }
+                catch
+                {
+                    CustomMessageBox.Show("Unable to set speed", "Error");
+                }
+            }
+        }
 
         public override bool Loop()
         //Loop is called in regular intervalls (set by loopratehz)
         {
-
-            {
-                var lq = Host.cs.linkqualitygcs;
-                if (lq >= 95) aMain.setStatus("COMMS", Stat.NOMINAL);
-                else if (lq < 95 && lq > 70) aMain.setStatus("COMMS", Stat.WARNING);
-                else aMain.setStatus("COMMS", Stat.ALERT);
-            }
-
-            {
-                var bs = bp.getGenericStatus();
-                switch (bs)
-                {
-                    case 0:
-                        aMain.setStatus("BATT", Stat.NOMINAL);
-                        break;
-                    case 1:
-                        aMain.setStatus("BATT", Stat.WARNING);
-                        break;
-                    case 2:
-                        aMain.setStatus("BATT", Stat.ALERT);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            #region MessagesBox
-
-            //Message box update
-
-            DateTime lastIncomingMessage = MainV2.comPort.MAV.cs.messages.LastOrDefault().time;
-            if (lastIncomingMessage != lastDisplayedMessage)
-            {
-
-
-                fctb.BeginUpdate();
-                fctb.TextSource.CurrentTB = fctb;
-
-                MainV2.comPort.MAV.cs.messages.ForEach(x =>
-                {
-                    if (x.Item1 > lastDisplayedMessage)
-                    {
-
-                        TextStyle displayStyle;
-                        switch ((int)x.Item3)
-                        {
-                            case 0:
-                            case 1:
-                            case 2:
-                                {
-                                    displayStyle = errorStyle;
-                                    aMain.setStatus("MSG", Stat.ALERT);
-                                    break;
-                                }
-                            case 3:
-                            case 4:
-                                {
-                                    displayStyle = warningStyle;
-                                    aMain.setStatus("MSG", Stat.WARNING);
-                                    break;
-                                }
-                            default:
-                                {
-                                    displayStyle = infoStyle;
-                                    break;
-                                }
-                        }
-
-                        fctb.SelectionStart = 0;
-                        fctb.InsertText(x.Item1 + " : (" + x.Item3 + ") " + x.Item2 + "\r\n", displayStyle);
-                    }
-
-                });
-                fctb.EndUpdate();
-                lastDisplayedMessage = lastIncomingMessage;
-            }
-
-            #endregion
-
-
-            #region BatteryVoltages
-
-            PowerStatus pwr = SystemInformation.PowerStatus;
-            bp.setGcsVoltage(pwr.BatteryLifePercent, pwr.PowerLineStatus);
-
-
-            #endregion
+            //The most important thing is to do the landing update, this will run at 5hz 
 
             doLanding();
+
+            //If 500ms ellapsed to the processing
+            if (((TimeSpan)(DateTime.Now - lastNonCriticalUpdate)).TotalMilliseconds > 500)
+            {
+                lastNonCriticalUpdate = DateTime.Now;
+                MainV2.instance.BeginInvoke((MethodInvoker)(() =>
+                {
+                    lc.updateLabels();
+                }));
+                {
+                    var lq = Host.cs.linkqualitygcs;
+                    if (lq >= 95) aMain.setStatus("COMMS", Stat.NOMINAL);
+                    else if (lq < 95 && lq > 70) aMain.setStatus("COMMS", Stat.WARNING);
+                    else aMain.setStatus("COMMS", Stat.ALERT);
+                }
+
+                {
+                    var bs = bp.getGenericStatus();
+                    switch (bs)
+                    {
+                        case 0:
+                            aMain.setStatus("BATT", Stat.NOMINAL);
+                            break;
+                        case 1:
+                            aMain.setStatus("BATT", Stat.WARNING);
+                            break;
+                        case 2:
+                            aMain.setStatus("BATT", Stat.ALERT);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                #region MessagesBox
+
+                //Message box update
+
+                DateTime lastIncomingMessage = MainV2.comPort.MAV.cs.messages.LastOrDefault().time;
+                if (lastIncomingMessage != lastDisplayedMessage)
+                {
+                    fctb.BeginUpdate();
+                    fctb.TextSource.CurrentTB = fctb;
+
+                    MainV2.comPort.MAV.cs.messages.ForEach(x =>
+                    {
+                        if (x.Item1 > lastDisplayedMessage)
+                        {
+
+                            TextStyle displayStyle;
+                            switch ((int)x.Item3)
+                            {
+                                case 0:
+                                case 1:
+                                case 2:
+                                    {
+                                        displayStyle = errorStyle;
+                                        aMain.setStatus("MSG", Stat.ALERT);
+                                        break;
+                                    }
+                                case 3:
+                                case 4:
+                                    {
+                                        displayStyle = warningStyle;
+                                        aMain.setStatus("MSG", Stat.WARNING);
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        displayStyle = infoStyle;
+                                        break;
+                                    }
+                            }
+
+                            fctb.SelectionStart = 0;
+                            fctb.InsertText(x.Item1 + " : (" + x.Item3 + ") " + x.Item2 + "\r\n", displayStyle);
+                        }
+
+                    });
+                    fctb.EndUpdate();
+                    lastDisplayedMessage = lastIncomingMessage;
+                }
+
+                #endregion
+
+
+                #region BatteryVoltages
+
+                PowerStatus pwr = SystemInformation.PowerStatus;
+                bp.setGcsVoltage(pwr.BatteryLifePercent, pwr.PowerLineStatus);
+
+
+                #endregion
+            }
 
             return true;	//Return value is not used
         }
@@ -458,11 +508,15 @@ namespace ptPlugin1
         }
 
 
-
-
         private void doLanding()
         {
             //This will handle the landing process
+
+            if (!Host.cs.connected || !Host.cs.armed)
+            {
+                lc.state = LandState.None;
+                return;
+            }
 
             //Check status
             if (lc.state == LandState.None) return;
@@ -572,11 +626,22 @@ namespace ptPlugin1
 
 
 
-            if (openpos2.GetDistance(lc.LandingPoint) <= 50 )
+            if (openpos2.GetDistance(lc.LandingPoint) <= 25 )
             {
-                Host.cs.messageHigh = "OPEN OPEN OPEN";
-                SystemSounds.Exclamation.Play();
-                SystemSounds.Exclamation.Play();
+
+                if (lc.chute == ChuteState.AutoOpenEnabled)
+                {
+                    Host.cs.messageHigh = "OPEN OPEN OPEN";
+                    //TODO settings
+                    MainV2.comPort.doCommand((byte)MainV2.comPort.sysidcurrent, (byte)MainV2.comPort.compidcurrent, MAVLink.MAV_CMD.DO_SET_SERVO, 9, 1100, 0, 0, 0, 0, 0);
+                    SystemSounds.Exclamation.Play();
+                }
+                else
+                {
+                    Host.cs.messages.Add((DateTime.Now, "SIMULTED CHUTE OPEN", MAVLink.MAV_SEVERITY.NOTICE));
+                    SystemSounds.Exclamation.Play();
+
+                }
 
             }
 
@@ -782,7 +847,8 @@ namespace ptPlugin1
             landingOverlay.Routes.Add(landingRoute);
 
             Host.FDGMapControl.Overlays.Add(landingOverlay);
-            Host.FDGMapControl.Invalidate();
+            Host.FDGMapControl.Position = Host.FDGMapControl.Position;
+
 
 
         }
