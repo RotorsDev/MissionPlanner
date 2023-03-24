@@ -22,19 +22,17 @@ using MissionPlanner.Attributes;
 using System.Security.Cryptography;
 using System.Runtime.InteropServices.WindowsRuntime;
 using static MissionPlanner.Utilities.LTM;
+using System.ComponentModel;
 
 namespace UDPWeatherStation
 {
     public class UDPWeatherStationPlugin : Plugin
     {
-        //private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         private int PORT;
         private IPEndPoint iPEndPoint;
         private UdpClient udpClient;
         private TimeSpan connectionTimeout;
         private DateTime lastWeatherUpdate;
-
 
         [AttributeUsage(AttributeTargets.All)]
         public class WeatherDataAttribute : Attribute
@@ -105,26 +103,38 @@ namespace UDPWeatherStation
         //Contains the last received data packet from the WeatherStation
         public class WeatherStationData
         {
+            [ReadOnly(false)]
             [WeatherDataAttribute("WindSpeed", "m/s", 1)]
             public double windSpeed { get; set; }
+            
+            [ReadOnly(false)]
             [WeatherDataAttribute("WindDir","deg",2)]
             public double windDirection { get; set; }
+            [ReadOnly(false)]
             [WeatherDataAttribute("QFE", "mbar", 3)]
             public double QFE { get; set; }
+            [ReadOnly(false)]
             [WeatherDataAttribute("Temp", "C", 6)]
             public double extTemp { get; set; }
+            [ReadOnly(false)]
             [WeatherDataAttribute("Humidity", "%", 5)]
             public double humidity { get; set; }
-            [WeatherDataAttribute("Internal Temp", "C", 4)]
+            [ReadOnly(false)]
+            [WeatherDataAttribute("Internal Temp", "C", 4,false)]
             public double intTemp { get; set; }
-            [WeatherDataAttribute("Battery", "V", 7)]
+            [ReadOnly(false)]
+            [WeatherDataAttribute("Battery", "Volts", 7)]
             public double batteryVoltage { get; set; }
-            [WeatherDataAttribute("Heading", "deg", 0)]
+            [ReadOnly(false)]
+            [WeatherDataAttribute("Heading", "deg", 0, false)]
             public double stationHeading { get; set; }
-            [WeatherDataAttribute("Impulses", "", 8)]
+            [ReadOnly(false)]
+            [WeatherDataAttribute("Impulses", "", 8,false)]
             public double speedImpulses { get; set; }
 
             public WeatherStationData() { }
+
+
 
             public double getFieldMuliplier(string name)
             {
@@ -166,24 +176,37 @@ namespace UDPWeatherStation
                 return 0;
             }
 
-            public void setFieldOffsetAndMultiplier(string name, double o, double m)
+            public void setFieldVariables(string name, double offset, double multiplier, bool visibility)
             {
-                try
-                {
-                    var typeofthing = typeof(WeatherStationData).GetProperty(name);
-                    if (typeofthing != null)
-                    {
-                        var attrib = typeofthing.GetCustomAttributes(false).OfType<WeatherDataAttribute>().ToArray();
-                        if (attrib.Length > 0)
-                        {
-                            attrib.OfType<WeatherDataAttribute>().First().Offset = o;
-                            attrib.OfType<WeatherDataAttribute>().First().Multiplier = o;
-                        }
-                    }
-                }
-                catch
-                {
-                }
+
+
+                var attr = TypeDescriptor.GetProperties(typeof(WeatherStationData))["windDirection"].Attributes[typeof(WeatherDataAttribute)] as WeatherDataAttribute;
+                attr.Visible = false;
+
+                //try
+                //{
+
+                //    //var attrib = TypeDescriptor.GetProperties(typeof(WeatherStationData))[name].Attributes[typeof(WeatherDataAttribute)] as WeatherDataAttribute;
+
+
+
+                //    var typeofthing = typeof(WeatherStationData).GetProperty(name);
+
+                //    if (typeofthing != null)
+                //    {
+                //        var attrib = typeofthing.GetCustomAttributes(false).OfType<WeatherDataAttribute>().ToArray();
+                //        if (attrib.Length > 0)
+                //        {
+
+                //            attrib.OfType<WeatherDataAttribute>().First().Offset = offset;
+                //            attrib.OfType<WeatherDataAttribute>().First().Multiplier = multiplier;
+                //            attrib.OfType<WeatherDataAttribute>().First().Visible = false;
+                //        }
+                //    }
+                //}
+                //catch
+                //{
+                //}
 
             }
 
@@ -266,7 +289,6 @@ namespace UDPWeatherStation
                 }
                 return retval;
 
-
             }
 
 
@@ -312,6 +334,17 @@ namespace UDPWeatherStation
                 return retval;
             }
 
+            public List<string> getDataNames()
+            {
+                List<string> retval = new List<string>();   
+                Type test = this.GetType();
+                foreach (var item in test.GetProperties())
+                {
+                    retval.Add(item.Name);
+                }
+                return retval;
+            }
+
 
         }
 
@@ -349,6 +382,7 @@ namespace UDPWeatherStation
         private string ConfigSaveKey = "RACWeatherStationTuningValues";
         private string ConfigVersionKey = "RACWeatherStationVersion";
         private int ConfigVersion = 2;
+
         internal class TuningItem
         {
             public string Name { get; set; }
@@ -432,53 +466,40 @@ namespace UDPWeatherStation
                 imageOriginal = pBoxArrow.Image; // Save 0 rotation image
                 flowPanel.Controls.Add(pBoxArrow);
 
-                //// Setup data table
-                //// állomás iránya (nem kell) | szélsebesség 'm/s' | szélirány '°' | légnyomás 'miliBar' | belső hőmérséklet (nem kell) | páratartalom '%' | hőmérséklet '°C' | akksifesz 'Volt' |
-                //tableConfig = new List<WeatherItem>
-                //{
-                //    new WeatherItem("Station heading", 0, "°", false) {},
-                //    new WeatherItem("Wind speed", 1, CurrentState.SpeedUnit) {},
-                //    new WeatherItem("Wind direction", 2, "°") {},
-                //    new WeatherItem("Air pressure", 3, "mBar") {},
-                //    new WeatherItem("Internal temperature", 4, "°C", false) {},
-                //    new WeatherItem("Humidity", 5, "%") {},
-                //    new WeatherItem("External temperature", 6, "°C") {},
-                //    new WeatherItem("Battery voltage", 7, "V") {}
-                //};
 
-                //// Value multipliers
-                //if (Settings.Instance.ContainsKey(ConfigSaveKey) // There are values
-                //    &&
-                //    Settings.Instance.ContainsKey(ConfigVersionKey) // There is a version number
-                //    &&
-                //    int.Parse(Settings.Instance[ConfigVersionKey]) == ConfigVersion) // Version number is correct
-                //{
-                //    // Load saved tuning values
-                //    List<TuningItem> saved = Settings.Instance[ConfigSaveKey].FromJSON<List<TuningItem>>();
-                //    foreach (TuningItem savedItem in saved)
-                //    {
-                //        WeatherItem tableItem = tableConfig.Where(tc => tc.Name == savedItem.Name).FirstOrDefault();
-                //        tableItem.Offset = savedItem.Offset;
-                //        tableItem.Multiplier = savedItem.Multiplier;
-                //        tableItem.Visible = savedItem.Visible;
-                //    }
-                //}
-                //// Save values and version number
-                //    List<TuningItem> toSave = new List<TuningItem>();
-                //    foreach (var tableItem in tableConfig)
-                //    {
-                //        toSave.Add(new TuningItem()
-                //        {
-                //            Name = tableItem.Name,
-                //            Offset = tableItem.Offset,
-                //            Multiplier = tableItem.Multiplier,
-                //            Visible = tableItem.Visible
-                //        });
-                //    }
-                //    Settings.Instance[ConfigSaveKey] = toSave.ToJSON();
-                //    Settings.Instance[ConfigVersionKey] = "" + ConfigVersion;
-                //    Settings.Instance.Save();
 
+                // Value multipliers
+                if (Settings.Instance.ContainsKey(ConfigSaveKey) // There are values
+                    &&
+                    Settings.Instance.ContainsKey(ConfigVersionKey) // There is a version number
+                    &&
+                    int.Parse(Settings.Instance[ConfigVersionKey]) == ConfigVersion) // Version number is correct
+                {
+                    // Load saved tuning values
+                    List<TuningItem> saved = Settings.Instance[ConfigSaveKey].FromJSON<List<TuningItem>>();
+                    foreach (TuningItem savedItem in saved)
+                    {
+                        wd.setFieldVariables(savedItem.Name, savedItem.Offset, savedItem.Multiplier, savedItem.Visible);
+                    }
+                }
+
+                else
+                {
+
+                    List<TuningItem> ti = new List<TuningItem>();
+                    foreach (var item in wd.getDataNames())
+                    {
+                        TuningItem t = new TuningItem();
+                        t.Name = item;
+                        t.Multiplier = wd.getFieldMuliplier(item);
+                        t.Offset = wd.getFieldOffset(item);
+                        t.Visible = wd.getFieldVisibility(item);
+                        ti.Add(t);
+                    }
+                    Settings.Instance[ConfigSaveKey] = ti.ToJSON();
+                    Settings.Instance[ConfigVersionKey] = "" + ConfigVersion;
+                    Settings.Instance.Save();
+                }
                 // Create control
                 weatherTable = new TableLayoutPanel();
                 weatherTable.Name = "tableWeather";
@@ -487,7 +508,7 @@ namespace UDPWeatherStation
                 List<(string, string)> data = wd.getDisplay();
                 foreach (var i in data)
                 {
-                    AddRow(i.Item1, i.Item2);
+                        AddRow(i.Item1, i.Item2);
                 }
 
                 // Format control
@@ -495,7 +516,8 @@ namespace UDPWeatherStation
                 weatherTable.Width = flowPanel.ClientSize.Width;
                 for (int i = 0; i < weatherTable.ColumnCount; i++)
                     weatherTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / weatherTable.ColumnCount));
-                weatherTable.Height = weatherTable.RowCount * ((new Label()).Height + 1) + 1;
+                weatherTable.Height = (weatherTable.RowCount+1) * ((new Label()).Height + 1) + 5;
+                weatherTable.Visible = true;
                 flowPanel.Controls.Add(weatherTable);
 
                 // Refresh UI
@@ -521,11 +543,7 @@ namespace UDPWeatherStation
         /// <param name="unit">Unit to be displayed</param>
         private void AddRow(string name, string unit)
         {
-            // Find next empty row
-            int i = 0;
-            while (weatherTable.GetControlFromPosition(0, i) != null)
-                i++;
-
+            weatherTable.RowCount = weatherTable.RowCount + 1;
             // Column 0: Name
             Label l1 = new Label();
             l1.Text = name;
@@ -533,7 +551,8 @@ namespace UDPWeatherStation
             l1.Padding = new Padding(5);
             l1.AutoSize = true;
             l1.Dock = DockStyle.Fill;
-            weatherTable.Controls.Add(l1, 0, i);
+            l1.Visible = true;
+            weatherTable.Controls.Add(l1, 0, weatherTable.RowCount-1);
 
             // Column 1: Value and unit
             Label l2 = new Label();
@@ -542,7 +561,8 @@ namespace UDPWeatherStation
             l2.Padding = new Padding(5);
             l2.AutoSize = true;
             l2.Dock = DockStyle.Fill;
-            weatherTable.Controls.Add(l2, 1, i);
+            l2.Visible = true;
+            weatherTable.Controls.Add(l2, 1, weatherTable.RowCount-1);
         }
 
         private void FlowPanel_Resize(object sender, EventArgs e)
@@ -675,14 +695,10 @@ namespace UDPWeatherStation
             // tableConfig -> weatherTable
             MainV2.instance.BeginInvoke((MethodInvoker)(() =>
             {
-                // Update time row
-                //weatherTable.GetControlFromPosition(1, 0).Text = $"{DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}";
-
                 List<(string, string)> data = wd.getDisplay();
-                // Update other rows
                 for (int i = 0; i < data.Count; i++) 
                 {
-                    weatherTable.GetControlFromPosition(1, i).Text = $"{data[i].Item1} {data[i].Item2}";
+                        weatherTable.GetControlFromPosition(1, i).Text = $"{data[i].Item2}";
                 }
 
                 // Update wind arrow
@@ -700,7 +716,6 @@ namespace UDPWeatherStation
                 disconnectedLabel.Hide();
                 pBoxArrow.Show();
                 weatherTable.Show();
-                flowPanel.Refresh();
             }));
         }
 
