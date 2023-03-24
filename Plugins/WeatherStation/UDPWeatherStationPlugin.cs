@@ -690,7 +690,7 @@ namespace UDPWeatherStation
                 rotatedBmp.SetResolution(imageOriginal.HorizontalResolution, imageOriginal.VerticalResolution);
                 Graphics graphics = Graphics.FromImage(rotatedBmp);
                 graphics.TranslateTransform(rotatedBmp.Width / 2, rotatedBmp.Height / 2);
-                float newAngle = (float)wd.windDirection; // Arrow points where the wind is blowing from
+                float newAngle = ((float)wd.windDirection + 180) % 360; // Arrow points where the wind is blowing to
                 graphics.RotateTransform(newAngle);
                 graphics.TranslateTransform(-(rotatedBmp.Width / 2), -(rotatedBmp.Height / 2));
                 graphics.DrawImage(imageOriginal, new PointF(0, 0));
