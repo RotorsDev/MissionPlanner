@@ -47,14 +47,12 @@ namespace UDPWeatherStation
 
             // This constructor defines two required parameters: name and level.
 
-            public WeatherDataAttribute(string name, string unit, int position, bool visible = true, double multiplier = 1.0, double offset = 0.0)
+            public WeatherDataAttribute(string name, string unit, int position, bool visibility = true)
             {
                 this.name = name;
                 this.unit = unit;
                 this.position = position;
-                this.visible = visible;
-                this.multiplier = multiplier;   
-                this.offset = offset;
+                this.visible = visibility;
             }
 
             // Define Name property.
@@ -86,27 +84,27 @@ namespace UDPWeatherStation
                 set { visible = value; }
             }
 
-            public virtual double Multiplier
-            {
-                get { return multiplier; }
-                set { multiplier = value; }
-            }
-
-            public virtual double Offset
-            {
-                get { return offset; }
-                set { offset = value; }
-            }
-
         }
 
         //Contains the last received data packet from the WeatherStation
         public class WeatherStationData
         {
+
+            private double ws;
+
             [ReadOnly(false)]
             [WeatherDataAttribute("WindSpeed", "m/s", 1)]
-            public double windSpeed { get; set; }
-            
+            public double windSpeed
+            {
+                get
+                {
+                    return ws * windspeedMultiplier + windspeedOffset;
+                }
+                set
+                {
+                    ws = value;
+                }
+            }
             [ReadOnly(false)]
             [WeatherDataAttribute("WindDir","deg",2)]
             public double windDirection { get; set; }
@@ -126,89 +124,17 @@ namespace UDPWeatherStation
             [WeatherDataAttribute("Battery", "Volts", 7)]
             public double batteryVoltage { get; set; }
             [ReadOnly(false)]
-            [WeatherDataAttribute("Heading", "deg", 0, false)]
+            [WeatherDataAttribute("Heading", "deg", 0,false)]
             public double stationHeading { get; set; }
             [ReadOnly(false)]
             [WeatherDataAttribute("Impulses", "", 8,false)]
             public double speedImpulses { get; set; }
 
+            public double windspeedOffset = 0;
+            public double windspeedMultiplier = 1.0;
+
+
             public WeatherStationData() { }
-
-
-
-            public double getFieldMuliplier(string name)
-            {
-                try
-                {
-                    var typeofthing = typeof(WeatherStationData).GetProperty(name);
-                    if (typeofthing != null)
-                    {
-                        var attrib = typeofthing.GetCustomAttributes(false).OfType<WeatherDataAttribute>().ToArray();
-                        if (attrib.Length > 0)
-                        {
-                            return attrib.OfType<WeatherDataAttribute>().First().Offset;
-                        }
-                    }
-                }
-                catch
-                {
-                }
-                return 0;
-            }
-
-            public double getFieldOffset(string name)
-            {
-                try
-                {
-                    var typeofthing = typeof(WeatherStationData).GetProperty(name);
-                    if (typeofthing != null)
-                    {
-                        var attrib = typeofthing.GetCustomAttributes(false).OfType<WeatherDataAttribute>().ToArray();
-                        if (attrib.Length > 0)
-                        {
-                            return attrib.OfType<WeatherDataAttribute>().First().Offset;
-                        }
-                    }
-                }
-                catch
-                {
-                }
-                return 0;
-            }
-
-            public void setFieldVariables(string name, double offset, double multiplier, bool visibility)
-            {
-
-
-                var attr = TypeDescriptor.GetProperties(typeof(WeatherStationData))["windDirection"].Attributes[typeof(WeatherDataAttribute)] as WeatherDataAttribute;
-                attr.Visible = false;
-
-                //try
-                //{
-
-                //    //var attrib = TypeDescriptor.GetProperties(typeof(WeatherStationData))[name].Attributes[typeof(WeatherDataAttribute)] as WeatherDataAttribute;
-
-
-
-                //    var typeofthing = typeof(WeatherStationData).GetProperty(name);
-
-                //    if (typeofthing != null)
-                //    {
-                //        var attrib = typeofthing.GetCustomAttributes(false).OfType<WeatherDataAttribute>().ToArray();
-                //        if (attrib.Length > 0)
-                //        {
-
-                //            attrib.OfType<WeatherDataAttribute>().First().Offset = offset;
-                //            attrib.OfType<WeatherDataAttribute>().First().Multiplier = multiplier;
-                //            attrib.OfType<WeatherDataAttribute>().First().Visible = false;
-                //        }
-                //    }
-                //}
-                //catch
-                //{
-                //}
-
-            }
 
             public int getFieldPosition(string name)
             {
@@ -228,7 +154,6 @@ namespace UDPWeatherStation
                 }
                 return retval;
             }
-
 
             public string getFieldHumanName(string name)
             {
@@ -267,8 +192,6 @@ namespace UDPWeatherStation
                 {
                 }
                 return retval;
-
-
             }
 
             public bool getFieldVisibility(string name)
@@ -288,7 +211,6 @@ namespace UDPWeatherStation
                 {
                 }
                 return retval;
-
             }
 
 
@@ -310,13 +232,11 @@ namespace UDPWeatherStation
 
             }
 
-
             public int getPropertyCount()
             {
                 Type test = this.GetType();
                 return test.GetProperties().Length;
             }
-
 
             public List<(string, string)> getDisplay()
             {
@@ -344,58 +264,19 @@ namespace UDPWeatherStation
                 }
                 return retval;
             }
-
-
-        }
-
-
-        public class WeatherItem
-        {
-            public string Name { get; set; }
-            public double Value { get; set; }
-            public int Index { get; set; }
-            public double Offset { get; set; }
-            public double Multiplier { get; set; }
-            public string Unit { get; set; }
-            public bool Visible { get; set; }
-
-            public WeatherItem(string name, double value, int index, double offset, double multiplier, string unit, bool visible)
-            {
-                Name = name;
-                Value = value;
-                Index = index;
-                Offset = offset;
-                Multiplier = multiplier;
-                Unit = unit;
-                Visible = visible;
-            }
-            public WeatherItem(string name, int index, string unit, bool visible) : this(name, 0, index, 0, 1, unit, visible) {}
-            public WeatherItem(string name, int index, string unit) : this(name, index, unit, true) {}
         }
 
         public WeatherStationData wd = new WeatherStationData();    
-
-        public List<WeatherItem> tableConfig; // make it public so other plugins can access the data
         private Image imageOriginal;
         private bool neverConnected;
-
-        private string ConfigSaveKey = "RACWeatherStationTuningValues";
-        private string ConfigVersionKey = "RACWeatherStationVersion";
-        private int ConfigVersion = 2;
-
-        internal class TuningItem
-        {
-            public string Name { get; set; }
-            public double Offset { get; set; }
-            public double Multiplier { get; set; }
-            public bool Visible { get; set; }
-        }
-
         private Label disconnectedLabel;
         private PictureBox pBoxArrow;
         private TableLayoutPanel weatherTable;
         private FlowLayoutPanel flowPanel;
         private TabPage tabPage;
+
+        private string wsOffsetKeyName = "WEATHER_WindspeedOffset";
+        private string wsMultiplierKeyName = "WEATHER_WindspeedMultiplier";
 
         #region Plugin info
         public override string Name
@@ -468,38 +349,25 @@ namespace UDPWeatherStation
 
 
 
-                // Value multipliers
-                if (Settings.Instance.ContainsKey(ConfigSaveKey) // There are values
-                    &&
-                    Settings.Instance.ContainsKey(ConfigVersionKey) // There is a version number
-                    &&
-                    int.Parse(Settings.Instance[ConfigVersionKey]) == ConfigVersion) // Version number is correct
+                if (Settings.Instance.ContainsKey(wsOffsetKeyName))
                 {
-                    // Load saved tuning values
-                    List<TuningItem> saved = Settings.Instance[ConfigSaveKey].FromJSON<List<TuningItem>>();
-                    foreach (TuningItem savedItem in saved)
-                    {
-                        wd.setFieldVariables(savedItem.Name, savedItem.Offset, savedItem.Multiplier, savedItem.Visible);
-                    }
+                    wd.windspeedOffset = Settings.Instance.GetDouble(wsOffsetKeyName, 0);
                 }
-
                 else
                 {
-
-                    List<TuningItem> ti = new List<TuningItem>();
-                    foreach (var item in wd.getDataNames())
-                    {
-                        TuningItem t = new TuningItem();
-                        t.Name = item;
-                        t.Multiplier = wd.getFieldMuliplier(item);
-                        t.Offset = wd.getFieldOffset(item);
-                        t.Visible = wd.getFieldVisibility(item);
-                        ti.Add(t);
-                    }
-                    Settings.Instance[ConfigSaveKey] = ti.ToJSON();
-                    Settings.Instance[ConfigVersionKey] = "" + ConfigVersion;
-                    Settings.Instance.Save();
+                    Settings.Instance[wsOffsetKeyName] = wd.windspeedOffset.ToString();
                 }
+
+                if (Settings.Instance.ContainsKey(wsMultiplierKeyName))
+                {
+                    wd.windspeedMultiplier = Settings.Instance.GetDouble(wsMultiplierKeyName, 0);
+                }
+                else
+                {
+                    Settings.Instance[wsMultiplierKeyName] = wd.windspeedMultiplier.ToString();
+                }
+
+
                 // Create control
                 weatherTable = new TableLayoutPanel();
                 weatherTable.Name = "tableWeather";
@@ -609,84 +477,20 @@ namespace UDPWeatherStation
             //UpdateData(message);
 
             wd.updateData(message);
+            UpdateCurrentControlsSet();
             // Update UI
             UpdateUI();
         }
 
-        /// <summary>
-        /// Log received UDP broadcast message
-        /// </summary>
-        /// <param name="message">Received UDP broadcast message</param>
-        //private void LogMessage(string message)
-        //{
-        //    // Log in csv format
-        //    string logLine = $"\"{DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}\"";
-        //    foreach (string item in message.Split('|'))
-        //        logLine += $",\"{item}\"";
-        //    log.Info(logLine);
-        //}
-
-        /// <summary>
-        /// Update the values in the weather data table
-        /// </summary>
-        /// <param name="message">UDP message string</param>
-        private void UpdateData(string message)
+        private void UpdateCurrentControlsSet()
         {
-            //MainV2.instance.BeginInvoke((MethodInvoker)(() => // We have to access CurrentState, so...
-            //{
-            // message -> tableConfig
-            message = message.Replace('.', (0.1).ToString()[1])
-                             .Replace(',', (0.1).ToString()[1]); // suck it invariant culture!
+            Host.cs.g_wind_vel = (float)wd.windSpeed;
+            Host.cs.g_wind_dir = (float)wd.windDirection;
+            Host.cs.g_press = (float)wd.QFE;
+            Host.cs.g_humidity = (float)wd.humidity;
+            Host.cs.g_temp = (float)wd.extTemp;
 
-            foreach (WeatherItem item in tableConfig)
-            {
-                item.Value = double.Parse(message.Split('|')[item.Index]); // parse value from message
-
-                MainV2.instance.BeginInvoke((MethodInvoker)(() => // TODO: can we get away with this?
-                {
-                    if (item.Name.Contains("speed") && item.Unit != CurrentState.SpeedUnit) // Windspeed is a special case
-                    {
-                        item.Value *= CurrentState.multiplierspeed; // Apply set unit multiplier
-                        item.Unit = CurrentState.SpeedUnit; // Apply set unit text
-                    }
-
-                    item.Value *= item.Multiplier; // Apply multiplier
-                    item.Value += item.Offset; // Apply offset
-		    
-		    if (item.Name.Contains("heading") || item.Name.Contains("direction")) // Constrain degrees to 0-360
-                    {
-                        if (item.Value < 0)
-                            item.Value += 360;
-                        else if (item.Value >= 360)
-                            item.Value -= 360;
-                    }
-		    
-                    // Write values for protar
-                    switch (item.Name)
-                    {
-                        case "Wind speed":
-                            Host.cs.g_wind_vel = (float)item.Value;
-                            break;
-                        case "Wind direction":
-                            Host.cs.g_wind_dir = (float)item.Value;
-                            break;
-                        case "Air pressure":
-                            Host.cs.g_press = (float)item.Value;
-                            break;
-                        case "Humidity":
-                            Host.cs.g_humidity = (float)item.Value;
-                            break;
-                        case "External temperature":
-                            Host.cs.g_temp = (float)item.Value;
-                            break;
-                        default:
-                            break;
-                    }
-                }));
-            }
-            //}));
         }
-
         /// <summary>
         /// Update the UI with the current values in the weather data table
         /// </summary>
@@ -706,8 +510,8 @@ namespace UDPWeatherStation
                 rotatedBmp.SetResolution(imageOriginal.HorizontalResolution, imageOriginal.VerticalResolution);
                 Graphics graphics = Graphics.FromImage(rotatedBmp);
                 graphics.TranslateTransform(rotatedBmp.Width / 2, rotatedBmp.Height / 2);
-                float newAngle = ((float)wd.windDirection + 180) % 360; // Arrow points where the wind is blowing to
-                graphics.RotateTransform(newAngle);
+                //float newAngle = ((float)wd.windDirection + 180) % 360; // Arrow points where the wind is blowing to
+                graphics.RotateTransform((float)wd.windDirection);
                 graphics.TranslateTransform(-(rotatedBmp.Width / 2), -(rotatedBmp.Height / 2));
                 graphics.DrawImage(imageOriginal, new PointF(0, 0));
                 pBoxArrow.Image = rotatedBmp;
