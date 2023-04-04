@@ -404,9 +404,6 @@ namespace ptPlugin1
                 landingOverlay.Markers.RemoveAt(3);
             }
             catch { }
-
-            sendUDPBroadcast("ABORT");
-
         }
 
         private void Lc_setCruiseSpeedClicked(object sender, EventArgs e)
@@ -900,11 +897,8 @@ namespace ptPlugin1
             lc.LandingPoint.Tag = "LP";
             lc.WaitingPoint.Tag = "WP";
 
-            Console.WriteLine(lc.LandingPoint.ToJSONWithType());
             sendUDPBroadcast(lc.LandingPoint.ToJSON());
-
-
-
+            sendUDPBroadcast(lc.WaitingPoint.ToJSON());
 
         }
 
