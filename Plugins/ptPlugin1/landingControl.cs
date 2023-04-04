@@ -16,12 +16,12 @@ namespace ptPlugin1
     public partial class landingControl : UserControl
     {
 
-        public int WaitDistance = 2000;
-        public int LandingSpeed = 36;
+        public int WaitDistance = 1000;
+        public int LandingSpeed = 42;
         public float OpeningTime = 1.8f;
         public float SinkRate = 5f;
         public int LandingAlt = 100;
-        public float WindDrag = 0.9f;
+        public float WindDrag = 1.2f;
         public float WindDirection = 0;
         public ChuteState chute = ChuteState.AutoOpenDisabled;
 
@@ -38,6 +38,17 @@ namespace ptPlugin1
         public event EventHandler setspeedClicked;
         public event EventHandler setCruiseSpeedClicked;
         public event EventHandler abortLandingClicked;
+        public event EventHandler nudgeSpeedClicked;
+
+        protected virtual void OnNudgeSpeedClicked(EventArgs e)
+        {
+            EventHandler handler = this.nudgeSpeedClicked;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
 
         protected virtual void OnAbortLandingClicked(EventArgs e)
         {
@@ -284,6 +295,11 @@ namespace ptPlugin1
         private void bSetCruiseSpeed_Click(object sender, EventArgs e)
         {
             this.OnsetCruiseSpeedClicked(EventArgs.Empty);
+        }
+
+        private void bNudge_Click(object sender, EventArgs e)
+        {
+            this.OnNudgeSpeedClicked(EventArgs.Empty);  
         }
     }
 }

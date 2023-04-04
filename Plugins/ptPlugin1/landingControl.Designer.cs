@@ -619,6 +619,7 @@ namespace ptPlugin1
             this.bNudge.TabIndex = 32;
             this.bNudge.Text = "Nudge Speed Controller";
             this.bNudge.UseVisualStyleBackColor = false;
+            this.bNudge.Click += new System.EventHandler(this.bNudge_Click);
             // 
             // bSetCruiseSpeed
             // 

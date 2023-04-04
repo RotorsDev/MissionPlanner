@@ -2075,6 +2075,12 @@ namespace MissionPlanner
                                 TargetLocation = new PointLatLngAlt(postraget.lat_int / 1e7, postraget.lon_int / 1e7,
                                     postraget.alt + HomeAlt,
                                     postraget.type_mask.ToString());
+
+                            if (postraget.coordinate_frame == (byte)MAVLink.MAV_FRAME.GLOBAL)
+                                TargetLocation = new PointLatLngAlt(postraget.lat_int / 1e7, postraget.lon_int / 1e7,
+                                    postraget.alt,
+                                    postraget.type_mask.ToString());
+
                         }
 
                         break;

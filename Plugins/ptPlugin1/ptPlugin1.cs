@@ -101,7 +101,8 @@ namespace ptPlugin1
 
         string actualPanel = "";
 
-
+        public int chuteServo = 9;
+        public int chuteServoOpenPWM = 1100;
 
 
         internal GMapMarker markerLanding;
@@ -349,16 +350,47 @@ namespace ptPlugin1
             lc.setspeedClicked += Lc_setspeedClicked;
             lc.setCruiseSpeedClicked += Lc_setCruiseSpeedClicked;
             lc.abortLandingClicked += Lc_abortLandingClicked;
+            lc.nudgeSpeedClicked += Lc_nudgeSpeedClicked;
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(landingPage);
-
-            
-
-
 
 
             //Setup mavlink receiving
             Host.comPort.OnPacketReceived += MavOnOnPacketReceivedHandler;
+
+            chuteServo = Settings.Instance.GetInt32("chuteServo", 9);
+            Settings.Instance["chuteServo"] = chuteServo.ToString();
+
+            chuteServoOpenPWM = Settings.Instance.GetInt32("chuteServoOpenPWM", 1100);
+            Settings.Instance["chuteServoOpenPWM"] = chuteServoOpenPWM.ToString();
+
+
             return true;     //If it is false plugin will not start (loop will not called)
+        }
+
+        private void Lc_nudgeSpeedClicked(object sender, EventArgs e)
+        {
+            if (Host.cs.mode.ToUpper() == "GUIDED")
+            {
+                PointLatLngAlt target = new PointLatLngAlt(Host.cs.TargetLocation);
+                lc.state = LandState.GoToLand;
+                Locationwp gotohere = new Locationwp();
+
+                gotohere.id = (ushort)MAVLink.MAV_CMD.WAYPOINT;
+                gotohere.alt = (float)Host.cs.TargetLocation.Alt - (float)Host.cs.HomeAlt; // back to m
+                gotohere.lat = Host.cs.TargetLocation.Lat;
+                gotohere.lng = Host.cs.TargetLocation.Lng;
+
+                Host.comPort.setMode("FBWA");
+
+                try
+                {
+                    MainV2.comPort.setGuidedModeWP(gotohere);
+                }
+                catch (Exception ex)
+                {
+                    CustomMessageBox.Show("Unable to switch back to Guided" + ex.Message, "ERROR");
+                }
+            }
         }
 
         private void Lc_abortLandingClicked(object sender, EventArgs e)
@@ -402,6 +434,7 @@ namespace ptPlugin1
             //If 500ms ellapsed to the processing
             if (((TimeSpan)(DateTime.Now - lastNonCriticalUpdate)).TotalMilliseconds > 500)
             {
+
                 lastNonCriticalUpdate = DateTime.Now;
                 MainV2.instance.BeginInvoke((MethodInvoker)(() =>
                 {
@@ -525,7 +558,8 @@ namespace ptPlugin1
             {
                 //Wait until we started loitering around the waiting point (+50meter need to check for discrepancies between loiter radius and actual radius
                 Console.WriteLine(Host.cs.Location.GetDistance(lc.WaitingPoint));
-                if (Host.cs.Location.GetDistance(lc.WaitingPoint) <= MainV2.comPort.MAV.param["WP_LOITER_RAD"].Value + 50)
+                if (Host.cs.Location.GetDistance(lc.WaitingPoint) <= MainV2.comPort.MAV.param["WP_LOITER_RAD"].Value + 50
+                    && (Host.cs.alt <= lc.LandingAlt+20) )
                 {
                     lc.state = LandState.WaitForSpeed;
                     try
@@ -543,7 +577,7 @@ namespace ptPlugin1
 
             if (lc.state == LandState.WaitForSpeed)
             {
-                if (Host.cs.airspeed <= lc.LandingSpeed + 2)
+                if (Host.cs.airspeed <= lc.LandingSpeed + 3)
                 {
                     lc.state = LandState.WaitForTangent;
                 }
@@ -599,54 +633,51 @@ namespace ptPlugin1
             }
 
 
+            //Landing position calculation
+
             var speed = Host.cs.airspeed;
             PointLatLngAlt currentpos = new PointLatLngAlt(Host.cs.Location);
             PointLatLngAlt openpos1 = currentpos.newpos(Host.cs.yaw, speed * lc.OpeningTime);
 
             float wd = 0;
 
-            if (!Convert.ToBoolean(Host.config["reverse_winddir", "false"]))
-            {
+            //if (!Convert.ToBoolean(Host.config["reverse_winddir", "false"]))
+            //{
 
-                wd = wrap360(lc.WindDirection);
-            }
-            else
-            {
+            //    wd = wrap360(lc.WindDirection);
+            //}
+            //else
+            //{
 
-                wd = lc.WindDirection;
-            }
+            //    wd = lc.WindDirection;
+            //}
 
-            PointLatLngAlt openpos2 = openpos1.newpos(wrap360(lc.WindDirection - 180), (Host.cs.g_wind_vel * (Host.cs.alt / lc.SinkRate) * lc.WindDrag));
+            PointLatLngAlt openpos2 = openpos1.newpos(wrap360(lc.WindDirection-180), (Host.cs.g_wind_vel * (Host.cs.alt / lc.SinkRate) * lc.WindDrag));
 
             GMarkerGoogle p1 = new GMarkerGoogle(openpos1, GMarkerGoogleType.white_small);
             p1.Tag = "p1";
-
             GMarkerGoogle p2 = new GMarkerGoogle(openpos2, GMarkerGoogleType.yellow_small);
             p2.Tag = "p2";
 
 
 
-            if (openpos2.GetDistance(lc.LandingPoint) <= 25 )
+            if (openpos2.GetDistance(lc.LandingPoint) <= 20 )
             {
 
                 if (lc.chute == ChuteState.AutoOpenEnabled)
                 {
                     Host.cs.messageHigh = "OPEN OPEN OPEN";
-                    //TODO settings
-                    MainV2.comPort.doCommand((byte)MainV2.comPort.sysidcurrent, (byte)MainV2.comPort.compidcurrent, MAVLink.MAV_CMD.DO_SET_SERVO, 9, 1100, 0, 0, 0, 0, 0);
+                    MainV2.comPort.doCommand((byte)MainV2.comPort.sysidcurrent, (byte)MainV2.comPort.compidcurrent, MAVLink.MAV_CMD.DO_SET_SERVO, chuteServo, chuteServoOpenPWM, 0, 0, 0, 0, 0);
                     SystemSounds.Exclamation.Play();
                 }
                 else
                 {
-                    Host.cs.messages.Add((DateTime.Now, "SIMULTED CHUTE OPEN", MAVLink.MAV_SEVERITY.NOTICE));
+                    Host.cs.messageHigh = "SIMULTED CHUTE OPEN";
                     SystemSounds.Exclamation.Play();
 
                 }
 
             }
-
-
-
             MainV2.instance.BeginInvoke((MethodInvoker)(() =>
             {
 
@@ -661,8 +692,9 @@ namespace ptPlugin1
                 landingOverlay.Markers.Add(p2);
                 Host.FDGMapControl.Refresh();
             }));
-
         }
+
+
         private void Lc_setspeedClicked(object sender, EventArgs e)
         {
             try
@@ -816,16 +848,9 @@ namespace ptPlugin1
         {
             PointLatLngAlt lp = Host.FDMenuMapPosition;
 
-            if (!Convert.ToBoolean(Host.config["reverse_winddir", "false"]))
-            {
-
-                lc.updateLandingData(lp, Host.cs.g_wind_dir, Host.cs.g_wind_vel, (int)MainV2.comPort.MAV.param["WP_LOITER_RAD"].Value);
-            }
-            else
-            {
-                lc.updateLandingData(lp, wrap360(Host.cs.g_wind_dir - 180), Host.cs.g_wind_vel, (int)MainV2.comPort.MAV.param["WP_LOITER_RAD"].Value);
-            }
-
+   
+            lc.updateLandingData(lp, wrap360(Host.cs.g_wind_dir - 180), Host.cs.g_wind_vel, (int)MainV2.comPort.MAV.param["WP_LOITER_RAD"].Value);
+   
             landingOverlay.Markers.Clear();
             landingOverlay.Routes.Clear();
 
