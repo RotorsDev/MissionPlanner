@@ -246,7 +246,6 @@ namespace ptPlugin1
             lLandPoint.Text = l.Lat.ToString("F5") + "," + l.Lng.ToString("F5");
             WindDirection = WindDir;
 
-
         }
         float wrap360(float noin)
         {

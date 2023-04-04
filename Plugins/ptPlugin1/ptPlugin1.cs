@@ -18,6 +18,8 @@ using MissionPlanner.Maps;
 using System.Text;
 using System.Media;
 using ClipperLib;
+using System.Net.Sockets;
+using System.Net;
 
 
 
@@ -402,6 +404,9 @@ namespace ptPlugin1
                 landingOverlay.Markers.RemoveAt(3);
             }
             catch { }
+
+            sendUDPBroadcast("ABORT");
+
         }
 
         private void Lc_setCruiseSpeedClicked(object sender, EventArgs e)
@@ -423,6 +428,23 @@ namespace ptPlugin1
                 }
             }
         }
+
+
+        public void sendUDPBroadcast(string message)
+        {
+            try
+            {
+                UdpClient client = new UdpClient();
+                IPEndPoint ip = new IPEndPoint(IPAddress.Broadcast, 19729);
+                byte[] bytes = Encoding.ASCII.GetBytes(message);
+                client.Send(bytes, bytes.Length, ip);
+                client.Close();
+            }
+            catch { }
+
+        }
+
+
 
         public override bool Loop()
         //Loop is called in regular intervalls (set by loopratehz)
@@ -873,6 +895,14 @@ namespace ptPlugin1
 
             Host.FDGMapControl.Overlays.Add(landingOverlay);
             Host.FDGMapControl.Position = Host.FDGMapControl.Position;
+
+
+            lc.LandingPoint.Tag = "LP";
+            lc.WaitingPoint.Tag = "WP";
+
+            Console.WriteLine(lc.LandingPoint.ToJSONWithType());
+            sendUDPBroadcast(lc.LandingPoint.ToJSON());
+
 
 
 
