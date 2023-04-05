@@ -102,6 +102,15 @@
       <Y>Long</Y>
       <Z>Alt</Z>
     </PAYLOAD_PLACE>
+    <DO_SEND_SCRIPT_MESSAGE>
+      <P1>waypoint</P1>
+      <P2>time</P2>
+      <P3>arg1</P3>
+      <P4>arg2</P4>
+      <X>arg3</X>
+      <Y>arg4</Y>
+      <Z></Z>
+    </DO_SEND_SCRIPT_MESSAGE>
     <SCRIPT_TIME>
       <P1>command</P1>
       <P2>timeout</P2>
@@ -111,6 +120,7 @@
       <Y>arg4</Y>
       <Z></Z>
     </SCRIPT_TIME>
+
     <SPLINE_WAYPOINT>
       <P1>Delay</P1>
       <P2></P2>
@@ -438,6 +448,15 @@
       <Y>arg4</Y>
       <Z></Z>
     </SCRIPT_TIME>
+    <DO_SEND_SCRIPT_MESSAGE>
+      <P1>waypoint</P1>
+      <P2>time</P2>
+      <P3>arg1</P3>
+      <P4>arg2</P4>
+      <X>arg3</X>
+      <Y>arg4</Y>
+      <Z></Z>
+    </DO_SEND_SCRIPT_MESSAGE>
     <DO_VTOL_TRANSITION>
       <P1>mode (3=mc/4=plane)</P1>
       <P2></P2>
