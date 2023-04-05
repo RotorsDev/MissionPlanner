@@ -660,18 +660,17 @@ namespace ptPlugin1
 
             float wd = 0;
 
-            //if (!Convert.ToBoolean(Host.config["reverse_winddir", "false"]))
-            //{
+            if (Convert.ToBoolean(Host.config["reverse_winddir_drag", "true"]))
+            {
 
-            //    wd = wrap360(lc.WindDirection);
-            //}
-            //else
-            //{
+                wd = wrap360(lc.WindDirection-180);
+            }
+            else
+            {
+                wd = lc.WindDirection;
+            }
 
-            //    wd = lc.WindDirection;
-            //}
-
-            PointLatLngAlt openpos2 = openpos1.newpos(wrap360(lc.WindDirection-180), (Host.cs.g_wind_vel * (Host.cs.alt / lc.SinkRate) * lc.WindDrag));
+            PointLatLngAlt openpos2 = openpos1.newpos(wd, (Host.cs.g_wind_vel * (Host.cs.alt / lc.SinkRate) * lc.WindDrag));
 
             GMarkerGoogle p1 = new GMarkerGoogle(openpos1, GMarkerGoogleType.white_small);
             p1.Tag = "p1";
@@ -867,8 +866,11 @@ namespace ptPlugin1
         {
             PointLatLngAlt lp = Host.FDMenuMapPosition;
 
+
+            float landReverse = Settings.Instance.GetFloat("LandDirectionReverse", 0);
+            Settings.Instance["LandDirectionReverse"] = landReverse.ToString();
    
-            lc.updateLandingData(lp, wrap360(Host.cs.g_wind_dir - 180), Host.cs.g_wind_vel, (int)MainV2.comPort.MAV.param["WP_LOITER_RAD"].Value);
+            lc.updateLandingData(lp, wrap360(Host.cs.g_wind_dir - landReverse), Host.cs.g_wind_vel, (int)MainV2.comPort.MAV.param["WP_LOITER_RAD"].Value);
    
             landingOverlay.Markers.Clear();
             landingOverlay.Routes.Clear();
@@ -897,8 +899,8 @@ namespace ptPlugin1
             lc.LandingPoint.Tag = "LP";
             lc.WaitingPoint.Tag = "WP";
 
-            sendUDPBroadcast(lc.LandingPoint.ToJSON());
-            sendUDPBroadcast(lc.WaitingPoint.ToJSON());
+            //sendUDPBroadcast(lc.LandingPoint.ToJSON());
+            //sendUDPBroadcast(lc.WaitingPoint.ToJSON());
 
         }
 
