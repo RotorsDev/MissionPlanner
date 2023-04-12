@@ -28,11 +28,39 @@ namespace UDPWeatherStation
 {
     public class UDPWeatherStationPlugin : Plugin
     {
+
+        public class MovingAverage
+        {
+            private Queue<Decimal> samples = new Queue<Decimal>();
+            private int windowSize = 30;
+            private Decimal sampleAccumulator;
+            public Decimal Average { get; private set; }
+
+            /// <summary>
+            /// Computes a new windowed average each time a new sample arrives
+            /// </summary>
+            /// <param name="newSample"></param>
+            public void ComputeAverage(Decimal newSample)
+            {
+                if (newSample == 0) newSample = 1;
+                sampleAccumulator += newSample;
+                samples.Enqueue(newSample);
+
+                if (samples.Count > windowSize)
+                {
+                    sampleAccumulator -= samples.Dequeue();
+                }
+
+                Average = sampleAccumulator / samples.Count;
+            }
+        }
+
         private int PORT;
         private IPEndPoint iPEndPoint;
         private UdpClient udpClient;
         private TimeSpan connectionTimeout;
         private DateTime lastWeatherUpdate;
+        
 
         [AttributeUsage(AttributeTargets.All)]
         public class WeatherDataAttribute : Attribute
@@ -91,6 +119,7 @@ namespace UDPWeatherStation
         {
 
             private double ws;
+            private MovingAverage diravg = new MovingAverage();
 
             [ReadOnly(false)]
             [WeatherDataAttribute("WindSpeed", "m/s", 1)]
@@ -106,8 +135,19 @@ namespace UDPWeatherStation
                 }
             }
             [ReadOnly(false)]
-            [WeatherDataAttribute("WindDir","deg",2)]
-            public double windDirection { get; set; }
+            [WeatherDataAttribute("WindDir", "deg", 2)]
+            public double windDirection
+            {
+                get
+                {
+                    return (double)diravg.Average; 
+                    //return (double)Math.Round(diravg.Average);
+                }
+                set
+                {
+                    diravg.ComputeAverage((decimal)(value + winddirOffset));
+                }
+            }
             [ReadOnly(false)]
             [WeatherDataAttribute("QFE", "mbar", 3)]
             public double QFE { get; set; }
@@ -132,6 +172,7 @@ namespace UDPWeatherStation
 
             public double windspeedOffset = 0;
             public double windspeedMultiplier = 1.0;
+            public double winddirOffset = 0;
 
 
             public WeatherStationData() { }
@@ -277,6 +318,8 @@ namespace UDPWeatherStation
 
         private string wsOffsetKeyName = "WEATHER_WindspeedOffset";
         private string wsMultiplierKeyName = "WEATHER_WindspeedMultiplier";
+        private string wdOffsetKeyName = "WEATHER_WinddirOffset";
+
 
         #region Plugin info
         public override string Name
@@ -347,7 +390,14 @@ namespace UDPWeatherStation
                 imageOriginal = pBoxArrow.Image; // Save 0 rotation image
                 flowPanel.Controls.Add(pBoxArrow);
 
-
+                if (Settings.Instance.ContainsKey(wdOffsetKeyName))
+                {
+                    wd.winddirOffset = Settings.Instance.GetDouble(wdOffsetKeyName, 0);
+                }
+                else
+                {
+                    Settings.Instance[wdOffsetKeyName] = wd.winddirOffset.ToString();
+                }
 
                 if (Settings.Instance.ContainsKey(wsOffsetKeyName))
                 {
