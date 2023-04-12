@@ -140,8 +140,8 @@ namespace UDPWeatherStation
             {
                 get
                 {
-                    return (double)diravg.Average; 
-                    //return (double)Math.Round(diravg.Average);
+                    //return (double)diravg.Average; 
+                    return (double)Math.Round(diravg.Average);
                 }
                 set
                 {
