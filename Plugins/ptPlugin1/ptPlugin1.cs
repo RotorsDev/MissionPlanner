@@ -581,12 +581,9 @@ namespace ptPlugin1
                     aMain3.Active = false;
 
                     SetupDone = true;
-  
 
-                        Panel panel1 = Host.MainForm.Controls.Find("Panel1", true).FirstOrDefault() as Panel;
-                        panel1.Size = new Size(panel1.Width, 47);
-
-                
+                    Panel panel1 = Host.MainForm.Controls.Find("Panel1", true).FirstOrDefault() as Panel;
+                    panel1.Size = new Size(panel1.Width, 47);
                 }
                 }));
 
