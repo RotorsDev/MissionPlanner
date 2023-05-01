@@ -47,11 +47,6 @@ namespace MapRotate
         internal GMapMarkerArrow markerFDcatapult;
         internal GMapMarkerArrow markerFPcatapult;
 
-        internal GMapMarkerPlaneSitu markerPlane1;
-        internal GMapMarkerPlaneSitu markerPlane2;
-        internal GMapMarkerPlaneSitu markerPlane3;
-
-
         internal static GMapOverlay catapultFDOverlay;
         internal static GMapOverlay catapultFPOverlay;
         internal static GMapOverlay situationOverlay;
@@ -138,16 +133,22 @@ namespace MapRotate
                 if (sit.pos1 != null && sit.sysid1 != Host.comPort.sysidcurrent)
                 {
                     GMapMarkerPlaneSitu markerPlane1 = new GMapMarkerPlaneSitu(sit.sysid1, sit.pos1, sit.heading1, sit.airspeed1);
+                    markerPlane1.ToolTipText = "Alt:" + sit.pos1.Alt + " IAS:" + sit.airspeed1;
+                    markerPlane1.ToolTipMode = MarkerTooltipMode.Always;
                     situationOverlay.Markers.Add(markerPlane1);
                 }
                 if (sit.pos2 != null && sit.sysid2 != Host.comPort.sysidcurrent)
                 {
                     GMapMarkerPlaneSitu markerPlane1 = new GMapMarkerPlaneSitu(sit.sysid2, sit.pos2, sit.heading2, sit.airspeed2);
+                    markerPlane1.ToolTipText = "Alt:" + sit.pos2.Alt + " IAS:" + sit.airspeed2;
+                    markerPlane1.ToolTipMode = MarkerTooltipMode.Always;
                     situationOverlay.Markers.Add(markerPlane1);
                 }
                 if (sit.pos3 != null && sit.sysid3 != Host.comPort.sysidcurrent)
                 {
                     GMapMarkerPlaneSitu markerPlane1 = new GMapMarkerPlaneSitu(sit.sysid3, sit.pos3, sit.heading3, sit.airspeed3);
+                    markerPlane1.ToolTipText = "Alt:" + sit.pos3.Alt + " IAS:" + sit.airspeed3;
+                    markerPlane1.ToolTipMode = MarkerTooltipMode.Always;
                     situationOverlay.Markers.Add(markerPlane1);
                 }
 
