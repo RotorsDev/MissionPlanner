@@ -20,6 +20,7 @@ using System.Media;
 using ClipperLib;
 using System.Net.Sockets;
 using System.Net;
+using static MissionPlanner.Utilities.LTM;
 
 
 
@@ -45,12 +46,47 @@ namespace ptPlugin1
         AutoOpenEnabled
     }
 
+    public class situation
+    {
+        public int sysid1;
+        public PointLatLngAlt pos1;
+        public float heading1;
+        public float airspeed1;
+        public int sysid2;
+        public PointLatLngAlt pos2;
+        public float heading2;
+        public float airspeed2;
+        public int sysid3;
+        public PointLatLngAlt pos3;
+        public float heading3;
+        public float airspeed3;
+
+    }
 
     [PreventTheming]
-    public class ptPlugin1 : Plugin
+    public partial class ptPlugin1 : Plugin
     {
 
-        annunciator aMain = new annunciator(19, new Size(130,40));
+        public situation sit = new situation();
+        
+        public static int plane1ID = 0;
+        public static int plane2ID = 0;    
+        public static int plane3ID = 0;
+
+        public static string plane1Name = "";
+        public static string plane2Name = "";
+        public static string plane3Name = "";
+
+        public static bool slot1Enabled = false;
+        public static bool slot2Enabled = false;
+        public static bool slot3Enabled = false;
+
+        annunciator aMain1 = new annunciator(20, new Size(130, 40));
+        annunciator aMain2 = new annunciator(20, new Size(130, 40));
+        annunciator aMain3 = new annunciator(20, new Size(130, 40));
+
+        public bool SetupDone = false;
+
         public static FloatingForm annunciatorForm = new FloatingForm();
 
 
@@ -68,9 +104,11 @@ namespace ptPlugin1
 
         public TabPage colorMessagePage = new TabPage();
         public FastColoredTextBox fctb;
-        public DateTime lastDisplayedMessage = DateTime.MinValue;
+        public DateTime lastDisplayedMessage1 = DateTime.MinValue;
+        public DateTime lastDisplayedMessage2 = DateTime.MinValue;
+        public DateTime lastDisplayedMessage3 = DateTime.MinValue;
 
-        
+
 
         TextStyle infoStyle = new TextStyle(Brushes.White, null, FontStyle.Regular);
         TextStyle warningStyle = new TextStyle(Brushes.BurlyWood, null, FontStyle.Regular);
@@ -99,6 +137,8 @@ namespace ptPlugin1
 
 
         public ToolStripMenuItem tsLandingPoint = new ToolStripMenuItem();
+        public ToolStripMenuItem tsStartSim = new ToolStripMenuItem();
+        public ToolStripMenuItem tsSetupFleet = new ToolStripMenuItem();
 
 
         string actualPanel = "";
@@ -115,7 +155,7 @@ namespace ptPlugin1
         internal static GMapOverlay landingOverlay;
 
         public LandState landState = LandState.None;
-        
+
 
 
         DateTime lastNonCriticalUpdate = DateTime.MinValue;
@@ -138,7 +178,7 @@ namespace ptPlugin1
 
         //[DebuggerHidden]
         public override bool Init()
-		//Init called when the plugin dll is loaded
+        //Init called when the plugin dll is loaded
         {
             loopratehz = 5;  //Loop runs every second (The value is in Hertz, so 2 means every 500ms, 0.1f means every 10 second...) 
 
@@ -146,7 +186,7 @@ namespace ptPlugin1
         }
 
         public override bool Loaded()
-		//Loaded called after the plugin dll successfully loaded
+        //Loaded called after the plugin dll successfully loaded
         {
 
             tsLandingPoint.Text = "Set Landing Point";
@@ -155,11 +195,21 @@ namespace ptPlugin1
             landingOverlay = new GMapOverlay("landing");
 
 
+            tsStartSim.Text = "Start Simulator";
+            tsStartSim.Click += TsStartSim_Click;
+            Host.FDMenuMap.Items.Add(tsStartSim);
+
+
+            tsSetupFleet.Text = "Setup Fleet";
+            tsSetupFleet.Click += TsSetupFleet_Click;
+            Host.FDMenuMap.Items.Add(tsSetupFleet);
+
 
             Panel panel1 = Host.MainForm.Controls.Find("Panel1", true).FirstOrDefault() as Panel;
 
 
-            string[] btnLabels = new string[] { 
+            string[] btnLabels = new string[] {
+                "PLANE",
                 "FLIGHT"+ Environment.NewLine +"DATA",
                 "FLIGHT" + Environment.NewLine +"PLAN",
                 "GEO"+ Environment.NewLine +"FENCE",
@@ -180,12 +230,13 @@ namespace ptPlugin1
                 "MSG",
                 "COMMS" };
 
-            string[] btnNames = new string[] { 
+            string[] btnNames = new string[] {
+                "PLANE",
                 "FD",
                 "FP",
                 "GF",
                 "SETUP",
-                "TUNING", 
+                "TUNING",
                 "ENGINE",
                 "FUEL",
                 "BATT",
@@ -200,23 +251,55 @@ namespace ptPlugin1
                 "DATA",
                 "MSG",
                 "COMMS" };
-            aMain.setPanels(btnNames, btnLabels);
 
-            aMain.Enabled = true;
-            aMain.Location = new Point(0, 0);
-            aMain.Size = new Size(panel1.Width, 47);
-            aMain.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Right;
-            aMain.undock += annunciator1_undock;
-            aMain.buttonClicked += annunciator1_buttonClicked;
 
-            aMain.Visible = true;
-            aMain.Refresh();
-            
+            aMain1.setPanels(btnNames, btnLabels);
+            aMain1.Enabled = true;
+            aMain1.Location = new Point(0, 0);
+            aMain1.Size = new Size(panel1.Width, 47);
+            aMain1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            aMain1.undock += annunciator1_undock;
+            aMain1.buttonClicked += annunciator1_buttonClicked;
+            aMain1.Visible = true;
+            aMain1.SysID = 0;
+            aMain1.Name = "";
+            aMain1.Active = true;
+            aMain1.Refresh();
+
+            aMain2.setPanels(btnNames, btnLabels);
+            aMain2.Enabled = true;
+            aMain2.Location = new Point(0, 47);
+            aMain2.Size = new Size(panel1.Width, 47);
+            aMain2.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            //aMain2.undock += annunciator2_undock;
+            aMain2.buttonClicked += annunciator1_buttonClicked;
+            aMain2.Visible = true;
+            aMain2.SysID = 0;
+            aMain2.Name = "";
+            aMain2.Active = false;
+            aMain2.Refresh();
+
+            aMain3.setPanels(btnNames, btnLabels);
+            aMain3.Enabled = true;
+            aMain3.Location = new Point(0, 94);
+            aMain3.Size = new Size(panel1.Width, 47);
+            aMain3.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            //aMain3.undock += annunciator2_undock;
+            aMain3.buttonClicked += annunciator1_buttonClicked;
+            aMain3.Visible = true;
+            aMain3.SysID = 0;
+            aMain3.Name = "";
+            aMain3.Active = false;
+            aMain3.Refresh();
+
+
             MainV2.instance.BeginInvoke((MethodInvoker)(() =>
             {
 
                 MenuStrip MainMenu = Host.MainForm.Controls.Find("MainMenu", true).FirstOrDefault() as MenuStrip;
                 if (MainMenu != null) MainMenu.Visible = false;
+
+                panel1.Size = new Size(panel1.Width, 141);
 
             }));
 
@@ -230,13 +313,19 @@ namespace ptPlugin1
                 }
                 else
                 {
-                    panel1.Controls.Add(aMain);
+                    panel1.Controls.Add(aMain1);
+
+                    panel1.Controls.Add(aMain2); 
+                    panel1.Controls.Add(aMain3);
+
 
                 }
             }
             else
             {
-                panel1.Controls.Add(aMain);
+                panel1.Controls.Add(aMain1);
+                panel1.Controls.Add(aMain2);
+                panel1.Controls.Add(aMain3);
             }
 
 
@@ -262,11 +351,6 @@ namespace ptPlugin1
             plControl.redrawControls();
             plControl.setSafetyStatus(false);
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(payloadControlpage);
-
-
-
-
-
 
             engineControlPage.Text = "Engine Control";
             engineControlPage.Name = "engCtrlTab";
@@ -357,7 +441,7 @@ namespace ptPlugin1
 
 
             //Setup mavlink receiving
-            Host.comPort.OnPacketReceived += MavOnOnPacketReceivedHandler;
+            //Host.comPort.OnPacketReceived += MavOnOnPacketReceivedHandler;
 
             chuteServo = Settings.Instance.GetInt32("chuteServo", 9);
             Settings.Instance["chuteServo"] = chuteServo.ToString();
@@ -367,6 +451,26 @@ namespace ptPlugin1
 
 
             return true;     //If it is false plugin will not start (loop will not called)
+        }
+        //Setup sysid's and names and number of planes in the air;
+        private void TsSetupFleet_Click(object sender, EventArgs e)
+        {
+
+            fleetSetup frm = new fleetSetup();
+            frm.ShowDialog();
+
+            aMain1.SysID = plane1ID;
+            aMain2.SysID = plane2ID;
+            aMain3.SysID = plane3ID;    
+            aMain1.Name = plane1Name;    
+            aMain2.Name = plane2Name;
+            aMain3.Name = plane3Name;
+
+        }
+
+        private void TsStartSim_Click(object sender, EventArgs e)
+        {
+            MainV2.instance.Simulation.StartProtars(3);
         }
 
         private void Lc_nudgeSpeedClicked(object sender, EventArgs e)
@@ -441,7 +545,12 @@ namespace ptPlugin1
 
         }
 
-
+        //Returns true if this is a supervisor station, if there is no setting then it returns false by default
+        public bool isSupervisor()
+        {
+            bool val = Settings.Instance.GetBoolean("Protar_Supervisor", false);
+            return val;
+        }
 
         public override bool Loop()
         //Loop is called in regular intervalls (set by loopratehz)
@@ -453,95 +562,207 @@ namespace ptPlugin1
             //If 500ms ellapsed to the processing
             if (((TimeSpan)(DateTime.Now - lastNonCriticalUpdate)).TotalMilliseconds > 500)
             {
+                MainV2.instance.BeginInvoke((MethodInvoker)(() =>
+                {
+
+                //Check if we in single mode
+                if (!isSupervisor() && !Host.cs.connected)
+                {
+                    SetupDone = false;
+                    aMain1.SysID = 0;
+                    aMain1.Name = "";
+                    aMain1.Active = false;
+                }
+                if (!isSupervisor() && Host.cs.connected && Host.comPort.sysidcurrent != 0 && !SetupDone)
+                {
+                    aMain1.SysID = Host.comPort.sysidcurrent;
+                    aMain1.Active = true;
+                    aMain2.Active = false;
+                    aMain3.Active = false;
+
+                    SetupDone = true;
+  
+
+                        Panel panel1 = Host.MainForm.Controls.Find("Panel1", true).FirstOrDefault() as Panel;
+                        panel1.Size = new Size(panel1.Width, 47);
+
+                
+                }
+                }));
+
 
                 lastNonCriticalUpdate = DateTime.Now;
+
+
+                updateNotifications();
+
+                if (isSupervisor()) sendUDPBroadcast(sit.ToJSON());
+
                 MainV2.instance.BeginInvoke((MethodInvoker)(() =>
                 {
                     lc.updateLabels();
                 }));
-                {
-                    var lq = Host.cs.linkqualitygcs;
-                    if (lq >= 95) aMain.setStatus("COMMS", Stat.NOMINAL);
-                    else if (lq < 95 && lq > 70) aMain.setStatus("COMMS", Stat.WARNING);
-                    else aMain.setStatus("COMMS", Stat.ALERT);
-                }
 
-                {
-                    var bs = bp.getGenericStatus();
-                    switch (bs)
-                    {
-                        case 0:
-                            aMain.setStatus("BATT", Stat.NOMINAL);
-                            break;
-                        case 1:
-                            aMain.setStatus("BATT", Stat.WARNING);
-                            break;
-                        case 2:
-                            aMain.setStatus("BATT", Stat.ALERT);
-                            break;
-                        default:
-                            break;
-                    }
-                }
 
                 #region MessagesBox
 
                 //Message box update
 
-                DateTime lastIncomingMessage = MainV2.comPort.MAV.cs.messages.LastOrDefault().time;
-                if (lastIncomingMessage != lastDisplayedMessage)
+                //Iterate over all ports and put every message to the common messages box
+
+                foreach (var port in MainV2.Comports)
                 {
-                    fctb.BeginUpdate();
-                    fctb.TextSource.CurrentTB = fctb;
-
-                    MainV2.comPort.MAV.cs.messages.ForEach(x =>
+                    //***
+                    if (port.sysidcurrent == aMain1.SysID)
                     {
-                        if (x.Item1 > lastDisplayedMessage)
+                        if (port.MAV.cs.messages.LastOrDefault().time != lastDisplayedMessage1)
                         {
+                            fctb.BeginUpdate();
+                            fctb.TextSource.CurrentTB = fctb;
 
-                            TextStyle displayStyle;
-                            switch ((int)x.Item3)
-                            {
-                                case 0:
-                                case 1:
-                                case 2:
-                                    {
-                                        displayStyle = errorStyle;
-                                        aMain.setStatus("MSG", Stat.ALERT);
-                                        break;
-                                    }
-                                case 3:
-                                case 4:
-                                    {
-                                        displayStyle = warningStyle;
-                                        aMain.setStatus("MSG", Stat.WARNING);
-                                        break;
-                                    }
-                                default:
-                                    {
-                                        displayStyle = infoStyle;
-                                        break;
-                                    }
-                            }
+                            port.MAV.cs.messages.ForEach(x =>
+                             {
+                                 if (x.Item1 > lastDisplayedMessage1)
+                                 {
 
-                            fctb.SelectionStart = 0;
-                            fctb.InsertText(x.Item1 + " : (" + x.Item3 + ") " + x.Item2 + "\r\n", displayStyle);
+                                     TextStyle displayStyle;
+                                     switch ((int)x.Item3)
+                                     {
+                                         case 0:
+                                         case 1:
+                                         case 2:
+                                             {
+                                                 displayStyle = errorStyle;
+                                                 aMain1.setStatus("MSG", Stat.ALERT);
+                                                 break;
+                                             }
+                                         case 3:
+                                         case 4:
+                                             {
+                                                 displayStyle = warningStyle;
+                                                 aMain1.setStatus("MSG", Stat.WARNING);
+                                                 break;
+                                             }
+                                         default:
+                                             {
+                                                 displayStyle = infoStyle;
+                                                 break;
+                                             }
+                                     }
+
+                                     fctb.SelectionStart = 0;
+                                     fctb.InsertText("(ID " + port.sysidcurrent + ") " + x.Item1 + " : (" + x.Item3 + ") " + x.Item2 + "\r\n", displayStyle);
+                                 }
+                             });
+                            fctb.EndUpdate();
+                            lastDisplayedMessage1 = port.MAV.cs.messages.LastOrDefault().time;
                         }
+                    }
+                    //---
+                    //***
+                    if (port.sysidcurrent == aMain2.SysID)
+                    {
+                        if (port.MAV.cs.messages.LastOrDefault().time != lastDisplayedMessage2)
+                        {
+                            fctb.BeginUpdate();
+                            fctb.TextSource.CurrentTB = fctb;
 
-                    });
-                    fctb.EndUpdate();
-                    lastDisplayedMessage = lastIncomingMessage;
+                            port.MAV.cs.messages.ForEach(x =>
+                            {
+                                if (x.Item1 > lastDisplayedMessage2)
+                                {
+
+                                    TextStyle displayStyle;
+                                    switch ((int)x.Item3)
+                                    {
+                                        case 0:
+                                        case 1:
+                                        case 2:
+                                            {
+                                                displayStyle = errorStyle;
+                                                aMain2.setStatus("MSG", Stat.ALERT);
+                                                break;
+                                            }
+                                        case 3:
+                                        case 4:
+                                            {
+                                                displayStyle = warningStyle;
+                                                aMain2.setStatus("MSG", Stat.WARNING);
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                displayStyle = infoStyle;
+                                                break;
+                                            }
+                                    }
+
+                                    fctb.SelectionStart = 0;
+                                    fctb.InsertText("(ID " + port.sysidcurrent + ") " + x.Item1 + " : (" + x.Item3 + ") " + x.Item2 + "\r\n", displayStyle);
+                                }
+                            });
+                            fctb.EndUpdate();
+                            lastDisplayedMessage2 = port.MAV.cs.messages.LastOrDefault().time;
+                        }
+                    }
+                    //---
+                    //***
+                    if (port.sysidcurrent == aMain3.SysID)
+                    {
+                        if (port.MAV.cs.messages.LastOrDefault().time != lastDisplayedMessage3)
+                        {
+                            fctb.BeginUpdate();
+                            fctb.TextSource.CurrentTB = fctb;
+
+                            port.MAV.cs.messages.ForEach(x =>
+                            {
+                                if (x.Item1 > lastDisplayedMessage3)
+                                {
+
+                                    TextStyle displayStyle;
+                                    switch ((int)x.Item3)
+                                    {
+                                        case 0:
+                                        case 1:
+                                        case 2:
+                                            {
+                                                displayStyle = errorStyle;
+                                                aMain3.setStatus("MSG", Stat.ALERT);
+                                                break;
+                                            }
+                                        case 3:
+                                        case 4:
+                                            {
+                                                displayStyle = warningStyle;
+                                                aMain3.setStatus("MSG", Stat.WARNING);
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                displayStyle = infoStyle;
+                                                break;
+                                            }
+                                    }
+
+                                    fctb.SelectionStart = 0;
+                                    fctb.InsertText("(ID " + port.sysidcurrent + ") " + x.Item1 + " : (" + x.Item3 + ") " + x.Item2 + "\r\n", displayStyle);
+                                }
+                            });
+                            fctb.EndUpdate();
+                            lastDisplayedMessage3 = port.MAV.cs.messages.LastOrDefault().time;
+                        }
+                    }
+                    //---
+
                 }
 
                 #endregion
 
 
-                #region BatteryVoltages
 
+                #region GCSPower
                 PowerStatus pwr = SystemInformation.PowerStatus;
                 bp.setGcsVoltage(pwr.BatteryLifePercent, pwr.PowerLineStatus);
-
-
                 #endregion
             }
 
@@ -967,97 +1188,276 @@ namespace ptPlugin1
         }
 
 
+        //This updates the gauge data based on the currently selected mavlink datastream;
+        public void update_gauges()
+        {
+            eCtrl.setRpmEgt(Host.cs.eng_rpm, Host.cs.eng_egt);
+            eCtrl.setThrFuel(Host.cs.eng_throttle, Host.cs.fuel_pump_volt, Host.cs.fuel_level_raw);
+            eCtrl.setStatus((byte)Host.cs.eng_status, (byte)Host.cs.eng_error);
+            fuel.setData(Host.cs.fuel_level_raw,Host.cs.fuel_flow, Host.cs.fuel_consumed);
+            pitot.setData(Host.cs.pitot_temp, Host.cs.ambient_temp, Host.cs.pitot_target_temp, Host.cs.pitot_heat_duty);
+            bp.setServo1Voltage(Host.cs.bat_servo1);
+            bp.setServo2Voltage(Host.cs.bat_servo2);
+            bp.setMainVoltage(Host.cs.bat_main);
+            bp.setPayloadVoltage(Host.cs.bat_payload);
+            plControl.setSafetyStatus(Host.cs.safety_switch);
+        }
+
+        //This updates all annunciator panels, based on connected vehicles. (Assuming cs is updated)
+        public void updateNotifications()
+        {
+            foreach (var port in MainV2.Comports)
+            {
+                if (port.sysidcurrent != 0)
+                {
+
+                    if (port.sysidcurrent == aMain1.SysID)
+                    {
+                        Stat engineStat = Stat.NOMINAL;
+                        Stat fuelStat = Stat.NOMINAL;
+                        if (port.MAV.cs.eng_rpm < 30000) engineStat = Stat.ALERT;
+                        if (port.MAV.cs.eng_egt > 900) engineStat = Stat.ALERT;
+
+                        if (port.MAV.cs.fuel_level_raw < 150) fuelStat = Stat.WARNING;
+                        if (port.MAV.cs.fuel_level_raw < 50) fuelStat = Stat.ALERT;
+
+                        aMain1.setStatus("ENGINE", engineStat);
+                        aMain1.setStatus("FUEL", fuelStat);
+
+                        var lq = port.MAV.cs.linkqualitygcs;
+                        if (lq >= 95) aMain1.setStatus("COMMS", Stat.NOMINAL);
+                        else if (lq < 95 && lq > 70) aMain1.setStatus("COMMS", Stat.WARNING);
+                        else aMain1.setStatus("COMMS", Stat.ALERT);
+                        switch (getBatteryStatus(port.MAV.cs))
+                        {
+                            case 0:
+                                aMain1.setStatus("BATT", Stat.NOMINAL);
+                                break;
+                            case 1:
+                                aMain1.setStatus("BATT", Stat.WARNING);
+                                break;
+                            case 2:
+                                aMain1.setStatus("BATT", Stat.ALERT);
+                                break;
+                            default:
+                                break;
+                        }
+
+                        sit.sysid1 = port.sysidcurrent;
+                        sit.pos1 = new PointLatLngAlt(port.MAV.cs.Location.Lat,port.MAV.cs.Location.Lng,port.MAV.cs.alt);
+                        sit.heading1 = port.MAV.cs.yaw;
+                        sit.airspeed1 = port.MAV.cs.airspeed;
+
+
+                    }
+
+                    if (port.sysidcurrent == aMain2.SysID)
+                    {
+                        Stat engineStat = Stat.NOMINAL;
+                        Stat fuelStat = Stat.NOMINAL;
+                        if (port.MAV.cs.eng_rpm < 30000) engineStat = Stat.ALERT;
+                        if (port.MAV.cs.eng_egt > 900) engineStat = Stat.ALERT;
+
+                        if (port.MAV.cs.fuel_level_raw < 150) fuelStat = Stat.WARNING;
+                        if (port.MAV.cs.fuel_level_raw < 50) fuelStat = Stat.ALERT;
+
+                        aMain2.setStatus("ENGINE", engineStat);
+                        aMain2.setStatus("FUEL", fuelStat);
+                        var lq = port.MAV.cs.linkqualitygcs;
+                        if (lq >= 95) aMain2.setStatus("COMMS", Stat.NOMINAL);
+                        else if (lq < 95 && lq > 70) aMain2.setStatus("COMMS", Stat.WARNING);
+                        else aMain2.setStatus("COMMS", Stat.ALERT);
+                        switch (getBatteryStatus(port.MAV.cs))
+                        {
+                            case 0:
+                                aMain2.setStatus("BATT", Stat.NOMINAL);
+                                break;
+                            case 1:
+                                aMain2.setStatus("BATT", Stat.WARNING);
+                                break;
+                            case 2:
+                                aMain2.setStatus("BATT", Stat.ALERT);
+                                break;
+                            default:
+                                break;
+                        }
+                        sit.sysid2 = port.sysidcurrent;
+                        sit.pos2 = new PointLatLngAlt(port.MAV.cs.Location.Lat, port.MAV.cs.Location.Lng, port.MAV.cs.alt);
+                        sit.heading2 = port.MAV.cs.yaw;
+                        sit.airspeed2 = port.MAV.cs.airspeed;
+
+                    }
+
+                    if (port.sysidcurrent == aMain3.SysID)
+                    {
+                        Stat engineStat = Stat.NOMINAL;
+                        Stat fuelStat = Stat.NOMINAL;
+                        if (port.MAV.cs.eng_rpm < 30000) engineStat = Stat.ALERT;
+                        if (port.MAV.cs.eng_egt > 900) engineStat = Stat.ALERT;
+
+                        if (port.MAV.cs.fuel_level_raw < 150) fuelStat = Stat.WARNING;
+                        if (port.MAV.cs.fuel_level_raw < 50) fuelStat = Stat.ALERT;
+
+                        aMain3.setStatus("ENGINE", engineStat);
+                        aMain3.setStatus("FUEL", fuelStat);
+                        var lq = port.MAV.cs.linkqualitygcs;
+                        if (lq >= 95) aMain3.setStatus("COMMS", Stat.NOMINAL);
+                        else if (lq < 95 && lq > 70) aMain3.setStatus("COMMS", Stat.WARNING);
+                        else aMain3.setStatus("COMMS", Stat.ALERT);
+                        switch (getBatteryStatus(port.MAV.cs))
+                        {
+                            case 0:
+                                aMain3.setStatus("BATT", Stat.NOMINAL);
+                                break;
+                            case 1:
+                                aMain3.setStatus("BATT", Stat.WARNING);
+                                break;
+                            case 2:
+                                aMain3.setStatus("BATT", Stat.ALERT);
+                                break;
+                            default:
+                                break;
+                        }
+                        sit.sysid3 = port.sysidcurrent;
+                        sit.pos3 = new PointLatLngAlt(port.MAV.cs.Location.Lat, port.MAV.cs.Location.Lng, port.MAV.cs.alt);
+                        sit.heading3 = port.MAV.cs.yaw;
+                        sit.airspeed3 = port.MAV.cs.airspeed;
+                    }
+                }
+            }
+
+        }
+
+
+        public byte getBatteryStatus(CurrentState cs)
+        {
+
+            byte retval = 0;
+
+            switch (cs.bat_servo1)
+            {
+                case float f when f <= 6:
+                    retval = 2;
+                    break;
+                case float f when f > 6 && f <= 6.8:
+                    retval = 1;
+                    break;
+                case float f when f > 8.4:
+                    retval = 2;
+                    break;
+                default:
+                    break;
+            }
+
+            if (retval == 2) return retval;
+
+            switch (cs.bat_servo2)
+            {
+                case float f when f <= 6:
+                    retval = 2;
+                    break;
+                case float f when f > 6 && f <= 6.8:
+                    retval = 1;
+                    break;
+                case float f when f > 8.4:
+                    retval = 2;
+                    break;
+                default:
+                    break;
+            }
+
+            if (retval == 2) return retval;
+
+            switch (cs.bat_payload)
+            {
+                case float f when f <= 9:
+                    retval = 2;
+                    break;
+                case float f when f > 9 && f <= 10.2:
+                    retval = 1;
+                    break;
+                case float f when f > 12.6:
+                    retval = 2;
+                    break;
+                default:
+                    break;
+            }
+            if (retval == 2) return retval;
+
+            switch (cs.bat_main)
+            {
+                case float f when f <= 12:
+                    retval = 2;
+                    break;
+                case float f when f > 12 && f <= 13.6:
+                    retval = 1;
+                    break;
+                case float f when f > 16.8:
+                    retval = 2;
+                    break;
+                default:
+                    break;
+            }
+            if (retval == 2) return retval;
+
+            PowerStatus pwr = SystemInformation.PowerStatus;
+            switch (pwr.BatteryLifePercent)
+            {
+                case float f when f <= 10:
+                    retval = 2;
+                    break;
+                case float f when f > 10 && f <= 20:
+                    retval = 1;
+                    break;
+                default:
+                    break;
+            }
+            return retval;
+        }
 
         private void MavOnOnPacketReceivedHandler(object o, MAVLink.MAVLinkMessage linkMessage)
         {
-
-            // Motor status and fuel level sensor data
-
-            if ((MAVLink.MAVLINK_MSG_ID)linkMessage.msgid == MAVLink.MAVLINK_MSG_ID.EFI_STATUS)
-            {
-
-                Stat engineStat = Stat.NOMINAL;
-                Stat fuelStat = Stat.NOMINAL;
-
-
-                MAVLink.mavlink_efi_status_t s = linkMessage.ToStructure<MAVLink.mavlink_efi_status_t>();
-
-                eCtrl.setRpmEgt(s.rpm, s.exhaust_gas_temperature);
-                eCtrl.setThrFuel(s.throttle_position, s.fuel_flow, s.fuel_consumed);
-                eCtrl.setStatus((byte)s.health, (byte)s.ecu_index);
-                fuel.setData(s.fuel_consumed, 0);
-
-
-                if (s.rpm < 31000) engineStat = Stat.ALERT;
-                if (s.exhaust_gas_temperature > 900) engineStat = Stat.ALERT;
-
-                if (s.fuel_consumed < 150) fuelStat = Stat.WARNING;
-                if (s.fuel_consumed < 50) fuelStat = Stat.ALERT;
-
-                aMain.setStatus("ENGINE", engineStat);
-                aMain.setStatus("FUEL", fuelStat);
-            }
-
-
-
-            //Pitot heating data
-            if ((MAVLink.MAVLINK_MSG_ID)linkMessage.msgid == MAVLink.MAVLINK_MSG_ID.GENERATOR_STATUS)
-            {
-                MAVLink.mavlink_generator_status_t s = linkMessage.ToStructure<MAVLink.mavlink_generator_status_t>();
-                pitot.setData(s.battery_current, s.load_current, s.power_generated, s.bus_voltage);
-
-            }
-
-
-            //Named values (voltage and payload status
-
-            if ((MAVLink.MAVLINK_MSG_ID)linkMessage.msgid == MAVLink.MAVLINK_MSG_ID.NAMED_VALUE_FLOAT)
-            {
-
-                MAVLink.mavlink_named_value_float_t s = linkMessage.ToStructure<MAVLink.mavlink_named_value_float_t>();
-
-                System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
-
-
-                Console.WriteLine(enc.GetString(s.name) + " : " + s.value.ToString());
-
-                if (enc.GetString(s.name).Contains("servo1"))
-                {
-                    bp.setServo1Voltage(s.value);
-                }
-
-                if (enc.GetString(s.name).Contains("servo2"))
-                {
-                    bp.setServo2Voltage(s.value);
-                }
-
-                if (enc.GetString(s.name).Contains("main"))
-                {
-                    bp.setMainVoltage(s.value);
-                }
-
-                if (enc.GetString(s.name).Contains("payload"))
-                {
-                    bp.setPayloadVoltage(s.value);
-                }
-
-                if (s.name[0] == 'S')
-                {
-                    //Set status pin TODO: Need to check
-                    if (s.value == 0) plControl.setSafetyStatus(true);
-                    else plControl.setSafetyStatus(false);
-                }
-
-
-            }
-
-
+        }
+        //TODO consolidate into one
+        private void annunciator2_buttonClicked(object sender, EventArgs e)
+        {
+        }
+        private void annunciator3_buttonClicked(object sender, EventArgs e)
+        {
         }
 
         private void annunciator1_buttonClicked(object sender, EventArgs e)
         {
 
-            switch (aMain.clickedButtonName)
+            //Check if we are in the right vehicle, if not then switch vehicle
+            var s = (annunciator)sender;
+
+
+            if (s.SysID != 0)
+            {
+                //If SysID os zero, then we does not have to update anything.
+                if (s.SysID != Host.comPort.sysidcurrent)
+                {
+                    foreach (var port in MainV2.Comports)
+                    {
+                        if (port.sysidcurrent == s.SysID)
+                        {
+                            MainV2.comPort = port;
+                            MainV2.comPort.sysidcurrent = s.SysID;
+                            MainV2.comPort.compidcurrent = 1; //Always do the vehicle  
+                            MainV2.View.Reload();
+                        }
+
+                        aMain1.Active = false;
+                        aMain2.Active = false;
+                        aMain3.Active = false;
+                        s.Active = true;
+                    }
+                }
+            }
+
+            //We also assume that all three controls are named and sorted on the same way, so no need to differentiate
+            switch (s.clickedButtonName)
             {
                 case "FD":
                     MainV2.instance.MyView.ShowScreen("FlightData");
@@ -1103,7 +1503,7 @@ namespace ptPlugin1
                     {
                         TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["colorMsgTab"];
                         if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
-                        aMain.setStatus("MSG", Stat.NOMINAL);
+                        aMain1.setStatus("MSG", Stat.NOMINAL);
                         break;
                     }
                 case "BATT":
@@ -1172,19 +1572,19 @@ namespace ptPlugin1
             annunciatorForm = new FloatingForm();
             annunciatorForm.Text = "Annunciator";
             annunciatorForm.RestoreStartupLocation();
-            MainV2.instance.panel1.Controls.Remove(aMain);
-            aMain.isSingleLine = false;
-            aMain.Dock = DockStyle.None;
-            aMain.Visible = true;
-            aMain.contextMenuEnabled = false;
-            aMain.Size = annunciatorForm.Size;
+            MainV2.instance.panel1.Controls.Remove(aMain1);
+            aMain1.isSingleLine = false;
+            aMain1.Dock = DockStyle.None;
+            aMain1.Visible = true;
+            aMain1.contextMenuEnabled = false;
+            aMain1.Size = annunciatorForm.Size;
             //annunciator1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            annunciatorForm.Controls.Add(aMain);
+            annunciatorForm.Controls.Add(aMain1);
             annunciatorForm.FormClosing += annunciator_FormClosing;
             //annunciatorUndocked = true;
             MainV2.instance.panel1.Dock = DockStyle.Top;
             MainV2.instance.panel1.Visible = false;
-            aMain.Invalidate();
+            aMain1.Invalidate();
             Settings.Instance["aMainDocked"] = "false";
             Settings.Instance.Save();
             annunciatorForm.Show();
@@ -1193,12 +1593,12 @@ namespace ptPlugin1
         void annunciator_FormClosing(object sender, FormClosingEventArgs e)
         {
             (sender as Form).SaveStartupLocation();
-            aMain.isSingleLine = true;
-            aMain.contextMenuEnabled = true;
-            MainV2.instance.panel1.Controls.Add(aMain);
+            aMain1.isSingleLine = true;
+            aMain1.contextMenuEnabled = true;
+            MainV2.instance.panel1.Controls.Add(aMain1);
             MainV2.instance.panel1.Dock = DockStyle.Top;
             MainV2.instance.panel1.Visible = true;
-            aMain.Size = MainV2.instance.panel1.Size;
+            aMain1.Size = MainV2.instance.panel1.Size;
             //annunciatorUndocked = false;
             Settings.Instance["aMainDocked"] = "true";
             Settings.Instance.Save();

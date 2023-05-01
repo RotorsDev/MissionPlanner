@@ -133,6 +133,12 @@
     <Compile Include="engineControl.Designer.cs">
       <DependentUpon>engineControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="fleetSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="fleetSetup.Designer.cs">
+      <DependentUpon>fleetSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="FloatingForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -187,6 +193,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="ptPlugin1.cs" />
+    <Compile Include="UISetup.cs" />
     <Compile Include="unThemedButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -224,6 +231,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="engineControl.resx">
       <DependentUpon>engineControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="fleetSetup.resx">
+      <DependentUpon>fleetSetup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="fuelControl.resx">
       <DependentUpon>fuelControl.cs</DependentUpon>

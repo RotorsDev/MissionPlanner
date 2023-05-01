@@ -22,6 +22,52 @@ namespace MissionPlanner.Controls
 
         private bool _contextMenuEnabled;
 
+
+        private int _sysid;
+
+
+        public int SysID
+        {
+            get { return _sysid; }
+            set {
+                _sysid = value;
+                updateNameTag();
+
+            }
+        }
+
+        private string _name;
+
+        public string Name
+        {
+            get { return _name; }
+            set {
+                _name = value;
+                updateNameTag();
+            }
+        }
+
+
+        private byte _transparency = 255;
+
+        private bool _active;
+
+        public bool Active
+        {
+            get { return _active; }
+            set
+            {
+                _active = value;
+                if (value) { _transparency = 255; }
+                      else { _transparency = 128; }
+                changeActiveState();
+                
+            }
+
+
+        }
+
+
         public bool contextMenuEnabled
         {
             get { return _contextMenuEnabled; }
@@ -46,6 +92,19 @@ namespace MissionPlanner.Controls
 
         //Add 500ms timer
         private System.Timers.Timer timer1 = new System.Timers.Timer(500);
+
+
+        private void updateNameTag()
+        {
+            foreach (panelItem i in panelItems)
+            {
+                if (i.name == "PLANE")
+                {
+                    i.btn.Text = _sysid.ToString() + Environment.NewLine + _name;
+                    return;
+                }
+            }
+        }
 
         public annunciator()
         {
@@ -210,6 +269,18 @@ namespace MissionPlanner.Controls
 
         }
 
+
+        private void changeActiveState()
+        {
+            foreach (panelItem i in panelItems)
+            {
+                i.btn._trans = _transparency;
+                i.update();
+            }
+
+        }
+
+
         private void annunciator_EnabledChanged(object sender, EventArgs e)
         {
             if (this.Enabled)
@@ -342,6 +413,11 @@ namespace MissionPlanner.Controls
             Status = s;
         }
 
+        public void update()
+        {
+            this.btn.Status = this.btn.Status;
+            Status = Status;
+        }
     }
 
 
@@ -358,6 +434,8 @@ namespace MissionPlanner.Controls
 
         internal Stat _status;
         internal bool _selected;
+
+        public byte _trans = 255;
 
         public string buttonName { get; set; }
 
@@ -458,28 +536,28 @@ namespace MissionPlanner.Controls
             switch (status)
             {
                 case Stat.NOMINAL:
-                    _BGGradTop = Color.LightGreen;
-                    _BGGradBot = Color.YellowGreen;
-                    _TextColor = Color.Black;
-                    _Outline = Color.ForestGreen;
+                    _BGGradTop = Color.FromArgb(_trans,Color.LightGreen);
+                    _BGGradBot = Color.FromArgb(_trans, Color.YellowGreen);
+                    _TextColor = Color.FromArgb(_trans, Color.Black);
+                    _Outline = Color.FromArgb(_trans, Color.ForestGreen);
                     break;
                 case Stat.WARNING:
-                    _BGGradTop = Color.Yellow;
-                    _BGGradBot = Color.Gold;
-                    _TextColor = Color.Black;
-                    _Outline = Color.Goldenrod;
+                    _BGGradTop = Color.FromArgb(_trans, Color.Yellow);
+                    _BGGradBot = Color.FromArgb(_trans, Color.Gold);
+                    _TextColor = Color.FromArgb(_trans, Color.Black);
+                    _Outline = Color.FromArgb(_trans, Color.Goldenrod);
                     break;
                 case Stat.ALERT:
-                    _BGGradTop = Color.Red;
-                    _BGGradBot = Color.DarkRed;
-                    _TextColor = Color.White;
-                    _Outline = Color.Maroon;
+                    _BGGradTop = Color.FromArgb(_trans, Color.Red);
+                    _BGGradBot = Color.FromArgb(_trans, Color.DarkRed);
+                    _TextColor = Color.FromArgb(_trans, Color.White);
+                    _Outline = Color.FromArgb(_trans, Color.Maroon);
                     break;
                 case Stat.DISABLED:
-                    _BGGradTop = Color.Gray;
-                    _BGGradBot = Color.DarkSlateGray;
-                    _TextColor = Color.Black;
-                    _Outline = Color.Black;
+                    _BGGradTop = Color.FromArgb(_trans, Color.Gray);
+                    _BGGradBot = Color.FromArgb(_trans, Color.DarkSlateGray);
+                    _TextColor = Color.FromArgb(_trans, Color.Black);
+                    _Outline = Color.FromArgb(_trans, Color.Black);
                     break;
                 case Stat.NOTEXIST:
                     break;
@@ -498,16 +576,16 @@ namespace MissionPlanner.Controls
                 switch (Status)
                 {
                     case Stat.WARNING:
-                        _BGGradTop = Color.Khaki;
-                        _BGGradBot = Color.Yellow;
-                        _TextColor = Color.Black;
-                        _Outline = Color.Goldenrod;
-                        break;
+                        _BGGradTop = Color.FromArgb(_trans,Color.Khaki);
+                        _BGGradBot = Color.FromArgb(_trans,Color.Yellow);
+                        _TextColor = Color.FromArgb(_trans,Color.Black);
+                        _Outline =   Color.FromArgb(_trans,Color.Goldenrod);
+                        break; 
                     case Stat.ALERT:
-                        _BGGradTop = Color.Tomato;
-                        _BGGradBot = Color.Red;
-                        _TextColor = Color.White;
-                        _Outline = Color.Maroon;
+                        _BGGradTop = Color.FromArgb(_trans,Color.Tomato);
+                        _BGGradBot = Color.FromArgb(_trans,Color.Red);
+                        _TextColor = Color.FromArgb(_trans,Color.White);
+                        _Outline = Color.FromArgb(_trans, Color.Maroon);
                         break;
                     default:
                         break;
@@ -518,16 +596,16 @@ namespace MissionPlanner.Controls
                 switch (Status)
                 {
                     case Stat.WARNING:
-                        _BGGradTop = Color.Yellow;
-                        _BGGradBot = Color.Gold;
-                        _TextColor = Color.Black;
-                        _Outline = Color.Goldenrod;
+                        _BGGradTop = Color.FromArgb(_trans, Color.Yellow);
+                        _BGGradBot = Color.FromArgb(_trans,Color.Gold);
+                        _TextColor = Color.FromArgb(_trans,Color.Black);
+                        _Outline = Color.FromArgb(_trans, Color.Goldenrod);
                         break;
                     case Stat.ALERT:
-                        _BGGradTop = Color.Red;
-                        _BGGradBot = Color.DarkRed;
-                        _TextColor = Color.White;
-                        _Outline = Color.Maroon;
+                        _BGGradTop = Color.FromArgb(_trans,Color.Red);
+                        _BGGradBot = Color.FromArgb(_trans,Color.DarkRed);
+                        _TextColor = Color.FromArgb(_trans,Color.White);
+                        _Outline = Color.FromArgb(_trans, Color.Maroon);
                         break;
                     default:
                         break;
@@ -657,23 +735,6 @@ namespace MissionPlanner.Controls
             if (_status != Stat.DISABLED)
                 base.OnClick(e);
         }
-
-        protected override void OnPaintBackground(PaintEventArgs pevent)
-        {
-            //base.OnPaintBackground(pevent);
-        }
-
-        //protected override void OnMouseEnter(EventArgs e)
-        //{
-        //    _mouseover = true;
-        //    base.OnMouseEnter(e);
-        //}
-
-        //protected override void OnMouseLeave(EventArgs e)
-        //{
-        //    _mouseover = false;
-        //    base.OnMouseLeave(e);
-        //}
 
         protected override void OnMouseDown(MouseEventArgs mevent)
         {

@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using GMap.NET;
 using GMap.NET.WindowsForms;
 using MissionPlanner.Utilities;
+using GMap.NET.WindowsForms.Markers;
+using System.Drawing.Imaging;
+using System.Diagnostics;
 
 namespace MissionPlanner.Maps
 {
@@ -38,6 +42,11 @@ namespace MissionPlanner.Maps
             new Point(inv(32,28),13),
             new Point(inv(28,28),0),
             };
+        
+        
+        SizeF txtsize = SizeF.Empty;
+        static Dictionary<string, Bitmap> fontBitmaps = new Dictionary<string, Bitmap>();
+        static Font font;
 
         private static int inv(int input, int mid)
         {
@@ -64,6 +73,28 @@ namespace MissionPlanner.Maps
             this.radius = radius;
             this.which = which;
             Size = icon.Size;
+
+            if (font == null)
+            {
+                font = SystemFonts.DefaultFont;
+            }
+            string wpno = (which + 1).ToString();
+
+            if (!fontBitmaps.ContainsKey(wpno))
+            {
+                Bitmap temp = new Bitmap(100, 40, PixelFormat.Format32bppArgb);
+                using (Graphics g = Graphics.FromImage(temp))
+                {
+                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                    txtsize = g.MeasureString(wpno, font);
+
+                    g.DrawString(wpno, font, Brushes.Black, new PointF(0, 0));
+                }
+                fontBitmaps[wpno] = temp;
+            }
+
+
         }
 
         public float Cog { get => cog; set => cog = value; }
@@ -160,17 +191,17 @@ namespace MissionPlanner.Maps
             // the shadow
             g.TranslateTransform(-26, -26);
 
-            g.FillPolygon(shadow, plane);
+            //g.FillPolygon(shadow, plane);
 
             // the plane
             g.TranslateTransform(-2, -2);
 
             if (which % 7 == 0)
-                g.FillPolygon(Brushes.Red, plane);
+                g.FillPolygon(Brushes.IndianRed, plane);
             if (which % 7 == 1)
-                g.FillPolygon(Brushes.Black, plane);
+                g.FillPolygon(Brushes.LightGoldenrodYellow, plane);
             if (which % 7 == 2)
-                g.FillPolygon(Brushes.Blue, plane);
+                g.FillPolygon(Brushes.LightBlue, plane);
             if (which % 7 == 3)
                 g.FillPolygon(Brushes.LimeGreen, plane);
             if (which % 7 == 4)
@@ -180,7 +211,15 @@ namespace MissionPlanner.Maps
             if (which % 7 == 6)
                 g.FillPolygon(Brushes.Pink, plane);
 
+
+            //if (txtsize.Width > 15)
+            //    midw -= 4;
+
+            g.DrawImageUnscaled(fontBitmaps[(which+1).ToString()], 23, 15);
+
             g.Transform = temp;
+
+
         }
     }
 }

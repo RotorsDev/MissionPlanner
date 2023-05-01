@@ -802,6 +802,85 @@ namespace MissionPlanner.GCSViews
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
+
+        public async Task StartProtars(byte nummachines)
+        {
+            var max = nummachines;
+            // kill old session
+            try
+            {
+                simulator.ForEach(a =>
+                {
+                    try
+                    {
+                        a.Kill();
+                    }
+                    catch { }
+                });
+            }
+            catch
+            {
+            }
+            Task<string> exepath;
+            string model = "";
+                exepath = CheckandGetSITLImage("ArduPlane.elf");
+                model = "plane";
+
+            var config = await GetDefaultConfig(model);
+
+            max--;
+
+            for (int a = (int)max; a >= 0; a--)
+            {
+                var extra = " --disable-fgview ";
+
+                if (!string.IsNullOrEmpty(config))
+                    extra += @" --defaults """ + config + @",identity.parm"" -P SERIAL0_PROTOCOL=2 -P SERIAL1_PROTOCOL=2 ";
+
+                var home = new PointLatLngAlt(47.236220, 18.170378, a * 4);
+                    extra += String.Format(
+                        " -M{4} -s1 --home {3} --instance {0} --uartA udpclient:0:{1} -P SYSID_THISMAV={2} ",
+                        a, (14550 + a).ToString() , a + 1, BuildHomeLocation(home, (int)NUM_heading.Value), model);
+
+                string simdir = sitldirectory + model + (a + 1) + Path.DirectorySeparatorChar;
+
+                Directory.CreateDirectory(simdir);
+
+                File.WriteAllText(simdir + "identity.parm", String.Format(@"SERIAL0_PROTOCOL=2
+SERIAL1_PROTOCOL=2
+SYSID_THISMAV={0}
+SIM_TERRAIN=0
+TERRAIN_ENABLE=0
+SCHED_LOOP_RATE=50
+SIM_RATE_HZ=400
+SIM_DRIFT_SPEED=0
+SIM_DRIFT_TIME=0
+", a + 1));
+
+                string path = Environment.GetEnvironmentVariable("PATH");
+
+                Environment.SetEnvironmentVariable("PATH", sitldirectory + ";" + simdir + ";" + path,
+                    EnvironmentVariableTarget.Process);
+
+                Environment.SetEnvironmentVariable("HOME", simdir, EnvironmentVariableTarget.Process);
+
+                ProcessStartInfo exestart = new ProcessStartInfo();
+                exestart.FileName = await exepath;
+                exestart.Arguments = extra;
+                exestart.WorkingDirectory = simdir;
+                exestart.WindowStyle = ProcessWindowStyle.Minimized;
+                exestart.UseShellExecute = true;
+
+                simulator.Add(System.Diagnostics.Process.Start(exestart));
+
+                await Task.Delay(100);
+            }
+
+            await Task.Delay(2000);
+
+            MainV2.View.ShowScreen(MainV2.View.screens[0].Name);
+        }
+
         public async Task StartSwarmSeperate(Firmwares firmware)
         {
             var max = 10;

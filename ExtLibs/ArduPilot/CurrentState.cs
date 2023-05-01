@@ -1,4 +1,5 @@
-﻿using log4net;
+﻿using ExifLibrary;
+using log4net;
 using MissionPlanner.ArduPilot;
 using MissionPlanner.Attributes;
 using MissionPlanner.Utilities;
@@ -2011,6 +2012,53 @@ namespace MissionPlanner
         [DisplayText("Callsign/Flight ID")]
         public byte[] xpdr_flight_id { get; set; }
 
+        //*** Protar Specific stuff
+        [GroupText("Protar")]
+        public byte eng_status { get; set; }
+        [GroupText("Protar")]
+        public float eng_error { get; set; }
+        [GroupText("Protar")]
+        public float eng_rpm { get; set; }
+        [GroupText("Protar")]
+        public float fuel_level_raw { get; set; }
+        [GroupText("Protar")]
+        public float fuel_pump_volt { get; set; }
+        [GroupText("Protar")]
+        public float fuel_flow { get; set; }
+        [GroupText("Protar")]
+        public float eng_throttle { get; set; }
+        [GroupText("Protar")]
+        public float eng_voltage { get; set; }
+        [GroupText("Protar")]
+        public float eng_pump_idle { get; set; }
+        [GroupText("Protar")]
+        public float eng_pump_max { get; set; }
+        [GroupText("Protar")]
+        public float fuel_consumed { get; set; }
+        [GroupText("Protar")]
+        public float eng_egt { get; set; }
+        [GroupText("Protar")]
+        public float eng_id { get; set; }
+        [GroupText("Protar")]
+        public float pitot_temp { get; set; }
+        [GroupText("Protar")]
+        public float ambient_temp { get; set; }
+        [GroupText("Protar")]
+        public float pitot_target_temp { get; set; }
+        [GroupText("Protar")]
+        public float pitot_heat_duty { get; set; }
+        [GroupText("Protar")]
+        public float bat_servo1 { get; set; }
+        [GroupText("Protar")]
+        public float bat_servo2 { get; set; }
+        [GroupText("Protar")]
+        public float bat_main { get; set; }
+        [GroupText("Protar")]
+        public float bat_payload { get; set; }
+        [GroupText("Protar")]
+        public bool safety_switch { get; set; }
+
+        //*** End of protar specific stuff
 
         public object Clone()
         {
@@ -2019,12 +2067,97 @@ namespace MissionPlanner
 
         private void Parent_OnPacketReceived(object sender, MAVLink.MAVLinkMessage mavLinkMessage)
         {
-            if (mavLinkMessage.sysid == parent.sysid && mavLinkMessage.compid == parent.compid
-                || mavLinkMessage.msgid == (uint)MAVLink.MAVLINK_MSG_ID.RADIO // propagate the RADIO/RADIO_STATUS message across all devices on this link
-                || mavLinkMessage.msgid == (uint)MAVLink.MAVLINK_MSG_ID.RADIO_STATUS)
+            //if (mavLinkMessage.sysid == parent.sysid && mavLinkMessage.compid == parent.compid
+            //    || mavLinkMessage.msgid == (uint)MAVLink.MAVLINK_MSG_ID.RADIO // propagate the RADIO/RADIO_STATUS message across all devices on this link
+            //    || mavLinkMessage.msgid == (uint)MAVLink.MAVLINK_MSG_ID.RADIO_STATUS)
+            //{
+
+            //*** This modification includes NAMED_FLOAT and EFI_STATUS and GENERATOR_STATUS messages into the CurrenState if they coming from the same systemid (ignoring compid)
+            //*** Needs extensive testing
+
+            if (mavLinkMessage.sysid == parent.sysid && 
+                ( mavLinkMessage.compid == parent.compid
+                || mavLinkMessage.msgid == (uint)MAVLink.MAVLINK_MSG_ID.EFI_STATUS 
+                || mavLinkMessage.msgid == (uint)MAVLink.MAVLINK_MSG_ID.GENERATOR_STATUS
+                || mavLinkMessage.msgid == (uint)MAVLink.MAVLINK_MSG_ID.NAMED_VALUE_FLOAT))
             {
+
+
+
                 switch (mavLinkMessage.msgid)
                 {
+
+                    //Here comes what is specific to protar
+                    //We removed custom nemd float handling since we have our our arrangement.
+                    case (uint)MAVLink.MAVLINK_MSG_ID.NAMED_VALUE_FLOAT:
+                        {
+                            var s = mavLinkMessage.ToStructure<MAVLink.mavlink_named_value_float_t>();
+                            System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
+
+                            if (enc.GetString(s.name).Contains("servo1"))
+                            {
+                                bat_servo1 = s.value;
+                            }
+
+                            if (enc.GetString(s.name).Contains("servo2"))
+                            {
+                                bat_servo2 = s.value;
+                            }
+
+                            if (enc.GetString(s.name).Contains("main"))
+                            {
+                                bat_main = s.value;
+                            }
+
+                            if (enc.GetString(s.name).Contains("payload"))
+                            {
+                                bat_payload = s.value;
+                            }
+
+                            if (s.name[0] == 'S')
+                            {
+                                if (s.value == 0) safety_switch = true;
+                                else safety_switch = false;
+                            }
+                        }
+                        break;
+
+                    //EFI Status message is repurposed for engine telemetry and fuel consumption data
+                    case (uint)MAVLink.MAVLINK_MSG_ID.EFI_STATUS:
+
+                        {
+                            var efi = mavLinkMessage.ToStructure<MAVLink.mavlink_efi_status_t>();
+
+                            eng_status = efi.health;
+                            eng_error = efi.ecu_index;
+                            eng_rpm = efi.rpm;
+                            eng_throttle = efi.throttle_position;
+                            eng_voltage = efi.spark_dwell_time;
+                            eng_pump_idle = efi.barometric_pressure;
+                            eng_pump_max = efi.intake_manifold_pressure;
+                            eng_egt = efi.exhaust_gas_temperature;
+                            eng_id = efi.pt_compensation;
+
+                            fuel_pump_volt = efi.fuel_flow;
+                            fuel_level_raw = efi.fuel_consumed;
+                            fuel_flow = efi.engine_load;
+                            fuel_consumed = efi.intake_manifold_temperature;
+                        }
+                        break;
+
+                    //Generator status messages are repurposed for heated pitot tube data
+                    case (uint)MAVLink.MAVLINK_MSG_ID.GENERATOR_STATUS:
+                        {
+                            var gen = mavLinkMessage.ToStructure<MAVLink.mavlink_generator_status_t>();
+
+                            pitot_temp = gen.battery_current;
+                            ambient_temp = gen.load_current;
+                            pitot_target_temp = gen.power_generated;
+                            pitot_heat_duty = gen.bus_voltage;
+
+                        }
+                        break;
+
                     case (uint)MAVLink.MAVLINK_MSG_ID.RC_CHANNELS_SCALED:
 
                         // hil mavlink 0.9
@@ -2133,18 +2266,7 @@ namespace MissionPlanner
                         }
 
                         break;
-                    case (uint)MAVLink.MAVLINK_MSG_ID.GENERATOR_STATUS:
-                        {
-                            var gen = mavLinkMessage.ToStructure<MAVLink.mavlink_generator_status_t>();
 
-                            gen_status = gen.status;
-                            gen_speed = gen.generator_speed;
-                            gen_current = gen.load_current;
-                            gen_voltage = gen.bus_voltage;
-                            gen_runtime = gen.runtime;
-                            gen_maint_time = gen.time_until_maintenance;
-                        }
-                        break;
                     case (uint)MAVLink.MAVLINK_MSG_ID.HIGH_LATENCY:
                         {
                             var highlatency = mavLinkMessage.ToStructure<MAVLink.mavlink_high_latency_t>();
@@ -2490,25 +2612,7 @@ namespace MissionPlanner
                         }
 
                         break;
-                    case (uint)MAVLink.MAVLINK_MSG_ID.EFI_STATUS:
 
-                        {
-                            var efi = mavLinkMessage.ToStructure<MAVLink.mavlink_efi_status_t>();
-
-                            if (efi.ecu_index == 0)
-                            {
-                                efi_baro = efi.barometric_pressure;
-                                efi_headtemp = efi.cylinder_head_temperature;
-                                efi_load = efi.engine_load;
-                                efi_health = efi.health;
-                                efi_exhasttemp = efi.exhaust_gas_temperature;
-                                efi_intaketemp = efi.intake_manifold_temperature;
-                                efi_rpm = efi.rpm;
-                                efi_fuelflow = efi.fuel_flow;
-                                efi_fuelconsumed = efi.fuel_consumed;
-                            }
-                        }
-                        break;
                     case (uint)MAVLink.MAVLINK_MSG_ID.POWER_STATUS:
 
                         {
@@ -3523,110 +3627,6 @@ namespace MissionPlanner
                         }
                         break;
 
-                    case (uint)MAVLink.MAVLINK_MSG_ID.NAMED_VALUE_FLOAT:
-
-                        {
-                            var named_float = mavLinkMessage.ToStructure<MAVLink.mavlink_named_value_float_t>();
-
-                            string mav_value_name = Encoding.UTF8.GetString(named_float.name);
-
-                            int ind = mav_value_name.IndexOf('\0');
-                            if (ind != -1)
-                                mav_value_name = mav_value_name.Substring(0, ind);
-
-                            string name = "MAV_" + mav_value_name.ToUpper();
-
-                            float value = named_float.value;
-                            var field = custom_field_names.FirstOrDefault(x => x.Value == name).Key;
-
-                            //todo: if field is null then check if we have a free customfield and add the named_value 
-                            if (field == null)
-                            {
-                                short i;
-                                for (i = 0; i < 20; i++)
-                                {
-                                    if (!custom_field_names.ContainsKey("customfield" + i.ToString())) break;
-                                }
-                                if (i < 20)
-                                {
-                                    field = "customfield" + i.ToString();
-                                    custom_field_names.Add(field, name);
-                                }
-                            }
-
-
-                            if (field != null)
-                            {
-                                switch (field)
-                                {
-                                    case "customfield0":
-                                        customfield0 = value;
-                                        break;
-                                    case "customfield1":
-                                        customfield1 = value;
-                                        break;
-                                    case "customfield2":
-                                        customfield2 = value;
-                                        break;
-                                    case "customfield3":
-                                        customfield3 = value;
-                                        break;
-                                    case "customfield4":
-                                        customfield4 = value;
-                                        break;
-                                    case "customfield5":
-                                        customfield5 = value;
-                                        break;
-                                    case "customfield6":
-                                        customfield6 = value;
-                                        break;
-                                    case "customfield7":
-                                        customfield7 = value;
-                                        break;
-                                    case "customfield8":
-                                        customfield8 = value;
-                                        break;
-                                    case "customfield9":
-                                        customfield9 = value;
-                                        break;
-                                    case "customfield10":
-                                        customfield10 = value;
-                                        break;
-                                    case "customfield11":
-                                        customfield11 = value;
-                                        break;
-                                    case "customfield12":
-                                        customfield12 = value;
-                                        break;
-                                    case "customfield13":
-                                        customfield13 = value;
-                                        break;
-                                    case "customfield14":
-                                        customfield14 = value;
-                                        break;
-                                    case "customfield15":
-                                        customfield15 = value;
-                                        break;
-                                    case "customfield16":
-                                        customfield16 = value;
-                                        break;
-                                    case "customfield17":
-                                        customfield17 = value;
-                                        break;
-                                    case "customfield18":
-                                        customfield18 = value;
-                                        break;
-                                    case "customfield19":
-                                        customfield19 = value;
-                                        break;
-                                    default:
-                                        break;
-                                }
-
-                            }
-
-                        }
-                        break;
                     case (uint)MAVLink.MAVLINK_MSG_ID.UAVIONIX_ADSB_OUT_STATUS:
                         {
                             var status = mavLinkMessage.ToStructure<MAVLink.mavlink_uavionix_adsb_out_status_t>();

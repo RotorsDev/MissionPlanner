@@ -451,23 +451,23 @@ namespace MissionPlanner
                 Console.ReadLine();
             }
 
-            try
-            {
-                // kill sim background process if its still running
-                GCSViews.SITL.simulator.ForEach(a =>
-                {
-                    try
-                    {
-                        a.Kill();
-                    }
-                    catch
-                    {
-                    }
-                });
-            }
-            catch
-            {
-            }
+            //try
+            //{
+            //    // kill sim background process if its still running
+            //    GCSViews.SITL.simulator.ForEach(a =>
+            //    {
+            //        try
+            //        {
+            //            a.Kill();
+            //        }
+            //        catch
+            //        {
+            //        }
+            //    });
+            //}
+            //catch
+            //{
+            //}
         }
 
         private static string SerialPort_GetDeviceName(string port)
