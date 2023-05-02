@@ -1715,6 +1715,8 @@ Mission Planner waits for 2 valid heartbeat packets before connecting");
                         logdata.ToLower().Contains("plane"))
                     {
                         MAVlist[sysid, compid].VersionString = logdata;
+                        // Version string may allow to better identify type
+                        setAPType(sysid, compid);
                     }
                     else if (logdata.ToLower().Contains("nuttx") || logdata.ToLower().Contains("chibios"))
                     {
@@ -1846,13 +1848,13 @@ Mission Planner waits for 2 valid heartbeat packets before connecting");
             };
 
             DateTime start = DateTime.Now;
-            DateTime restart = DateTime.Now;
 
             DateTime lastmessage = DateTime.MinValue;
 
             //hires.Stopwatch stopwatch = new hires.Stopwatch();
             int retry = 0;
             bool onebyone = false;
+            bool missing_params = false;
             DateTime lastonebyone = DateTime.MinValue;
 
             var sub2 = SubscribeToPacketType(MAVLINK_MSG_ID.STATUSTEXT, buffer =>
@@ -1900,7 +1902,6 @@ Mission Planner waits for 2 valid heartbeat packets before connecting");
                 if (buffer.msgid == (byte) MAVLINK_MSG_ID.PARAM_VALUE && buffer.sysid == req.target_system &&
                     buffer.compid == req.target_component)
                 {
-                    restart = DateTime.Now;
                     // if we are doing one by one dont update start time
                     if (!onebyone)
                         start = DateTime.Now;
@@ -1971,9 +1972,9 @@ Mission Planner waits for 2 valid heartbeat packets before connecting");
                         this.frmProgressReporter.UpdateProgressAndStatus((indexsreceived.Count * 100) / param_total,
                             Strings.Gotparam + paramID);
 
-                    // we hit the last param - lets escape eq total = 176 index = 0-175
+                    // we hit the last param, jump striaght to retry if params missing
                     if (par.param_index == (param_total - 1))
-                        start = DateTime.MinValue;
+                        missing_params |= indexsreceived.Count < param_total;
                 }
 
                 return true;
@@ -1996,17 +1997,23 @@ Mission Planner waits for 2 valid heartbeat packets before connecting");
                     return MAVlist[sysid, compid].param;
                 }
 
-                // 4 seconds between valid packets
-                if (!(start.AddMilliseconds(4000) > DateTime.Now) && !logreadmode)
+                // 4 seconds between valid packets or got to last param and have some missing
+                if ((missing_params || !(start.AddMilliseconds(4000) > DateTime.Now)) && !logreadmode)
                 {
                     // if we have less than 75% of the total use full list pull
-                    if (retry < 2 && indexsreceived.Count < ((param_total / 4) * 3))
+                    if (!onebyone && (retry < 2) && ((param_total <= 1) || (indexsreceived.Count < ((param_total / 4) * 3))))
                     {
-                        retry++;
+                        if (param_total > 1)
+                        {
+                            // only increment retry counter if we have a valid total
+                            // otherwise keep requesting full list
+                            retry++;
+                        }
                         log.InfoFormat("Get Param whole list retry {0} got {1} 75%={2} count {3}", retry,
                             indexsreceived.Count, ((param_total / 4) * 3), param_total);
                         generatePacket((byte) MAVLINK_MSG_ID.PARAM_REQUEST_LIST, req);
                         start = DateTime.Now;
+                        missing_params = false;
                         continue;
                     }
 
@@ -2030,10 +2037,13 @@ Mission Planner waits for 2 valid heartbeat packets before connecting");
                                  " request from startindex " + startindex + " seen since last requests " + backupseenvalid);
 
                         // try getting individual params
+                        bool found_missing_param = false;
                         for (short i = startindex; i <= (param_total - 1); i++)
                         {
                             if (!indexsreceived.Contains(i))
                             {
+                                found_missing_param = true;
+
                                 if (frmProgressReporter != null && frmProgressReporter.doWorkArgs.CancelRequested)
                                 {
                                     frmProgressReporter.doWorkArgs.CancelAcknowledged = true;
@@ -2074,6 +2084,11 @@ Mission Planner waits for 2 valid heartbeat packets before connecting");
                                     throw excp;
                                 }
                             }
+                        }
+                        if (!found_missing_param)
+                        {
+                            // no missing param after start index, start from the begining
+                            tenbytenindex = 0;
                         }
 
                         lastonebyone = DateTime.Now;
@@ -5304,7 +5319,7 @@ Mission Planner waits for 2 valid heartbeat packets before connecting");
                                 Settings.Instance["speechenable"] != null &&
                                 Settings.Instance["speechenable"].ToString() == "True")
                             {
-                                if (speechenabled)
+                                if (speechenabled && !logdata.StartsWith("PreArm:")) // Suppress audible PreArm messages
                                     Speech.SpeakAsync(logdata);
                             }
                         }
@@ -6548,6 +6563,26 @@ Mission Planner waits for 2 valid heartbeat packets before connecting");
             switch (MAVlist[sysid, compid].apname)
             {
                 case MAV_AUTOPILOT.ARDUPILOTMEGA:
+                    // try and pull vehicle type from version string
+                    if (MAVlist[sysid, compid].VersionString != null && MAVlist[sysid, compid].VersionString.Length > 1)
+                    {
+                        var firmware_lookup = new Dictionary<string, Firmwares>()
+                                {
+                                    {"ArduPlane V", Firmwares.ArduPlane},
+                                    {"ArduCopter V", Firmwares.ArduCopter2},
+                                    {"Blimp V", Firmwares.ArduCopter2},
+                                    {"ArduRover V",Firmwares.ArduRover},
+                                    {"ArduSub V",Firmwares.ArduSub},
+                                    {"AntennaTracker V", Firmwares.ArduTracker}
+                                };
+                        var match = firmware_lookup.Where(d => MAVlist[sysid, compid].VersionString.StartsWith(d.Key)).ToArray();
+                        if (match.Count() == 1)
+                        {
+                            MAVlist[sysid, compid].cs.firmware = match[0].Value;
+                            break;
+                        }
+                    }
+
                     switch (MAVlist[sysid, compid].aptype)
                     {
                         case MAV_TYPE.FIXED_WING:
