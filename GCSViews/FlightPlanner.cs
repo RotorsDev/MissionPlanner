@@ -3543,7 +3543,12 @@ namespace MissionPlanner.GCSViews
                                     Reproject.ReprojectPoints(xyarray, zarray, pStart, pESRIEnd, 0, 1);
                                     point.X = xyarray[0];
                                     point.Y = xyarray[1];
-                                    point.Z = zarray[0];
+                                    try
+                                    {
+                                        if (zarray[0] != double.NaN)
+                                            point.Z = zarray[0];
+                                    }
+                                    catch { }
                                 }
 
                                 drawnpolygon.Points.Add(new PointLatLng(point.Y, point.X));
@@ -3957,6 +3962,8 @@ namespace MissionPlanner.GCSViews
                         return null;
                     });
                     var values = missionpck.unpack(paramfileTask.GetAwaiter().GetResult().ToArray());
+                    MainV2.comPort.MAVlist[MainV2.comPort.MAV.sysid, MainV2.comPort.MAV.compid].wps.Clear();
+                    values.wps.ForEach(wp => MainV2.comPort.MAVlist[MainV2.comPort.MAV.sysid, MainV2.comPort.MAV.compid].wps[wp.seq] = wp);
                     WPtoScreen(values.wps.Select(a => (Locationwp)a).ToList());
                     return;
                 }

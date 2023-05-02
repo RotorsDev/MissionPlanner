@@ -2,3 +2,6 @@
 	path = ExtLibs/mono
 	url = https://github.com/meee1/mono.git
 	shallow = true
+[submodule "Plugins/RAC-MPplugin-UDP-GPS-sender"]
+	path = Plugins/RAC-MPplugin-UDP-GPS-sender
+	url = https://github.com/RotorsAndCams/RAC-MPplugin-UDP-GPS-sender.git
