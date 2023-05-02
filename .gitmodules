@@ -2,3 +2,6 @@
 	path = ExtLibs/mono
 	url = https://github.com/meee1/mono.git
 	shallow = true
+[submodule "Plugins/MissonPlannerPluginSkeleton"]
+	path = Plugins/MissonPlannerPluginSkeleton
+	url = https://github.com/RotorsAndCams/MissonPlannerPluginSkeleton.git
