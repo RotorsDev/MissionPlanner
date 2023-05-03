@@ -225,7 +225,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bulb", "ExtLibs\LEDBulb\Bul
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MissionPlannerTests", "MissionPlannerTests\MissionPlannerTests.csproj", "{0B99EBF2-B964-4AAC-9EC5-76353610AAAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OverlayControlsPlugin", "Plugins\MissonPlannerPluginSkeleton\OverlayControlsPlugin.csproj", "{DDD2FEA8-801E-463B-8913-9CCCDA2D9429}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginSkeleton", "Plugins\MissonPlannerPluginSkeleton\PluginSkeleton.csproj", "{DDD2FEA8-801E-463B-8913-9CCCDA2D9429}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
