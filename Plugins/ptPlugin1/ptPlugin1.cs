@@ -604,6 +604,7 @@ namespace ptPlugin1
 
 
                 updateNotifications();
+                update_gauges();
 
                 if (isSupervisor()) sendUDPBroadcast(sit.ToJSON());
 
