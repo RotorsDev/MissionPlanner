@@ -139,6 +139,8 @@ namespace ptPlugin1
         public ToolStripMenuItem tsLandingPoint = new ToolStripMenuItem();
         public ToolStripMenuItem tsStartSim = new ToolStripMenuItem();
         public ToolStripMenuItem tsSetupFleet = new ToolStripMenuItem();
+        public ToolStripMenuItem tsDoAutoConnect = new ToolStripMenuItem();
+
 
 
         string actualPanel = "";
@@ -203,6 +205,10 @@ namespace ptPlugin1
             tsSetupFleet.Text = "Setup Fleet";
             tsSetupFleet.Click += TsSetupFleet_Click;
             Host.FDMenuMap.Items.Add(tsSetupFleet);
+
+            tsDoAutoConnect.Text = "Trigger AutoConnect";
+            tsDoAutoConnect.Click += TsDoAutoConnect_Click; 
+            Host.FDMenuMap.Items.Add(tsDoAutoConnect);
 
 
             Panel panel1 = Host.MainForm.Controls.Find("Panel1", true).FirstOrDefault() as Panel;
@@ -452,6 +458,12 @@ namespace ptPlugin1
 
             return true;     //If it is false plugin will not start (loop will not called)
         }
+
+        private void TsDoAutoConnect_Click(object sender, EventArgs e)
+        {
+            AutoConnect.Start();
+        }
+
         //Setup sysid's and names and number of planes in the air;
         private void TsSetupFleet_Click(object sender, EventArgs e)
         {
@@ -1412,17 +1424,6 @@ namespace ptPlugin1
             return retval;
         }
 
-        private void MavOnOnPacketReceivedHandler(object o, MAVLink.MAVLinkMessage linkMessage)
-        {
-        }
-        //TODO consolidate into one
-        private void annunciator2_buttonClicked(object sender, EventArgs e)
-        {
-        }
-        private void annunciator3_buttonClicked(object sender, EventArgs e)
-        {
-        }
-
         private void annunciator1_buttonClicked(object sender, EventArgs e)
         {
 
@@ -1501,6 +1502,8 @@ namespace ptPlugin1
                         TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["colorMsgTab"];
                         if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
                         aMain1.setStatus("MSG", Stat.NOMINAL);
+                        aMain2.setStatus("MSG", Stat.NOMINAL);
+                        aMain3.setStatus("MSG", Stat.NOMINAL);
                         break;
                     }
                 case "BATT":
@@ -1561,8 +1564,6 @@ namespace ptPlugin1
                     break;
             }
         }
-
-
 
         private void annunciator1_undock(object sender, EventArgs e)
         {
