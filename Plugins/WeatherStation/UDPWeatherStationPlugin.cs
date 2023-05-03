@@ -31,9 +31,10 @@ namespace UDPWeatherStation
 
         public class MovingAverage
         {
-            private Queue<Decimal> samples = new Queue<Decimal>();
+            private Queue<double> EW_samples = new Queue<double>();
+            private Queue<double> NS_samples = new Queue<double>();
+
             private int windowSize = 30;
-            private Decimal sampleAccumulator;
             public Decimal Average { get; private set; }
 
             /// <summary>
@@ -42,16 +43,33 @@ namespace UDPWeatherStation
             /// <param name="newSample"></param>
             public void ComputeAverage(Decimal newSample)
             {
-                if (newSample == 0) newSample = 1;
-                sampleAccumulator += newSample;
-                samples.Enqueue(newSample);
+                double EW_vector = Math.Sin(MathHelper.Radians((double)newSample));
+                double NS_vector = Math.Cos(MathHelper.Radians((double)newSample));
 
-                if (samples.Count > windowSize)
+                EW_samples.Enqueue(EW_vector);
+                NS_samples.Enqueue(NS_vector);
+
+                //Over the window, deque oldest 
+                if (EW_samples.Count > windowSize)
                 {
-                    sampleAccumulator -= samples.Dequeue();
+                    EW_samples.Dequeue();
+                    NS_samples.Dequeue();   
                 }
 
-                Average = sampleAccumulator / samples.Count;
+                double EW_average = EW_samples.Sum()/EW_samples.Count * -1;
+                double NS_average = NS_samples.Sum()/NS_samples.Count * -1;
+
+                double avg = MathHelper.Degrees(Math.Atan2(EW_average, NS_average));
+                if (avg > 180)
+                {
+                    avg -= 180;
+                }
+                else if (avg < 180)
+                {
+                    avg += 180;
+                }
+
+                Average = (decimal)avg;
             }
         }
 
