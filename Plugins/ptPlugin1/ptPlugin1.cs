@@ -1413,10 +1413,10 @@ namespace ptPlugin1
             PowerStatus pwr = SystemInformation.PowerStatus;
             switch (pwr.BatteryLifePercent)
             {
-                case float f when f <= 10:
+                case float f when f <= 0.1:
                     retval = 2;
                     break;
-                case float f when f > 10 && f <= 20:
+                case float f when f > 0.1 && f <= 0.2:
                     retval = 1;
                     break;
                 default:

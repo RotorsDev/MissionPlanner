@@ -119,7 +119,7 @@ namespace MissionPlanner.Maps
             // the plane
             g.TranslateTransform(-2, -2);
 
-            Color c = Color.FromArgb(100, Color.LightBlue);
+            Color c = Color.FromArgb(180, Color.LightBlue);
             g.FillPolygon(new SolidBrush(c), plane);
 
             g.DrawImageUnscaled(fontBitmaps[which.ToString()], 23, 15);
