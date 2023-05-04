@@ -522,16 +522,12 @@ namespace ptPlugin1
             ((Label)tlOw.GetControlFromPosition(0, 5)).Text = "ClimbRate";
             ((Label)tlOw.GetControlFromPosition(0, 6)).Text = "Fuel Consumed";
             ((Label)tlOw.GetControlFromPosition(0, 7)).Text = "Radio Health";
-            ((Label)tlOw.GetControlFromPosition(0, 8)).Text = "DistanceToHome";
+            ((Label)tlOw.GetControlFromPosition(0, 8)).Text = "Distance To Home";
             ((Label)tlOw.GetControlFromPosition(0, 9)).Text = "Engine RPM";
             ((Label)tlOw.GetControlFromPosition(0, 10)).Text = "Engine EGT";
             ((Label)tlOw.GetControlFromPosition(0, 11)).Text = "Engine Thr";
 
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(overviewPage);
-
-
-
-
 
             //Setup mavlink receiving
             //Host.comPort.OnPacketReceived += MavOnOnPacketReceivedHandler;
