@@ -70,12 +70,12 @@ namespace ptPlugin1
             }
             if ((cbEnable2.Checked == true) && (!idList.Contains(t2)))
             {
-                CustomMessageBox.Show("SLOT 1 allocated an invalid Tail Number", "ERROR");
+                CustomMessageBox.Show("SLOT 2 allocated an invalid Tail Number", "ERROR");
                 this.Close();
             }
             if ((cbEnable3.Checked == true) && (!idList.Contains(t3)))
             {
-                CustomMessageBox.Show("SLOT 1 allocated an invalid Tail Number", "ERROR");
+                CustomMessageBox.Show("SLOT 3 allocated an invalid Tail Number", "ERROR");
                 this.Close();
             }
 

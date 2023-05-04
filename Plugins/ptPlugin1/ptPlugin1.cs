@@ -335,6 +335,21 @@ namespace ptPlugin1
             }
 
 
+            MainV2.instance.BeginInvoke((MethodInvoker)(() =>
+            {
+                //If this is not a supervisor then you have to setup only one ID
+                if (!isSupervisor())
+                {
+                    aMain1.Active = true;
+                    aMain2.Active = false;
+                    aMain3.Active = false;
+                    panel1.Size = new Size(panel1.Width, 47);
+                }
+            }));
+
+
+
+
             colorMessagePage.Text = "ColorMessages";
             colorMessagePage.Name = "colorMsgTab";
             fctb = new FastColoredTextBoxNS.FastColoredTextBox();
@@ -478,6 +493,34 @@ namespace ptPlugin1
             aMain2.Name = plane2Name;
             aMain3.Name = plane3Name;
 
+            MainV2.instance.BeginInvoke((MethodInvoker)(() =>
+            {
+                //If this is not a supervisor then you have to setup only one ID
+                if (!isSupervisor())
+                {
+                    aMain1.Active = true;
+                    aMain2.Active = false;
+                    aMain3.Active = false;
+                    Panel panel1 = Host.MainForm.Controls.Find("Panel1", true).FirstOrDefault() as Panel;
+                    panel1.Size = new Size(panel1.Width, 47);
+                }
+                else
+                {
+                    aMain1.Active = true;
+                    aMain2.Active = (aMain2.SysID != 0);
+                    aMain3.Active = (aMain3.SysID != 0);
+
+                    Panel panel1 = Host.MainForm.Controls.Find("Panel1", true).FirstOrDefault() as Panel;
+                    int panelsize = 47 + (aMain2.Active ? 47 : 0) + (aMain3.Active ? 47 : 0); 
+
+                    panel1.Size = new Size(panel1.Width, panelsize);
+
+                }
+
+
+            }));
+
+
         }
 
         private void TsStartSim_Click(object sender, EventArgs e)
@@ -574,30 +617,7 @@ namespace ptPlugin1
             //If 500ms ellapsed to the processing
             if (((TimeSpan)(DateTime.Now - lastNonCriticalUpdate)).TotalMilliseconds > 500)
             {
-                MainV2.instance.BeginInvoke((MethodInvoker)(() =>
-                {
 
-                //Check if we in single mode
-                if (!isSupervisor() && !Host.cs.connected)
-                {
-                    SetupDone = false;
-                    aMain1.SysID = 0;
-                    aMain1.Name = "";
-                    aMain1.Active = false;
-                }
-                if (!isSupervisor() && Host.cs.connected && Host.comPort.sysidcurrent != 0 && !SetupDone)
-                {
-                    aMain1.SysID = Host.comPort.sysidcurrent;
-                    aMain1.Active = true;
-                    aMain2.Active = false;
-                    aMain3.Active = false;
-
-                    SetupDone = true;
-
-                    Panel panel1 = Host.MainForm.Controls.Find("Panel1", true).FirstOrDefault() as Panel;
-                    panel1.Size = new Size(panel1.Width, 47);
-                }
-                }));
 
 
                 lastNonCriticalUpdate = DateTime.Now;
