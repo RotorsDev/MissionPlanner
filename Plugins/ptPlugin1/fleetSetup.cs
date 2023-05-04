@@ -37,6 +37,7 @@ namespace ptPlugin1
             {
                 lConnectedUAV.Text += p.sysidcurrent.ToString() + " / ";
                 idList.Add(p.sysidcurrent);
+                p.printbps = false;
             }
 
             tTail1.Text = "0";

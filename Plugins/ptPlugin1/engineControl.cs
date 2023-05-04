@@ -110,7 +110,7 @@ namespace ptPlugin1
         {
             MissionPlanner.MainV2.instance.BeginInvoke((MethodInvoker)(() =>
             {
-                Console.WriteLine("Stat : {0} {1} Error:{2}", stat & 0x07, stat & 0xf8, error);
+                //Console.WriteLine("Stat : {0} {1} Error:{2}", stat & 0x07, stat & 0xf8, error);
 
                 switch (stat & 0x07)
                 {

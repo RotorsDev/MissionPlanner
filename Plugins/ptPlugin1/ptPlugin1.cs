@@ -136,6 +136,10 @@ namespace ptPlugin1
         public landingControl lc = new landingControl();
 
 
+        public TabPage overviewPage = new TabPage();
+        public TableLayoutPanel tlOw = new TableLayoutPanel();   
+        public Dictionary<string, Label> oWlabels = new Dictionary<string, Label>();  
+
         public ToolStripMenuItem tsLandingPoint = new ToolStripMenuItem();
         public ToolStripMenuItem tsStartSim = new ToolStripMenuItem();
         public ToolStripMenuItem tsSetupFleet = new ToolStripMenuItem();
@@ -348,8 +352,6 @@ namespace ptPlugin1
             }));
 
 
-
-
             colorMessagePage.Text = "ColorMessages";
             colorMessagePage.Name = "colorMsgTab";
             fctb = new FastColoredTextBoxNS.FastColoredTextBox();
@@ -461,6 +463,76 @@ namespace ptPlugin1
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(landingPage);
 
 
+            overviewPage.Text = "Overview";
+            overviewPage.Name = "overViewTab";
+            overviewPage.Controls.Add(tlOw);
+            tlOw.Size = overviewPage.ClientSize;
+            tlOw.Location = new Point(3,3);
+            tlOw.Dock = DockStyle.Fill;
+            tlOw.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top | AnchorStyles.Bottom;
+            tlOw.ColumnCount = 4;
+            tlOw.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            tlOw.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            tlOw.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            tlOw.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            tlOw.RowCount = 12;
+            tlOw.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
+
+
+            for (int i = 0; i < 12; i++)
+            {
+                Label l = new Label();
+                l.Text = "row" + i.ToString() + "name";
+                l.AutoSize = true;
+                l.Dock = DockStyle.Fill;
+                l.Font = new Font("Arial", 12,FontStyle.Bold);
+                tlOw.Controls.Add(l, 0, i);
+
+                Label l1 = new Label();
+                l1.Text = "row" + i.ToString() + "data1";
+                l1.Font = new Font("Arial", 12);
+                l1.Dock = DockStyle.Fill;
+                l1.TextAlign = ContentAlignment.TopCenter;
+                l1.AutoSize = true;
+                tlOw.Controls.Add(l1, 1, i);
+
+                Label l2 = new Label();
+                l2.Text = "row" + i.ToString() + "data2";
+                l2.Font = new Font("Arial", 12);
+                l2.Dock = DockStyle.Fill;
+                l2.TextAlign = ContentAlignment.TopCenter;
+                l2.AutoSize = true;
+                tlOw.Controls.Add(l2, 2, i);
+
+                Label l3 = new Label();
+                l3.Text = "row" + i.ToString() + "data3";
+                l3.Font = new Font("Arial", 12);
+                l3.Dock = DockStyle.Fill;
+                l3.TextAlign = ContentAlignment.TopCenter;
+                l3.AutoSize = true;
+                tlOw.Controls.Add(l3, 2, i);
+            }
+
+            //Update Row Names
+            ((Label)tlOw.GetControlFromPosition(0, 0)).Text = "SYSID";
+            ((Label)tlOw.GetControlFromPosition(0, 1)).Text = "Callsign";
+            ((Label)tlOw.GetControlFromPosition(0, 2)).Text = "AirSpeed";
+            ((Label)tlOw.GetControlFromPosition(0, 3)).Text = "GroundSpeed";
+            ((Label)tlOw.GetControlFromPosition(0, 4)).Text = "Altitude";
+            ((Label)tlOw.GetControlFromPosition(0, 5)).Text = "ClimbRate";
+            ((Label)tlOw.GetControlFromPosition(0, 6)).Text = "Fuel Consumed";
+            ((Label)tlOw.GetControlFromPosition(0, 7)).Text = "Radio Health";
+            ((Label)tlOw.GetControlFromPosition(0, 8)).Text = "DistanceToHome";
+            ((Label)tlOw.GetControlFromPosition(0, 9)).Text = "Engine RPM";
+            ((Label)tlOw.GetControlFromPosition(0, 10)).Text = "Engine EGT";
+            ((Label)tlOw.GetControlFromPosition(0, 11)).Text = "Engine Thr";
+
+            Host.MainForm.FlightData.tabControlactions.TabPages.Add(overviewPage);
+
+
+
+
+
             //Setup mavlink receiving
             //Host.comPort.OnPacketReceived += MavOnOnPacketReceivedHandler;
 
@@ -509,18 +581,14 @@ namespace ptPlugin1
                     aMain1.Active = true;
                     aMain2.Active = (aMain2.SysID != 0);
                     aMain3.Active = (aMain3.SysID != 0);
-
                     Panel panel1 = Host.MainForm.Controls.Find("Panel1", true).FirstOrDefault() as Panel;
                     int panelsize = 47 + (aMain2.Active ? 47 : 0) + (aMain3.Active ? 47 : 0); 
-
                     panel1.Size = new Size(panel1.Width, panelsize);
 
                 }
 
 
             }));
-
-
         }
 
         private void TsStartSim_Click(object sender, EventArgs e)
@@ -625,6 +693,7 @@ namespace ptPlugin1
 
                 updateNotifications();
                 update_gauges();
+                if (isSupervisor()) updateOverview();
 
                 if (isSupervisor()) sendUDPBroadcast(sit.ToJSON());
 
@@ -797,6 +866,72 @@ namespace ptPlugin1
             }
 
             return true;	//Return value is not used
+        }
+
+        private void updateOverview()
+        {
+
+            MainV2.instance.BeginInvoke((MethodInvoker)(() =>
+            {
+
+            foreach (var port in MainV2.Comports)
+            {
+
+                if (port.sysidcurrent == aMain1.SysID)
+                {
+                    ((Label)tlOw.GetControlFromPosition(1, 0)).Text = aMain1.SysID.ToString();
+                    ((Label)tlOw.GetControlFromPosition(1, 1)).Text = aMain1.Name;
+                    ((Label)tlOw.GetControlFromPosition(1, 2)).Text = port.MAV.cs.airspeed.ToString("F0") + " m/s";
+                    ((Label)tlOw.GetControlFromPosition(1, 3)).Text = port.MAV.cs.groundspeed.ToString("F0") + " m/s";
+                    ((Label)tlOw.GetControlFromPosition(1, 4)).Text = port.MAV.cs.alt.ToString("F0") + " m";
+                    ((Label)tlOw.GetControlFromPosition(1, 5)).Text = port.MAV.cs.climbrate.ToString("F0") + " m/s";
+                    ((Label)tlOw.GetControlFromPosition(1, 6)).Text = port.MAV.cs.fuel_consumed.ToString("F1") + " L";
+                    ((Label)tlOw.GetControlFromPosition(1, 7)).Text = port.MAV.cs.linkqualitygcs.ToString("F0") + " %";
+                    ((Label)tlOw.GetControlFromPosition(1, 8)).Text = port.MAV.cs.DistToHome.ToString("F0") + " m";
+                    ((Label)tlOw.GetControlFromPosition(1, 9)).Text = port.MAV.cs.eng_rpm.ToString("F0");
+                    ((Label)tlOw.GetControlFromPosition(1, 10)).Text = port.MAV.cs.eng_egt.ToString("F0") + " C";
+                    ((Label)tlOw.GetControlFromPosition(1, 11)).Text = port.MAV.cs.eng_throttle.ToString("F0") + " %";
+
+                }
+
+                if (port.sysidcurrent == aMain2.SysID)
+                {
+                    ((Label)tlOw.GetControlFromPosition(2, 0)).Text = aMain2.SysID.ToString();
+                    ((Label)tlOw.GetControlFromPosition(2, 1)).Text = aMain2.Name;
+                    ((Label)tlOw.GetControlFromPosition(2, 2)).Text = port.MAV.cs.airspeed.ToString("F0") + " m/s";
+                    ((Label)tlOw.GetControlFromPosition(2, 3)).Text = port.MAV.cs.groundspeed.ToString("F0") + " m/s";
+                    ((Label)tlOw.GetControlFromPosition(2, 4)).Text = port.MAV.cs.alt.ToString("F0") + " m";
+                    ((Label)tlOw.GetControlFromPosition(2, 5)).Text = port.MAV.cs.climbrate.ToString("F0") + " m/s";
+                    ((Label)tlOw.GetControlFromPosition(2, 6)).Text = port.MAV.cs.fuel_consumed.ToString("F1") + " L";
+                    ((Label)tlOw.GetControlFromPosition(2, 7)).Text = port.MAV.cs.linkqualitygcs.ToString("F0") + " %";
+                    ((Label)tlOw.GetControlFromPosition(2, 8)).Text = port.MAV.cs.DistToHome.ToString("F0") + " m";
+                    ((Label)tlOw.GetControlFromPosition(2, 9)).Text = port.MAV.cs.eng_rpm.ToString("F0");
+                    ((Label)tlOw.GetControlFromPosition(2, 10)).Text = port.MAV.cs.eng_egt.ToString("F0") + " C";
+                    ((Label)tlOw.GetControlFromPosition(2, 11)).Text = port.MAV.cs.eng_throttle.ToString("F0") + " %";
+
+                }
+                if (port.sysidcurrent == aMain3.SysID)
+                {
+                    ((Label)tlOw.GetControlFromPosition(3, 0)).Text = aMain3.SysID.ToString();
+                    ((Label)tlOw.GetControlFromPosition(3, 1)).Text = aMain3.Name;
+                    ((Label)tlOw.GetControlFromPosition(3, 2)).Text = port.MAV.cs.airspeed.ToString("F0") + " m/s";
+                    ((Label)tlOw.GetControlFromPosition(3, 3)).Text = port.MAV.cs.groundspeed.ToString("F0") + " m/s";
+                    ((Label)tlOw.GetControlFromPosition(3, 4)).Text = port.MAV.cs.alt.ToString("F0") + " m";
+                    ((Label)tlOw.GetControlFromPosition(3, 5)).Text = port.MAV.cs.climbrate.ToString("F0") + " m/s";
+                    ((Label)tlOw.GetControlFromPosition(3, 6)).Text = port.MAV.cs.fuel_consumed.ToString("F1") + " L";
+                    ((Label)tlOw.GetControlFromPosition(3, 7)).Text = port.MAV.cs.linkqualitygcs.ToString("F0") + " %";
+                    ((Label)tlOw.GetControlFromPosition(3, 8)).Text = port.MAV.cs.DistToHome.ToString("F0") + " m";
+                    ((Label)tlOw.GetControlFromPosition(3, 9)).Text = port.MAV.cs.eng_rpm.ToString("F0");
+                    ((Label)tlOw.GetControlFromPosition(3, 10)).Text = port.MAV.cs.eng_egt.ToString("F0") + " C";
+                    ((Label)tlOw.GetControlFromPosition(3, 11)).Text = port.MAV.cs.eng_throttle.ToString("F0") + " %";
+                }
+            }
+
+
+            }));
+
+
+
         }
 
         public override bool Exit()
