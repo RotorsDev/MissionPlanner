@@ -840,7 +840,7 @@ namespace MissionPlanner.GCSViews
                 var home = new PointLatLngAlt(47.236220, 18.170378, a * 4);
                     extra += String.Format(
                         " -M{4} -s1 --home {3} --instance {0} --uartA udpclient:0:{1} -P SYSID_THISMAV={2} ",
-                        a, (14550 + a).ToString() , a + 1, BuildHomeLocation(home, (int)NUM_heading.Value), model);
+                        a, (14550 + a).ToString() , (a+1)*3, BuildHomeLocation(home, (int)NUM_heading.Value), model);
 
                 string simdir = sitldirectory + model + (a + 1) + Path.DirectorySeparatorChar;
 

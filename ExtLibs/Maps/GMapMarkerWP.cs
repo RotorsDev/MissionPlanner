@@ -17,8 +17,8 @@ namespace MissionPlanner.Maps
         static Dictionary<string, Bitmap> fontBitmaps = new Dictionary<string, Bitmap>();
         static Font font;
 
-        public GMapMarkerWP(PointLatLng p, string wpno)
-            : base(p, GMarkerGoogleType.green)
+        public GMapMarkerWP(PointLatLng p, string wpno, float transp = 1.0f)
+            : base(p, GMarkerGoogleType.green, transp)
         {
             this.wpno = wpno;
             if (font == null)

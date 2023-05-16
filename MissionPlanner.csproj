@@ -42,11 +42,12 @@
     <OutputPath>bin\Debug\net461\</OutputPath>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <Prefer32Bit>false</Prefer32Bit>
-    <DebugType>portable</DebugType>
-    <DefineConstants>DEBUG</DefineConstants>
+    <DebugType>full</DebugType>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\net461\</OutputPath>
@@ -884,6 +885,12 @@
     </None>
     <None Include="MissionPlanner.GCSViews.ConfigurationView.ConfigGPSOrder+GPSCAN.datasource" />
     <None Include="MissionPlanner.GCSViews.ConfigurationView.ConfigHWCompass2+CompassDeviceInfo.datasource" />
+    <Compile Include="PayloadToIgnite.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PayloadToIgnite.Designer.cs">
+      <DependentUpon>PayloadToIgnite.cs</DependentUpon>
+    </Compile>
     <Compile Include="Utilities\AirMarket.cs">
       <SubType>UserControl</SubType>
     </Compile>

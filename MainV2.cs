@@ -11,6 +11,7 @@ using MissionPlanner.GCSViews.ConfigurationView;
 using MissionPlanner.Log;
 using MissionPlanner.Maps;
 using MissionPlanner.Utilities;
+using MissionPlanner.StatusForms;
 
 using MissionPlanner.Warnings;
 using SkiaSharp;
@@ -699,6 +700,7 @@ namespace MissionPlanner
             }
         }
 
+        public static payloadIgnite payloadToIgnite = new payloadIgnite();
 
         public MainV2()
         {

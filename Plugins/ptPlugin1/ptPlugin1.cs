@@ -145,7 +145,7 @@ namespace ptPlugin1
         public ToolStripMenuItem tsSetupFleet = new ToolStripMenuItem();
         public ToolStripMenuItem tsDoAutoConnect = new ToolStripMenuItem();
 
-
+        
 
         string actualPanel = "";
 
@@ -1594,6 +1594,7 @@ namespace ptPlugin1
                             MainV2.comPort = port;
                             MainV2.comPort.sysidcurrent = s.SysID;
                             MainV2.comPort.compidcurrent = 1; //Always do the vehicle  
+                            MainV2.instance.FlightPlanner.UpdateVehicleMissionOnScreen(s.SysID);  //Notify FlightPlanner that we changed vehicle
                             MainV2.View.Reload();
                         }
 

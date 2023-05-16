@@ -92,6 +92,10 @@ namespace ptPlugin1
             ptPlugin1.plane2Name = tCallSign2.Text;
             ptPlugin1.plane3Name = tCallSign3.Text;
 
+            //Call MainV2
+            MainV2.instance.FlightPlanner.UpdateVehicleIdList(t1, t2, t3);
+
+
             this.Close();
         }
     }
