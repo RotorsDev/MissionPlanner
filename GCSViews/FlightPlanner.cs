@@ -130,7 +130,10 @@ namespace MissionPlanner.GCSViews
 
         //These contains the mission items for all three sysid's in vehicleIDList
 
-        public List<Locationwp>[] wplists = { new List<Locationwp> { }, new List<Locationwp> { }, new List<Locationwp>() }; 
+        public List<Locationwp>[] wplists = { new List<Locationwp> { }, new List<Locationwp> { }, new List<Locationwp>() };
+        
+        //This true if the given mission needs save
+        public bool[] modified = { false, false, false };
 
         public List<Locationwp> secondaryDisplay = new List<Locationwp>();
         public List<Locationwp> tertiaryDisplay = new List<Locationwp>();   
@@ -1122,6 +1125,9 @@ namespace MissionPlanner.GCSViews
                     // add history
                     history.Add(currentlist);
                 }
+
+                Console.WriteLine("Undo buffer updated");
+
             }
             catch (Exception ex)
             {
@@ -1455,7 +1461,7 @@ namespace MissionPlanner.GCSViews
                 if ((MAVLink.MAV_MISSION_TYPE) cmb_missiontype.SelectedValue == MAVLink.MAV_MISSION_TYPE.MISSION)
                 {
                     wpOverlay = new WPOverlay();
-                    wpOverlay.overlay.Id = "WPOverlayMain";
+                    wpOverlay.overlay.Id = "WPOverlay";     //Note Do not rename, it is used elsewhere
 
                     try
                     {
@@ -2678,6 +2684,9 @@ namespace MissionPlanner.GCSViews
                 Settings.Instance["fpminaltwarning"] = TXT_altwarn.Text;
 
                 Settings.Instance["fpcoordmouse"] = coords1.System;
+
+                Settings.Instance["TXT_DefaultTWPSpeed"] = TXT_DefaultTwpSpeed.Text;
+
             }
             else
             {
@@ -2694,6 +2703,9 @@ namespace MissionPlanner.GCSViews
                             break;
                         case "TXT_DefaultAlt":
                             TXT_DefaultAlt.Text = "" + Settings.Instance[key];
+                            break;
+                        case "TXT_DefaultTWPSpeed":
+                            TXT_DefaultTwpSpeed.Text = "" + Settings.Instance[key];
                             break;
                         case "CMB_altmode":
                             CMB_altmode.Text = "" + Settings.Instance[key];
@@ -3963,7 +3975,7 @@ namespace MissionPlanner.GCSViews
             }
         }
 
-        private List<Locationwp> GetCommandList()
+        public List<Locationwp> GetCommandList()
         {
             List<Locationwp> commands = new List<Locationwp>();
 
@@ -6702,6 +6714,25 @@ Column 1: Field type (RALLY is the only one at the moment -- may have RALLY_LAND
             }
         }
 
+        public void TXT_DefaultTWPSpeed_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            float isNumber = 0;
+            if (e.KeyChar.ToString() == "\b")
+                return;
+            e.Handled = !float.TryParse(e.KeyChar.ToString(), out isNumber);
+        }
+
+        public void TXT_DefaulTWPSpeed_Leave(object sender, EventArgs e)
+        {
+            float isNumber = 0;
+            if (!float.TryParse(TXT_DefaultTwpSpeed.Text, out isNumber))
+            {
+                TXT_DefaultTwpSpeed.Text = "70";
+            }
+        }
+
+
+
         public void TXT_homealt_TextChanged(object sender, EventArgs e)
         {
             sethome = false;
@@ -7415,9 +7446,14 @@ Column 1: Field type (RALLY is the only one at the moment -- may have RALLY_LAND
                     {
                         // cant add WP in existing rect
                     }
+                    else if (Control.ModifierKeys == Keys.Shift)
+                    {
+                        addTimedWP(currentMarker.Position.Lat, currentMarker.Position.Lng, 0);
+                    }
                     else
                     {
                         AddWPToMap(currentMarker.Position.Lat, currentMarker.Position.Lng, 0);
+
                     }
                 }
                 else
@@ -8066,182 +8102,72 @@ Column 1: Field type (RALLY is the only one at the moment -- may have RALLY_LAND
             Settings.Instance["UseMissionMAVFTP"] = chk_usemavftp.Checked.ToString();
         }
 
-        private void addTimedWPToolStripMenuItem_Click_1(object sender, EventArgs e)
+
+        private void addTimedWP(double Lat, double Long, int speed)
         {
 
-
-
+            if (speed == 0)
+            {
+                speed = (int)float.Parse(TXT_DefaultTwpSpeed.Text);
+            }
             if (Commands.Rows.Count == 0)
             {
                 CustomMessageBox.Show("First WP cannot be timed", "Error");
                 return;
             }
+            if (speed == 0)
+            {
+                speed = 70;
+                InputBox.Show("Speed", "Enter desired speed in formation leg", ref speed);
+            }
+            if (speed < 50 || speed > 140)
+            {
+                CustomMessageBox.Show("Asked speed is out of range (50-140m/s)", "Error");
+                return;
+            }
 
-
+            //This will be the speed and time setting row
             int timingRow = Commands.Rows.Add();
             Commands.Rows[timingRow].Cells[Command.Index].Value = MAVLink.MAV_CMD.DO_SEND_SCRIPT_MESSAGE.ToString();
-            //ChangeColumnHeader(MAVLink.MAV_CMD.DO_SET_ROI.ToString());
-
+            //And this will be the actual waypoint
             selectedrow = Commands.Rows.Add();
             Commands.Rows[selectedrow].Cells[Command.Index].Value = MAVLink.MAV_CMD.WAYPOINT.ToString();
             ChangeColumnHeader(MAVLink.MAV_CMD.WAYPOINT.ToString());
+
             updateUndoBuffer(false);
-            setfromMap(MouseDownEnd.Lat, MouseDownEnd.Lng, (int)float.Parse(TXT_DefaultAlt.Text));
+            setfromMap(Lat, Long, (int)float.Parse(TXT_DefaultAlt.Text));
             writeKML();
-            int speed;
-            speed = 18;
-            InputBox.Show("Speed", "Enter desired speed in formation leg", ref speed);
-
-
+            //calculate time, based on speed
             double distance = Convert.ToDouble(Commands.Rows[selectedrow].Cells[Dist.Index].Value);
             Commands.Rows[timingRow].Cells[Param1.Index].Value = (selectedrow + 1).ToString();
             Commands.Rows[timingRow].Cells[Param2.Index].Value = (distance / speed).ToString("F0");
             Commands.Rows[timingRow].Cells[Param3.Index].Value = speed.ToString();
+            //update total time calculation
             updatetime();
-
         }
 
-        private void updateFormationToolStripMenuItem_Click(object sender, EventArgs e)
+
+        private void addTimedWPToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            ////TODO need update !!!!!!
-
-
-            ////Ask offsets for timed waypoints and move them in the current list
-
-            //if (Commands.Rows.Count < 3) return;
-
-
-            //int xOffset = 0;
-            //int yOffset = 0;
-            //int zOffset = 0;
-
-            //InputBox.Show("Offset X", "Enter horizontal X offset", ref xOffset);
-            //InputBox.Show("Offset Y", "Enter horizontal Y offset", ref yOffset);
-            //InputBox.Show("Offset Z", "Enter altitude offset", ref zOffset);
-
-            ////xOffset = Convert.ToInt32(tPlane2X.Text);
-            ////yOffset = Convert.ToInt32(tPlane2Y.Text);
-            ////zOffset = Convert.ToInt32(tPlane2X.Text);
-
-
-            ////Todo: do checks for integrity
-
-            ////Save current setup
-            //List<Locationwp> temp = GetCommandList();
-
-            //for (int i = 0; i < Commands.Rows.Count; i++)
-            //{
-            //    if (i > 0)
-            //    {
-            //        if (Commands.Rows[i - 1].Cells[Command.Index].Value.ToString() == MAVLink.MAV_CMD.DO_SEND_SCRIPT_MESSAGE.ToString())
-            //        {
-
-            //            PointLatLngAlt c = new PointLatLngAlt();
-            //            c.Lat = temp[i].lat;
-            //            c.Lng = temp[i].lng;
-            //            c.Alt = temp[i].alt;
-            //            double azimuth = temp[i].Az;
-
-            //            double distance = Math.Sqrt(xOffset * xOffset + yOffset * yOffset);
-
-            //            double angle = (MathHelper.rad2deg * Math.Atan2(xOffset, yOffset));
-            //            PointLatLngAlt newPoint = c.newpos(azimuth - angle, distance);
-            //            newPoint.Alt = c.Alt + zOffset;
-
-            //            Commands.Rows[i].Cells[Lat.Index].Value = newPoint.Lat.ToString();
-            //            Commands.Rows[i].Cells[Lon.Index].Value = newPoint.Lng.ToString();
-            //            Commands.Rows[i].Cells[Alt.Index].Value = newPoint.Alt.ToString();
-            //            writeKML();
-
-
-            //            double speed = Convert.ToDouble(Commands.Rows[i - 1].Cells[Param3.Index].Value);
-            //            double dist = Convert.ToDouble(Commands.Rows[i].Cells[Dist.Index].Value);
-
-            //            Commands.Rows[i - 1].Cells[Param2.Index].Value = (dist / speed).ToString();
-            //        }
-            //    }
-            //}
-
-            //mission2 = GetCommandList();
-
-            //Locationwp h = new Locationwp();
-            //h.lat = Convert.ToDouble(TXT_homelat.Text);
-            //h.lng = Convert.ToDouble(TXT_homelng.Text);
-            //h.alt = (float)Convert.ToDouble(TXT_homealt.Text);
-
-            //temp.Insert(0, h);
-            ////Restore back originals
-            //processToScreen(temp, false);
-
-            ////------------------------
-            ////xOffset = Convert.ToInt32(tPlane3X.Text);
-            ////yOffset = Convert.ToInt32(tPlane3Y.Text);
-            ////zOffset = Convert.ToInt32(tPlane3X.Text);
-
-            //if (xOffset == 0 && yOffset == 0 && zOffset == 0) return;
-
-            ////Todo: do checks for integrity
-
-            ////Save current setup
-            //temp = GetCommandList();
-
-            //for (int i = 0; i < Commands.Rows.Count; i++)
-            //{
-            //    if (i > 0)
-            //    {
-            //        if (Commands.Rows[i - 1].Cells[Command.Index].Value.ToString() == MAVLink.MAV_CMD.DO_SEND_SCRIPT_MESSAGE.ToString())
-            //        {
-
-            //            PointLatLngAlt c = new PointLatLngAlt();
-            //            c.Lat = temp[i].lat;
-            //            c.Lng = temp[i].lng;
-            //            c.Alt = temp[i].alt;
-            //            double azimuth = temp[i].Az;
-
-            //            double distance = Math.Sqrt(xOffset * xOffset + yOffset * yOffset);
-
-            //            double angle = (MathHelper.rad2deg * Math.Atan2(xOffset, yOffset));
-            //            PointLatLngAlt newPoint = c.newpos(azimuth - angle, distance);
-            //            newPoint.Alt = c.Alt + zOffset;
-
-            //            Commands.Rows[i].Cells[Lat.Index].Value = newPoint.Lat.ToString();
-            //            Commands.Rows[i].Cells[Lon.Index].Value = newPoint.Lng.ToString();
-            //            Commands.Rows[i].Cells[Alt.Index].Value = newPoint.Alt.ToString();
-            //            writeKML();
-
-
-            //            double speed = Convert.ToDouble(Commands.Rows[i - 1].Cells[Param3.Index].Value);
-            //            double dist = Convert.ToDouble(Commands.Rows[i].Cells[Dist.Index].Value);
-
-            //            Commands.Rows[i - 1].Cells[Param2.Index].Value = (dist / speed).ToString();
-            //        }
-            //    }
-            //}
-
-            //mission3 = GetCommandList();
-
-            //h = new Locationwp();
-            //h.lat = Convert.ToDouble(TXT_homelat.Text);
-            //h.lng = Convert.ToDouble(TXT_homelng.Text);
-            //h.alt = (float)Convert.ToDouble(TXT_homealt.Text);
-
-            //temp.Insert(0, h);
-            ////Restore back originals
-            //processToScreen(temp, false);
-
+            addTimedWP(MouseDownEnd.Lat, MouseDownEnd.Lng, 0);
         }
-
 
         private int currentSysId = 0;
 
         //Gets the index of the given sysID, returns -1 if the sysID is not in the VehicleIDList array
-        private int getSysIdIndex(int sysid)
+        public int getSysIdIndex(int sysid)
         {
             int retval = -1;
             for (int i = 0; i < 3; i++)
                 if (vehicleIdList[i] == sysid) retval = i;
 
             return retval;
+        }
+
+        public void updateCurrentWpTable()
+        {
+            var currentIndex = getSysIdIndex(currentSysId);
+            wplists[currentIndex] = GetCommandList();
         }
 
         public void UpdateVehicleMissionOnScreen(int sysid)
@@ -8316,41 +8242,63 @@ Column 1: Field type (RALLY is the only one at the moment -- may have RALLY_LAND
                     {
                         double speed = Convert.ToDouble(Commands.Rows[i - 1].Cells[Param3.Index].Value);
                         double dist = Convert.ToDouble(Commands.Rows[i].Cells[Dist.Index].Value);
-                        Commands.Rows[i - 1].Cells[Param2.Index].Value = (dist / speed).ToString();
+                        Commands.Rows[i - 1].Cells[Param2.Index].Value = (dist / speed).ToString("F1");
 
-                        routeTimes[currentIndex] += (int)(dist / speed);
+                        routeTimes[currentIndex] += (int)Math.Round(dist / speed);
                     }
                 }
             }
-
-            //foreach (var l in wplists[currentIndex])
-            //{
-            //    if (l.id == (ushort)MAVLink.MAV_CMD.DO_SEND_SCRIPT_MESSAGE)
-            //    {
-            //        routeTimes[currentIndex] += (int)l.p2;
-            //    }
-            //}
 
             lTime1.Text = $"ID {vehicleIdList[0]} Total Time {routeTimes[0]} sec";
             lTime2.Text = $"ID {vehicleIdList[1]} Total Time {routeTimes[1]} sec";
             lTime3.Text = $"ID {vehicleIdList[2]} Total Time {routeTimes[2]} sec";
 
+            //Copy current list ti the currentIndex 
+            wplists[currentIndex] = GetCommandList();
+
+            //Add secondary and tertiary routes calculation as well
+
         }
+
+       public void updatealltime()
+        {
+
+            for (int t=0; t<3; t++)
+            {
+                routeTimes[t] = 0;
+                for (int i = 0; i < wplists[t].Count; i++)
+                {
+                    if (i > 0)
+                    {
+                        Locationwp item = wplists[t][i];
+                        if (item.id == (ushort)MAVLink.MAV_CMD.DO_SEND_SCRIPT_MESSAGE)
+                        {
+                            routeTimes[t] += (int)Math.Round(item.p2);
+                        }
+                    }
+                }
+            }
+
+            lTime1.Text = $"ID {vehicleIdList[0]} Total Time {routeTimes[0]} sec";
+            lTime2.Text = $"ID {vehicleIdList[1]} Total Time {routeTimes[1]} sec";
+            lTime3.Text = $"ID {vehicleIdList[2]} Total Time {routeTimes[2]} sec";
+        }
+
+
+
 
         private void bGenerateFormation_Click(object sender, EventArgs e)
         {
-            ////TODO need update !!!!!!
-
-
-            ////Ask offsets for timed waypoints and move them in the current list
 
             if (Commands.Rows.Count < 3) return;
 
+            int xOffset = 0;
+            int yOffset = 0;
+            int zOffset = 0;
 
-            int xOffset = Convert.ToInt32(xOffset1.Text);
-            int yOffset = Convert.ToInt32(yOffset1.Text);
-            int zOffset = Convert.ToInt32(zOffset1.Text);
-
+            Int32.TryParse(xOffset1.Text, out xOffset);
+            Int32.TryParse(yOffset1.Text, out yOffset);
+            Int32.TryParse(zOffset1.Text, out zOffset);
 
             //Todo: do checks for integrity
 
@@ -8374,7 +8322,7 @@ Column 1: Field type (RALLY is the only one at the moment -- may have RALLY_LAND
             for (int i = 0; i < sourcelist.Count; i++)
             {
                 Locationwp loc = sourcelist[i];
-                if (i > 0)
+                if (i > 1)
                 {
                     if (sourcelist[i - 1].id == (ushort)MAVLink.MAV_CMD.DO_SEND_SCRIPT_MESSAGE)
                     {
@@ -8391,6 +8339,11 @@ Column 1: Field type (RALLY is the only one at the moment -- may have RALLY_LAND
                         loc.lat = newPoint.Lat;
                         loc.lng = newPoint.Lng;
                         loc.alt = (float)newPoint.Alt;
+
+                        ////recalculate distance
+                        //PointLatLngAlt from = new PointLatLngAlt(sourcelist[i-2].lat, sourcelist[i - 2].lng, sourcelist[i-2].alt);
+                        //loc.dist = from.GetDistance(newPoint);
+
                         wplists[1].Add(loc);
                     }
                     else
@@ -8405,18 +8358,23 @@ Column 1: Field type (RALLY is the only one at the moment -- may have RALLY_LAND
             }
             writeKML();
 
-            xOffset = Convert.ToInt32(xOffset2.Text);
-            yOffset = Convert.ToInt32(yOffset2.Text);
-            zOffset = Convert.ToInt32(zOffset2.Text);
-
 
             if (vehicleIdList[2] > 0)
             {
+
+                xOffset = 0;
+                yOffset = 0;
+                zOffset = 0;
+
+                Int32.TryParse(xOffset2.Text, out xOffset);
+                Int32.TryParse(yOffset2.Text, out yOffset);
+                Int32.TryParse(zOffset2.Text, out zOffset);
+
                 wplists[2].Clear();
                 for (int i = 0; i < sourcelist.Count; i++)
                 {
                     Locationwp loc = sourcelist[i];
-                    if (i > 0)
+                    if (i > 1)
                     {
                         if (sourcelist[i - 1].id == (ushort)MAVLink.MAV_CMD.DO_SEND_SCRIPT_MESSAGE)
                         {
@@ -8433,6 +8391,11 @@ Column 1: Field type (RALLY is the only one at the moment -- may have RALLY_LAND
                             loc.lat = newPoint.Lat;
                             loc.lng = newPoint.Lng;
                             loc.alt = (float)newPoint.Alt;
+
+                            ////recalculate distance
+                            //PointLatLngAlt from = new PointLatLngAlt(sourcelist[i - 2].lat, sourcelist[i - 2].lng, sourcelist[i - 2].alt);
+                            //loc.dist = from.GetDistance(newPoint);
+
                             wplists[2].Add(loc);
                         }
                         else
@@ -8447,6 +8410,73 @@ Column 1: Field type (RALLY is the only one at the moment -- may have RALLY_LAND
                 }
                 writeKML();
             }
+
+            updatealltime();
+
+        }
+        //Adjust secondary and tertiary flight plans to match in time with the first 
+        private void bAdjustSpeed_Click(object sender, EventArgs e)
+        {
+
+            CustomMessageBox.Show("You have to select all vehicle flight plans to recalculate distances");
+
+            //Check if we have the same number of waypoints
+            if (wplists[0].Count != wplists[1].Count)
+            {
+                CustomMessageBox.Show("Number of WPs does not match in first and second vehicle!");
+                return;
+            }
+            if (vehicleIdList[2] != 0 && (wplists[0].Count != wplists[2].Count))
+            {
+                CustomMessageBox.Show("Number of WPs does not match in first and third vehicle!");
+                return;
+            }
+
+
+            for (int i = 0; i < wplists[0].Count;i++)
+            {
+                //Dont modify the first waypoint
+                if (i>0)
+                {
+                    if (wplists[0][i].id == (ushort)MAVLink.MAV_CMD.DO_SEND_SCRIPT_MESSAGE)
+                    {
+                        //Second
+                        if (wplists[1][i].id != (ushort)MAVLink.MAV_CMD.DO_SEND_SCRIPT_MESSAGE)
+                        {
+                            CustomMessageBox.Show("Incosistent mission plan at second wehicle");
+                            return;
+                        }
+                        if (vehicleIdList[2] != 0 && (wplists[2][i].id != (ushort)MAVLink.MAV_CMD.DO_SEND_SCRIPT_MESSAGE))
+                        {
+                            CustomMessageBox.Show("Incosistent mission plan at third wehicle");
+                            return;
+                        }
+
+                        //TODO check recalculated speeds
+
+                        var distance = wplists[1][i + 1].dist;
+                        var speed = wplists[0][i].p3;
+                        var time = wplists[0][i].p2;
+
+                        var l = wplists[1][i];
+                        l.p3 = (float)Math.Round(distance / time,1);
+                        l.p2 = (float)time;
+                        wplists[1][i] = l;
+
+                        if (vehicleIdList[2] != 0 )
+                        {
+                            distance = wplists[2][i + 1].dist;
+                            l = wplists[2][i];
+                            l.p3 = (float)Math.Round(distance / time,1);
+                            l.p2 = (float)time;
+                            wplists[2][i] = l;
+                        }
+
+                    }
+                }
+            }
+            updatealltime();
+
         }
     }
 }

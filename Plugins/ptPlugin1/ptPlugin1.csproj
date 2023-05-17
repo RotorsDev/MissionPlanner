@@ -193,6 +193,12 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="ptPlugin1.cs" />
+    <Compile Include="TimedWpConsole.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TimedWpConsole.Designer.cs">
+      <DependentUpon>TimedWpConsole.cs</DependentUpon>
+    </Compile>
     <Compile Include="UISetup.cs" />
     <Compile Include="unThemedButton.cs">
       <SubType>Component</SubType>
@@ -259,6 +265,9 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TimedWpConsole.resx">
+      <DependentUpon>TimedWpConsole.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
