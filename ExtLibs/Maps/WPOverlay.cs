@@ -388,15 +388,16 @@ namespace MissionPlanner.ArduPilot
                         if (color == Color.Pink)
                         {
                             m = new GMarkerGoogle(point, GMarkerGoogleType.orange_dot, transparency);
-                        }
+                                                    }
                         else
                         {
                             m = new GMarkerGoogle(point, GMarkerGoogleType.purple_dot, transparency);
                         }
+                        m.ToolTipText = "ID: " + tag + " ";
                         if (alt.HasValue)
                         {
                             m.ToolTipMode = MarkerTooltipMode.OnMouseOver;
-                            m.ToolTipText = "Alt: " + alt.Value.ToString("0");
+                            m.ToolTipText += "Alt: " + alt.Value.ToString("0");
                         }
                         m.Tag = tag;
 
