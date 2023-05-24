@@ -30,14 +30,66 @@ namespace ptPlugin1
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(fuelControl));
-            this.gaugeFuel = new AGaugeApp.AGauge();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.bSetLoadedFuel = new MissionPlanner.Controls.MyButton();
             this.lConsumed = new System.Windows.Forms.Label();
             this.lLoaded = new System.Windows.Forms.Label();
-            this.lFlow = new System.Windows.Forms.Label();
+            this.IRaw = new System.Windows.Forms.Label();
+            this.gaugeFuel = new AGaugeApp.AGauge();
+            this.bSetLoadedFuel = new MissionPlanner.Controls.MyButton();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.gaugeFuel, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.bSetLoadedFuel, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.lConsumed, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.lLoaded, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.IRaw, 1, 2);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 12F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(481, 571);
+            this.tableLayoutPanel1.TabIndex = 1;
+            // 
+            // lConsumed
+            // 
+            this.lConsumed.AutoSize = true;
+            this.lConsumed.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lConsumed.Location = new System.Drawing.Point(243, 531);
+            this.lConsumed.Name = "lConsumed";
+            this.lConsumed.Size = new System.Drawing.Size(235, 40);
+            this.lConsumed.TabIndex = 3;
+            this.lConsumed.Text = "Consumed Fuel: 000 l";
+            // 
+            // lLoaded
+            // 
+            this.lLoaded.AutoSize = true;
+            this.lLoaded.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lLoaded.Location = new System.Drawing.Point(3, 531);
+            this.lLoaded.Name = "lLoaded";
+            this.lLoaded.Size = new System.Drawing.Size(234, 40);
+            this.lLoaded.TabIndex = 4;
+            this.lLoaded.Text = "Loaded Fuel : 29 liters";
+            // 
+            // IRaw
+            // 
+            this.IRaw.AutoSize = true;
+            this.IRaw.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.IRaw.Location = new System.Drawing.Point(243, 501);
+            this.IRaw.Name = "IRaw";
+            this.IRaw.Size = new System.Drawing.Size(235, 30);
+            this.IRaw.TabIndex = 5;
+            this.IRaw.Text = "Raw Level : 000";
             // 
             // gaugeFuel
             // 
@@ -58,26 +110,26 @@ namespace ptPlugin1
         System.Drawing.Color.Black,
         System.Drawing.Color.Black,
         System.Drawing.Color.Black};
-            this.gaugeFuel.CapPosition = new System.Drawing.Point(65, 115);
+            this.gaugeFuel.CapPosition = new System.Drawing.Point(60, 115);
             this.gaugeFuel.CapsPosition = new System.Drawing.Point[] {
-        new System.Drawing.Point(65, 115),
+        new System.Drawing.Point(60, 115),
         new System.Drawing.Point(0, 0),
         new System.Drawing.Point(10, 10),
         new System.Drawing.Point(10, 10),
         new System.Drawing.Point(10, 10)};
             this.gaugeFuel.CapsText = new string[] {
-        "000",
-        "Fuel level",
+        "00.00L",
+        "Remaining fuel",
         "",
         "",
         ""};
-            this.gaugeFuel.CapText = "000";
+            this.gaugeFuel.CapText = "00.00L";
             this.gaugeFuel.Center = new System.Drawing.Point(75, 75);
             this.tableLayoutPanel1.SetColumnSpan(this.gaugeFuel, 2);
             this.gaugeFuel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gaugeFuel.Location = new System.Drawing.Point(0, 0);
             this.gaugeFuel.Margin = new System.Windows.Forms.Padding(0);
-            this.gaugeFuel.MaxValue = 800F;
+            this.gaugeFuel.MaxValue = 30F;
             this.gaugeFuel.MinValue = 0F;
             this.gaugeFuel.Name = "gaugeFuel";
             this.gaugeFuel.Need_Idx = ((byte)(3));
@@ -120,7 +172,7 @@ namespace ptPlugin1
             this.gaugeFuel.Range_Idx = ((byte)(2));
             this.gaugeFuel.RangeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.gaugeFuel.RangeEnabled = true;
-            this.gaugeFuel.RangeEndValue = 800F;
+            this.gaugeFuel.RangeEndValue = 30F;
             this.gaugeFuel.RangeInnerRadius = 50;
             this.gaugeFuel.RangeOuterRadius = 60;
             this.gaugeFuel.RangesColor = new System.Drawing.Color[] {
@@ -136,9 +188,9 @@ namespace ptPlugin1
         false,
         false};
             this.gaugeFuel.RangesEndValue = new float[] {
-        50F,
-        150F,
-        800F,
+        5F,
+        8F,
+        30F,
         0F,
         0F};
             this.gaugeFuel.RangesInnerRadius = new int[] {
@@ -155,11 +207,11 @@ namespace ptPlugin1
         80};
             this.gaugeFuel.RangesStartValue = new float[] {
         0F,
-        50F,
-        150F,
+        5F,
+        8F,
         0F,
         0F};
-            this.gaugeFuel.RangeStartValue = 150F;
+            this.gaugeFuel.RangeStartValue = 8F;
             this.gaugeFuel.ScaleLinesInterColor = System.Drawing.Color.Transparent;
             this.gaugeFuel.ScaleLinesInterInnerRadius = 53;
             this.gaugeFuel.ScaleLinesInterOuterRadius = 60;
@@ -167,7 +219,7 @@ namespace ptPlugin1
             this.gaugeFuel.ScaleLinesMajorColor = System.Drawing.Color.Transparent;
             this.gaugeFuel.ScaleLinesMajorInnerRadius = 50;
             this.gaugeFuel.ScaleLinesMajorOuterRadius = 60;
-            this.gaugeFuel.ScaleLinesMajorStepValue = 100F;
+            this.gaugeFuel.ScaleLinesMajorStepValue = 5F;
             this.gaugeFuel.ScaleLinesMajorWidth = 2;
             this.gaugeFuel.ScaleLinesMinorColor = System.Drawing.Color.Transparent;
             this.gaugeFuel.ScaleLinesMinorInnerRadius = 55;
@@ -188,28 +240,6 @@ namespace ptPlugin1
             this.gaugeFuel.Value2 = 0F;
             this.gaugeFuel.Value3 = 0F;
             // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.gaugeFuel, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.bSetLoadedFuel, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.lConsumed, 1, 3);
-            this.tableLayoutPanel1.Controls.Add(this.lLoaded, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.lFlow, 1, 2);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 4;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 12F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(481, 571);
-            this.tableLayoutPanel1.TabIndex = 1;
-            // 
             // bSetLoadedFuel
             // 
             this.bSetLoadedFuel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -222,36 +252,7 @@ namespace ptPlugin1
             this.bSetLoadedFuel.TabIndex = 2;
             this.bSetLoadedFuel.Text = "SET Loaded Fuel";
             this.bSetLoadedFuel.UseVisualStyleBackColor = true;
-            // 
-            // lConsumed
-            // 
-            this.lConsumed.AutoSize = true;
-            this.lConsumed.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lConsumed.Location = new System.Drawing.Point(243, 531);
-            this.lConsumed.Name = "lConsumed";
-            this.lConsumed.Size = new System.Drawing.Size(235, 40);
-            this.lConsumed.TabIndex = 3;
-            this.lConsumed.Text = "Consumed Fuel: 000 l";
-            // 
-            // lLoaded
-            // 
-            this.lLoaded.AutoSize = true;
-            this.lLoaded.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lLoaded.Location = new System.Drawing.Point(3, 531);
-            this.lLoaded.Name = "lLoaded";
-            this.lLoaded.Size = new System.Drawing.Size(234, 40);
-            this.lLoaded.TabIndex = 4;
-            this.lLoaded.Text = "Loaded Fuel : 29 liters";
-            // 
-            // lFlow
-            // 
-            this.lFlow.AutoSize = true;
-            this.lFlow.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lFlow.Location = new System.Drawing.Point(243, 501);
-            this.lFlow.Name = "lFlow";
-            this.lFlow.Size = new System.Drawing.Size(235, 30);
-            this.lFlow.TabIndex = 5;
-            this.lFlow.Text = "Fuel Flow : 00 l/sec";
+            this.bSetLoadedFuel.Click += new System.EventHandler(this.bSetLoadedFuel_Click);
             // 
             // fuelControl
             // 
@@ -276,6 +277,6 @@ namespace ptPlugin1
         private MissionPlanner.Controls.MyButton bSetLoadedFuel;
         private System.Windows.Forms.Label lConsumed;
         private System.Windows.Forms.Label lLoaded;
-        private System.Windows.Forms.Label lFlow;
+        private System.Windows.Forms.Label IRaw;
     }
 }

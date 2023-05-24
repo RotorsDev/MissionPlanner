@@ -446,6 +446,7 @@ namespace ptPlugin1
             fuel.Size = fuelPage.ClientSize;
             fuel.Location = new Point(0, 0);
             fuel.Dock = DockStyle.Fill;
+            fuel.loadedFuelClicked += Fuel_loadedFuelClicked;
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(fuelPage);
 
 
@@ -548,6 +549,10 @@ namespace ptPlugin1
             return true;     //If it is false plugin will not start (loop will not called)
         }
 
+        private void Fuel_loadedFuelClicked(object sender, EventArgs e)
+        {
+            Host.cs.fuel_loaded = fuel.loadedFuel;
+        }
 
         private void TsDoAutoConnect_Click(object sender, EventArgs e)
         {
@@ -1364,9 +1369,9 @@ namespace ptPlugin1
         public void update_gauges()
         {
             eCtrl.setRpmEgt(Host.cs.eng_rpm, Host.cs.eng_egt);
-            eCtrl.setThrFuel(Host.cs.eng_throttle, Host.cs.fuel_pump_volt, Host.cs.fuel_level_raw);
+            eCtrl.setThrFuel(Host.cs.eng_throttle, Host.cs.fuel_flow, Host.cs.fuel_consumed);
             eCtrl.setStatus((byte)Host.cs.eng_status, (byte)Host.cs.eng_error);
-            fuel.setData(Host.cs.fuel_level_raw,Host.cs.fuel_flow, Host.cs.fuel_consumed);
+            fuel.setData(Host.cs.fuel_level_raw,Host.cs.fuel_flow, Host.cs.fuel_consumed, Host.cs.fuel_loaded);
             pitot.setData(Host.cs.pitot_temp, Host.cs.ambient_temp, Host.cs.pitot_target_temp, Host.cs.pitot_heat_duty);
             bp.setServo1Voltage(Host.cs.bat_servo1);
             bp.setServo2Voltage(Host.cs.bat_servo2);
@@ -1387,11 +1392,12 @@ namespace ptPlugin1
                     {
                         Stat engineStat = Stat.NOMINAL;
                         Stat fuelStat = Stat.NOMINAL;
-                        if (port.MAV.cs.eng_rpm < 30000) engineStat = Stat.ALERT;
+                        if (port.MAV.cs.eng_rpm < 27000) engineStat = Stat.ALERT;
                         if (port.MAV.cs.eng_egt > 900) engineStat = Stat.ALERT;
 
-                        if (port.MAV.cs.fuel_level_raw < 150) fuelStat = Stat.WARNING;
-                        if (port.MAV.cs.fuel_level_raw < 50) fuelStat = Stat.ALERT;
+
+                        if (port.MAV.cs.fuel_loaded - port.MAV.cs.fuel_consumed < 8) fuelStat = Stat.WARNING;
+                        if (port.MAV.cs.fuel_loaded - port.MAV.cs.fuel_consumed < 5) fuelStat = Stat.ALERT;
 
                         aMain1.setStatus("ENGINE", engineStat);
                         aMain1.setStatus("FUEL", fuelStat);
@@ -1427,11 +1433,11 @@ namespace ptPlugin1
                     {
                         Stat engineStat = Stat.NOMINAL;
                         Stat fuelStat = Stat.NOMINAL;
-                        if (port.MAV.cs.eng_rpm < 30000) engineStat = Stat.ALERT;
+                        if (port.MAV.cs.eng_rpm < 27000) engineStat = Stat.ALERT;
                         if (port.MAV.cs.eng_egt > 900) engineStat = Stat.ALERT;
 
-                        if (port.MAV.cs.fuel_level_raw < 150) fuelStat = Stat.WARNING;
-                        if (port.MAV.cs.fuel_level_raw < 50) fuelStat = Stat.ALERT;
+                        if (port.MAV.cs.fuel_loaded - port.MAV.cs.fuel_consumed < 8) fuelStat = Stat.WARNING;
+                        if (port.MAV.cs.fuel_loaded - port.MAV.cs.fuel_consumed < 5) fuelStat = Stat.ALERT;
 
                         aMain2.setStatus("ENGINE", engineStat);
                         aMain2.setStatus("FUEL", fuelStat);
@@ -1464,11 +1470,11 @@ namespace ptPlugin1
                     {
                         Stat engineStat = Stat.NOMINAL;
                         Stat fuelStat = Stat.NOMINAL;
-                        if (port.MAV.cs.eng_rpm < 30000) engineStat = Stat.ALERT;
+                        if (port.MAV.cs.eng_rpm < 27000) engineStat = Stat.ALERT;
                         if (port.MAV.cs.eng_egt > 900) engineStat = Stat.ALERT;
 
-                        if (port.MAV.cs.fuel_level_raw < 150) fuelStat = Stat.WARNING;
-                        if (port.MAV.cs.fuel_level_raw < 50) fuelStat = Stat.ALERT;
+                        if (port.MAV.cs.fuel_loaded - port.MAV.cs.fuel_consumed < 8) fuelStat = Stat.WARNING;
+                        if (port.MAV.cs.fuel_loaded - port.MAV.cs.fuel_consumed < 5) fuelStat = Stat.ALERT;
 
                         aMain3.setStatus("ENGINE", engineStat);
                         aMain3.setStatus("FUEL", fuelStat);

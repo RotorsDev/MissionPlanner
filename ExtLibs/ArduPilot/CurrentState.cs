@@ -2036,6 +2036,8 @@ namespace MissionPlanner
         [GroupText("Protar")]
         public float fuel_consumed { get; set; }
         [GroupText("Protar")]
+        public float fuel_loaded { get; set; }
+        [GroupText("Protar")]
         public float eng_egt { get; set; }
         [GroupText("Protar")]
         public float eng_id { get; set; }

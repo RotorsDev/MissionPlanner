@@ -73,13 +73,13 @@ namespace ptPlugin1
         }
 
 
-        public void setThrFuel(float thr, float pump, float level)
+        public void setThrFuel(float thr, float fuel_flow, float used_fuel)
         {
             MissionPlanner.MainV2.instance.BeginInvoke((MethodInvoker)(() =>
             {
                 lThrFuel.Text = "Throttle:" + thr.ToString("F0") + "%" + Environment.NewLine +
-                            "Fuel Pump:" + pump.ToString("F1") + "volt" + Environment.NewLine +
-                            "RAW Fuel Level:" + level.ToString("F0");
+                            "Fuel Flow:" + fuel_flow.ToString("F3") + " l/sec" + Environment.NewLine +
+                            "User Fuel:" + used_fuel.ToString("F2") + " l";
             }));
         }
 

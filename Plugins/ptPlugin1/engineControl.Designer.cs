@@ -114,7 +114,7 @@ namespace ptPlugin1
             this.lThrFuel.Name = "lThrFuel";
             this.lThrFuel.Size = new System.Drawing.Size(285, 90);
             this.lThrFuel.TabIndex = 87;
-            this.lThrFuel.Text = "Throttle : 0%\r\nFuel Pump : 5.6v\r\nFuel Level : 123";
+            this.lThrFuel.Text = "Throttle : 0%\r\nFuel Flow: 0.00 l/s\r\nFuel Used : 0.0 l";
             // 
             // engineTempGauge
             // 
