@@ -489,7 +489,6 @@ namespace ptPlugin1
             tlOw.RowCount = 12;
             tlOw.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
 
-
             for (int i = 0; i < 12; i++)
             {
                 Label l = new Label();
@@ -598,6 +597,22 @@ namespace ptPlugin1
 
 
             }));
+
+            //Send fleet setup data to the flight termination unit as well
+            try
+            {
+                UdpClient client = new UdpClient();
+                IPEndPoint ip = new IPEndPoint(IPAddress.Parse("192.168.69.99"), 19728);
+                byte[] bytes = { 0xaa, 0x55, 0x00, 0x00, 0x00 };
+                bytes[2] = (byte)plane1ID;
+                bytes[3] = (byte)plane2ID;
+                bytes[4] = (byte)plane3ID; 
+                client.Send(bytes, bytes.Length, ip);
+                client.Close();
+            }
+            catch {
+                CustomMessageBox.Show("Unable to send fleet setup to the Flight Termination Unit. Check network connectivity!");
+            }
         }
 
         private void TsStartSim_Click(object sender, EventArgs e)
