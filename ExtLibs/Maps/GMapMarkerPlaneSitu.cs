@@ -60,7 +60,7 @@ namespace MissionPlanner.Maps
         float nav_bearing = -1;
         float radius = -1;
         float target = -1;
-        int which = 0;
+        public int which = 0;
 
         public GMapMarkerPlaneSitu(int which, PointLatLng p, float heading, float speed)
             : base(p)

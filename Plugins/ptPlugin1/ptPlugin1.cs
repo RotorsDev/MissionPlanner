@@ -140,6 +140,9 @@ namespace ptPlugin1
         public TableLayoutPanel tlOw = new TableLayoutPanel();   
         public Dictionary<string, Label> oWlabels = new Dictionary<string, Label>();
 
+        public TabPage ftPage = new TabPage();
+        public TableLayoutPanel tlFT = new TableLayoutPanel();
+        public Dictionary<string, Label> FTlabels = new Dictionary<string, Label>();
 
         public TabPage twpPage = new TabPage();
 
@@ -163,9 +166,13 @@ namespace ptPlugin1
 
         public LandState landState = LandState.None;
 
-
-
         DateTime lastNonCriticalUpdate = DateTime.MinValue;
+
+        //udp client for the Flight Termination System Data display
+        //IP address and port is hardcoded (192.168.69.99 - FT, 192.168.69.100 - GCS, PORT - 19728
+        UdpClient FTudpClient;
+        IPEndPoint FTudpEndPoint;
+        internal static GMapOverlay FTOverlay = new GMapOverlay();
 
 
         public override string Name
@@ -535,9 +542,88 @@ namespace ptPlugin1
 
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(overviewPage);
 
-            //Setup mavlink receiving
-            //Host.comPort.OnPacketReceived += MavOnOnPacketReceivedHandler;
 
+            #region FTDataDisplaySetup
+            //*** Flight termination data display setup
+            ftPage.Text = "Flight Termination System";
+            ftPage.Name = "FlightTermViewTab";
+            ftPage.Controls.Add(tlFT);
+            tlFT.Size = ftPage.ClientSize;
+            tlFT.Location = new Point(3, 3);
+            tlFT.Dock = DockStyle.Fill;
+            tlFT.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top | AnchorStyles.Bottom;
+            tlFT.ColumnCount = 4;
+            tlFT.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            tlFT.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            tlFT.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            tlFT.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            tlFT.RowCount = 11;
+            tlFT.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
+
+            for (int i = 0; i < 10; i++)
+            {
+                Label l = new Label();
+                l.AutoSize = true;
+                l.Dock = DockStyle.Fill;
+                l.Font = new Font("Arial", 12, FontStyle.Bold);
+                tlFT.Controls.Add(l, 0, i);
+
+                Label l1 = new Label();
+                l1.Font = new Font("Arial", 12);
+                l1.Dock = DockStyle.Fill;
+                l1.TextAlign = ContentAlignment.TopCenter;
+                l1.AutoSize = true;
+                tlFT.Controls.Add(l1, 1, i);
+
+                Label l2 = new Label();
+                l2.Font = new Font("Arial", 12);
+                l2.Dock = DockStyle.Fill;
+                l2.TextAlign = ContentAlignment.TopCenter;
+                l2.AutoSize = true;
+                tlFT.Controls.Add(l2, 2, i);
+
+                Label l3 = new Label();
+                l3.Font = new Font("Arial", 12);
+                l3.Dock = DockStyle.Fill;
+                l3.TextAlign = ContentAlignment.TopCenter;
+                l3.AutoSize = true;
+                tlFT.Controls.Add(l3, 2, i);
+            }
+
+            Label la = new Label();
+            la.Font = new Font("Arial", 12);
+            la.Dock = DockStyle.Fill;
+            la.TextAlign = ContentAlignment.TopCenter;
+            la.AutoSize = true;
+            tlFT.Controls.Add(la, 0, 10);
+
+            CheckBox cb = new CheckBox();
+            cb.Dock = DockStyle.Fill;
+            cb.AutoSize = true;
+            cb.Checked = false;
+            cb.AutoSize = true;
+            tlFT.Controls.Add(cb, 1, 10);
+
+
+            //Update Row Names
+            ((Label)tlFT.GetControlFromPosition(0, 0)).Text = "SYSID";
+            ((Label)tlFT.GetControlFromPosition(0, 1)).Text = "FT State";
+            ((Label)tlFT.GetControlFromPosition(0, 2)).Text = "AirSpeed";
+            ((Label)tlFT.GetControlFromPosition(0, 3)).Text = "POS LAT";
+            ((Label)tlFT.GetControlFromPosition(0, 4)).Text = "POS LON";
+            ((Label)tlFT.GetControlFromPosition(0, 5)).Text = "Alt AMSL";
+            ((Label)tlFT.GetControlFromPosition(0, 6)).Text = "Heading";
+            ((Label)tlFT.GetControlFromPosition(0, 7)).Text = "Flight Mode";
+            ((Label)tlFT.GetControlFromPosition(0, 8)).Text = "AIR SNR";
+            ((Label)tlFT.GetControlFromPosition(0, 9)).Text = "AIR RSSI";
+            ((Label)tlFT.GetControlFromPosition(0, 10)).Text = "Show on Map";
+
+
+            Host.MainForm.FlightData.tabControlactions.TabPages.Add(ftPage);
+            //*** End of flight termination data display setup
+            #endregion
+
+            //Get servo settings from config
             chuteServo = Settings.Instance.GetInt32("chuteServo", 9);
             Settings.Instance["chuteServo"] = chuteServo.ToString();
 
@@ -545,8 +631,147 @@ namespace ptPlugin1
             Settings.Instance["chuteServoOpenPWM"] = chuteServoOpenPWM.ToString();
 
 
+            //Set up Fligh Termination UDP packet receiving 
+            FTudpEndPoint = new IPEndPoint(IPAddress.Parse("192.168.69.100"), 19728);
+            FTudpClient = new UdpClient(19728);
+            FTudpClient.BeginReceive(new AsyncCallback(ProcessFTMessage), null);
+
+            //Add Flight Termination Overlay
+            FTOverlay.Id = "FTO";
+            Host.FDGMapControl.Overlays.Add(FTOverlay);
+
             return true;     //If it is false plugin will not start (loop will not called)
         }
+
+        private void ProcessFTMessage(IAsyncResult result)
+        {
+
+            try
+            {
+                // Get message
+                byte[] m = FTudpClient.EndReceive(result, ref FTudpEndPoint);
+                // Restart listener
+                FTudpClient.BeginReceive(new AsyncCallback(ProcessFTMessage), null);
+
+                //Process the message
+                Console.WriteLine("FT Message received, SysID:" + m[0].ToString());
+
+                int sysid = m[0];
+                string ftstate;
+                switch (m[1])
+                {
+                    case 0:
+                        ftstate = "PRESS TEST";
+                        break;
+                    case 1:
+                        ftstate = "Normal";
+                        break;
+                    case 2:
+                        ftstate = "RTL invoked";
+                        break;
+                    case 3:
+                        ftstate = "TERMINATE";
+                        break;
+                    default:
+                        ftstate = "UNKNOWN";
+                        break;
+                }
+                string fltmode;
+                switch (m[15])
+                {
+                    case 1:
+                        fltmode = "Circle";
+                        break;
+                    case 2:
+                        fltmode = "Stabilize";
+                        break;
+                    case 5:
+                        fltmode = "FBW A";
+                        break;
+                    case 6:
+                        fltmode = "FBW B";
+                        break;
+                    case 10:
+                        fltmode = "Auto";
+                        break;
+                    case 11:
+                        fltmode = "RTL";
+                        break;
+                    case 12:
+                        fltmode = "Loiter";
+                        break;
+                    case 15:
+                        fltmode = "Guided";
+                        break;
+                    default:
+                        fltmode = "Mode " + m[14].ToString();
+                        break;
+                }
+
+                byte[] conv_int32 = { 0, 0, 0, 0 };
+                conv_int32[0] = m[2]; conv_int32[1] = m[3]; conv_int32[2] = m[4]; conv_int32[3] = m[5];
+                float pos_lat = (float)(BitConverter.ToInt32(conv_int32, 0) / 1e7);
+                conv_int32[0] = m[6]; conv_int32[1] = m[7]; conv_int32[2] = m[8]; conv_int32[3] = m[9];
+                float pos_lon = (float)(BitConverter.ToInt32(conv_int32, 0) / 1e7);
+
+                int airspeed = m[14];
+                byte[] c = { 0, 0 };
+                c[0] = m[10]; c[1] = m[11];
+                int alt_amsl = BitConverter.ToInt16(c, 0);
+                c[0] = m[12]; c[1] = m[13];
+                int heading = BitConverter.ToInt16(c, 0);
+
+                MainV2.instance.BeginInvoke((MethodInvoker)(() =>
+                {
+
+                    ((Label)tlFT.GetControlFromPosition(m[18] + 1, 0)).Text = sysid.ToString();
+                    ((Label)tlFT.GetControlFromPosition(m[18] + 1, 1)).Text = ftstate;
+                    ((Label)tlFT.GetControlFromPosition(m[18] + 1, 2)).Text = airspeed.ToString() + " m/s";
+                    ((Label)tlFT.GetControlFromPosition(m[18] + 1, 3)).Text = pos_lat.ToString("F6");
+                    ((Label)tlFT.GetControlFromPosition(m[18] + 1, 4)).Text = pos_lon.ToString("F6");
+                    ((Label)tlFT.GetControlFromPosition(m[18] + 1, 5)).Text = alt_amsl.ToString() + " m";
+                    ((Label)tlFT.GetControlFromPosition(m[18] + 1, 6)).Text = heading.ToString() + " deg";
+                    ((Label)tlFT.GetControlFromPosition(m[18] + 1, 7)).Text = fltmode;
+                    ((Label)tlFT.GetControlFromPosition(m[18] + 1, 8)).Text = m[16].ToString() + "dBm";
+                    ((Label)tlFT.GetControlFromPosition(m[18] + 1, 9)).Text = ((sbyte)m[17]).ToString() + "dBm";
+                }));
+
+
+                bool showplanes = ((CheckBox)tlFT.GetControlFromPosition(1, 10)).Checked;
+                if (!showplanes)
+                {
+                    FTOverlay.Markers.Clear();
+                }
+                else
+                {
+
+                    GMapMarkerPlaneSitu marker_to_remove = null;
+
+                    foreach (GMapMarkerPlaneSitu marker in FTOverlay.Markers)
+                    {
+                        if (marker.which == sysid)
+                        {
+                            marker_to_remove = marker;
+                        }
+                    }
+
+                    if (marker_to_remove != null)
+                    {
+                        FTOverlay.Markers.Remove(marker_to_remove);
+                    }
+                    GMapMarkerPlaneSitu new_marker = new GMapMarkerPlaneSitu(sysid, new PointLatLngAlt(pos_lat, pos_lon, 0), heading, airspeed);
+                    new_marker.ToolTipText = "Alt:" + alt_amsl.ToString("F0") + Environment.NewLine + "IAS:" + airspeed.ToString("F0");
+                    new_marker.ToolTipMode = MarkerTooltipMode.Always;
+                    FTOverlay.Markers.Add(new_marker);
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Catch!!!");
+
+            }
+        }
+
 
         private void Fuel_loadedFuelClicked(object sender, EventArgs e)
         {
