@@ -21,6 +21,7 @@ using ClipperLib;
 using System.Net.Sockets;
 using System.Net;
 using static MissionPlanner.Utilities.LTM;
+using System.Linq.Expressions;
 
 
 
@@ -1502,13 +1503,31 @@ namespace ptPlugin1
         //set landing point an init landing sequence
         private void TsLandingPoint_Click(object sender, EventArgs e)
         {
+
+            //Check wind velocity and if it is below 3m/s then ask for direction
+            var winddir = Host.cs.g_wind_dir;
+            string winddir_input = winddir.ToString();
+
+            if (Host.cs.g_wind_vel < 4)
+            {
+                InputBox.Show("Low windspeed detected", "You can enter wind direction manually or accept meassured value", ref winddir_input);
+                try
+                {
+                    winddir = float.Parse(winddir_input);
+                }
+                catch
+                {
+
+                }
+                //Sanity checks 
+                if (winddir < 0 || winddir > 359) winddir = Host.cs.g_wind_dir;
+            }
+
             PointLatLngAlt lp = Host.FDMenuMapPosition;
-
-
             float landReverse = Settings.Instance.GetFloat("LandDirectionReverse", 0);
             Settings.Instance["LandDirectionReverse"] = landReverse.ToString();
    
-            lc.updateLandingData(lp, wrap360(Host.cs.g_wind_dir - landReverse), Host.cs.g_wind_vel, (int)MainV2.comPort.MAV.param["WP_LOITER_RAD"].Value);
+            lc.updateLandingData(lp, wrap360(winddir - landReverse), Host.cs.g_wind_vel, (int)MainV2.comPort.MAV.param["WP_LOITER_RAD"].Value);
    
             landingOverlay.Markers.Clear();
             landingOverlay.Routes.Clear();
@@ -1536,9 +1555,6 @@ namespace ptPlugin1
 
             lc.LandingPoint.Tag = "LP";
             lc.WaitingPoint.Tag = "WP";
-
-            //sendUDPBroadcast(lc.LandingPoint.ToJSON());
-            //sendUDPBroadcast(lc.WaitingPoint.ToJSON());
 
         }
 
