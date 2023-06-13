@@ -579,7 +579,7 @@ namespace UDPWeatherStation
                 Graphics graphics = Graphics.FromImage(rotatedBmp);
                 graphics.TranslateTransform(rotatedBmp.Width / 2, rotatedBmp.Height / 2);
                 //float newAngle = ((float)wd.windDirection + 180) % 360; // Arrow points where the wind is blowing to
-                graphics.RotateTransform((float)wd.windDirection);
+                graphics.RotateTransform((float)wd.windDirection+(float)180);//(float)180 --> reverse arrow direction
                 graphics.TranslateTransform(-(rotatedBmp.Width / 2), -(rotatedBmp.Height / 2));
                 graphics.DrawImage(imageOriginal, new PointF(0, 0));
                 pBoxArrow.Image = rotatedBmp;
