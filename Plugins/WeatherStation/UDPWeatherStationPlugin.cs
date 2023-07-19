@@ -28,7 +28,6 @@ namespace UDPWeatherStation
 {
     public class UDPWeatherStationPlugin : Plugin
     {
-
         public class MovingAverage
         {
             private Queue<double> EW_samples = new Queue<double>();
@@ -79,7 +78,6 @@ namespace UDPWeatherStation
         private TimeSpan connectionTimeout;
         private DateTime lastWeatherUpdate;
         
-
         [AttributeUsage(AttributeTargets.All)]
         public class WeatherDataAttribute : Attribute
         {
@@ -129,13 +127,11 @@ namespace UDPWeatherStation
                 get { return visible; }
                 set { visible = value; }
             }
-
         }
 
         //Contains the last received data packet from the WeatherStation
         public class WeatherStationData
         {
-
             private double ws;
             private MovingAverage diravg = new MovingAverage();
 
@@ -192,7 +188,6 @@ namespace UDPWeatherStation
             public double windspeedMultiplier = 1.0;
             public double winddirOffset = 0;
 
-
             public WeatherStationData() { }
 
             public int getFieldPosition(string name)
@@ -231,7 +226,6 @@ namespace UDPWeatherStation
                 {
                 }
                 return retval;
-
             }
 
             public string getFieldUnit(string name)
@@ -272,8 +266,6 @@ namespace UDPWeatherStation
                 return retval;
             }
 
-
-
             // Format // heading|windSpd|windDir|pressure|intTemp|extHum|extTemp|battery|impules/min
             public void updateData(string UDPString)
             {
@@ -288,7 +280,6 @@ namespace UDPWeatherStation
                     var value = fields[pos];
                     item.SetValue(this, value.ConvertToDouble());
                 }
-
             }
 
             public int getPropertyCount()
@@ -337,7 +328,6 @@ namespace UDPWeatherStation
         private string wsOffsetKeyName = "WEATHER_WindspeedOffset";
         private string wsMultiplierKeyName = "WEATHER_WindspeedMultiplier";
         private string wdOffsetKeyName = "WEATHER_WinddirOffset";
-
 
         #region Plugin info
         public override string Name
@@ -435,7 +425,6 @@ namespace UDPWeatherStation
                     Settings.Instance[wsMultiplierKeyName] = wd.windspeedMultiplier.ToString();
                 }
 
-
                 // Create control
                 weatherTable = new TableLayoutPanel();
                 weatherTable.Name = "tableWeather";
@@ -460,7 +449,7 @@ namespace UDPWeatherStation
                 ThemeManager.ApplyThemeTo(tabPage);
                 flowPanel.Refresh();
 
-                // Setup UDP broadcast listener
+                // Setup UDP broadcast listeners
                 PORT = 3333;
                 iPEndPoint = new IPEndPoint(IPAddress.Any, PORT);
                 udpClient = new UdpClient(PORT);
@@ -531,23 +520,94 @@ namespace UDPWeatherStation
             // Restart listener
             udpClient.BeginReceive(new AsyncCallback(ProcessMessage), null);
 
-            // Save update time
-            lastWeatherUpdate = DateTime.Now;
+            // Check which message it is
+            if (message.StartsWith("ADSB:"))
+            {
+                ProcessADSB(message.Replace("ADSB:", ""));
+            }
+            else // message.StartsWith("WEATHER:")
+            {
+                // Save update time
+                lastWeatherUpdate = DateTime.Now;
 
-            // Flip bool for first message
-            neverConnected = false;
+                // Flip bool for first message
+                neverConnected = false;
 
+                // Update tableConfig values
+                //UpdateData(message);
+
+                wd.updateData(message.Replace("WEATHER:", ""));
+                UpdateCurrentControlsSet();
+                // Update UI
+                UpdateUI();
+            }
             // Log message
             Console.WriteLine($"UDP broadcast on port {PORT}: {message}");
             //LogMessage(message);
+        }
 
-            // Update tableConfig values
-            //UpdateData(message);
+        private void ProcessADSB(string message)
+        {
+            //            0       1   2     3        4         5            6         7      8        9           10         11       12
+            // ADSB:ICAO_address|lat|lon|altitude|heading|hor_velocity|ver_velocity|flags|squawk|altitude_type|callsign|emitter_type|tslc
 
-            wd.updateData(message);
-            UpdateCurrentControlsSet();
-            // Update UI
-            UpdateUI();
+            MAVLink.mavlink_adsb_vehicle_t packet = new MAVLink.mavlink_adsb_vehicle_t()
+            {
+                ICAO_address = uint.Parse(message.Split('|')[0]),
+                lat = int.Parse(message.Split('|')[1]),
+                lon = int.Parse(message.Split('|')[2]),
+                altitude = int.Parse(message.Split('|')[3]),
+                heading = ushort.Parse(message.Split('|')[4]),
+                hor_velocity = ushort.Parse(message.Split('|')[5]),
+                ver_velocity = short.Parse(message.Split('|')[6]),
+                flags = ushort.Parse(message.Split('|')[7]),
+                squawk = ushort.Parse(message.Split('|')[8]),
+                altitude_type = byte.Parse(message.Split('|')[9]),
+                callsign = Encoding.UTF8.GetBytes(message.Split('|')[10]),
+                emitter_type = byte.Parse(message.Split('|')[11]),
+                tslc = byte.Parse(message.Split('|')[12])
+            };
+
+            //MissionPlanner.Utilities.adsb.UpdatePlanePosition(null, null); // If only this wasn't private
+
+            lock (Host.MainForm.adsblock)
+            {
+                string id = ""+packet.ICAO_address;
+
+                // Inspired by MAVLinkInterface.cs readPacketAsync() lines 5023-5040
+
+                if (Host.MainForm.adsbPlanes.ContainsKey(id))
+                {
+                    // update existing
+                    (Host.MainForm.adsbPlanes[id]).Lat = packet.lat / 1e7;
+                    (Host.MainForm.adsbPlanes[id]).Lng = packet.lon / 1e7;
+                    (Host.MainForm.adsbPlanes[id]).Alt = packet.altitude / 1000.0;
+                    (Host.MainForm.adsbPlanes[id]).Heading = packet.heading * 0.01f;
+                    (Host.MainForm.adsbPlanes[id]).Time = DateTime.Now;
+                    (Host.MainForm.adsbPlanes[id]).CallSign = Encoding.UTF8.GetString(packet.callsign);
+                    (Host.MainForm.adsbPlanes[id]).Squawk = packet.squawk;
+                    (Host.MainForm.adsbPlanes[id]).Raw = packet;
+                    (Host.MainForm.adsbPlanes[id]).Speed = packet.hor_velocity * 0.01f;
+                }
+                else
+                {
+                    // create new plane
+                    Host.MainForm.adsbPlanes[id] =
+                        new adsb.PointLatLngAltHdg(
+                            packet.lat / 1e7,
+                            packet.lon / 1e7,
+                            packet.altitude / 1000.0,
+                            packet.heading * 0.01f,
+                            packet.hor_velocity * 0.01f,
+                            id,
+                            DateTime.Now)
+                        {
+                            CallSign = Encoding.UTF8.GetString(packet.callsign),
+                            Squawk = packet.squawk,
+                            Raw = packet
+                        };
+                }
+            }
         }
 
         private void UpdateCurrentControlsSet()
@@ -570,7 +630,7 @@ namespace UDPWeatherStation
                 List<(string, string)> data = wd.getDisplay();
                 for (int i = 0; i < data.Count; i++) 
                 {
-                        weatherTable.GetControlFromPosition(1, i).Text = $"{data[i].Item2}";
+                    weatherTable.GetControlFromPosition(1, i).Text = $"{data[i].Item2}";
                 }
 
                 // Update wind arrow
@@ -578,8 +638,8 @@ namespace UDPWeatherStation
                 rotatedBmp.SetResolution(imageOriginal.HorizontalResolution, imageOriginal.VerticalResolution);
                 Graphics graphics = Graphics.FromImage(rotatedBmp);
                 graphics.TranslateTransform(rotatedBmp.Width / 2, rotatedBmp.Height / 2);
-                //float newAngle = ((float)wd.windDirection + 180) % 360; // Arrow points where the wind is blowing to
-                graphics.RotateTransform((float)wd.windDirection);
+                //float newAngle = ((float)wd.windDirection + 180) % 360;
+                graphics.RotateTransform(((float)wd.windDirection + 180) % 360);
                 graphics.TranslateTransform(-(rotatedBmp.Width / 2), -(rotatedBmp.Height / 2));
                 graphics.DrawImage(imageOriginal, new PointF(0, 0));
                 pBoxArrow.Image = rotatedBmp;
@@ -616,8 +676,8 @@ namespace UDPWeatherStation
             }));
         }
 
-        public override bool Exit()
         // Exit called when plugin is terminated (usually when Mission Planner is exiting)
+        public override bool Exit()
         {
             return true;	// Return value is not used
         }
