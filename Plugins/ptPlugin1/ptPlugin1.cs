@@ -1245,6 +1245,24 @@ namespace ptPlugin1
             {
                 if (Math.Abs(lc.WindDirection - Host.cs.yaw) < 3)
                 {
+                    /*
+                    // During the final we aim to reduce the speed to a set value (finalSpeed).
+                    // Todo: finalSpeed setting should be handled by the GUI.
+
+                    float finalSpeed = 30;
+                    // For testing, send landingSpeed again here (instead of finalSpeed)
+
+                    try
+                    {
+                        MainV2.comPort.doCommandAsync(MainV2.comPort.MAV.sysid, MainV2.comPort.MAV.compid,
+                                MAVLink.MAV_CMD.DO_CHANGE_SPEED, 0, finalSpeed, 0, 0, 0, 0, 0);
+                    }
+                    catch
+                    {
+                        lc.state = LandState.None;
+                        CustomMessageBox.Show("Unable to set speed", "Error");
+                    }
+                    */
 
                     lc.state = LandState.GoToLand;
                     Locationwp gotohere = new Locationwp();
