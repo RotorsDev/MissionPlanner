@@ -333,6 +333,9 @@
     <EmbeddedResource Include="Log\MavlinkLog.uk.resx">
       <DependentUpon>MavlinkLog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="MV04\Settings\SettingForm.resx">
+      <DependentUpon>SettingForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Radio\Sikradio.uk.resx">
       <DependentUpon>Sikradio.cs</DependentUpon>
     </EmbeddedResource>
@@ -919,6 +922,13 @@
       <SubType>Form</SubType>
       <DependentUpon>MainV2.cs</DependentUpon>
     </Compile>
+    <Compile Include="MV04\Settings\SettingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MV04\Settings\SettingForm.Designer.cs">
+      <DependentUpon>SettingForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MV04\Settings\SettingManager.cs" />
     <Compile Include="NativeMethods.cs" />
     <None Include="Drivers\cubeorangeplus.cat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
