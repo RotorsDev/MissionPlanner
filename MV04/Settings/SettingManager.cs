@@ -21,7 +21,7 @@ namespace MissionPlanner.MV04.Settings
     internal class SettingManager
     {
         private string FileName = MissionPlanner.Utilities.Settings.GetUserDataDirectory() + "MV04_settings.json";
-        Dictionary<Settings, object> SettingCollection;
+        internal Dictionary<Settings, object> SettingCollection;
 
         public SettingManager()
         {
