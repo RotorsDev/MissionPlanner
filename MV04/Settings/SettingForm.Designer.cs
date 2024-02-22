@@ -46,7 +46,7 @@
             // 
             this.button_Save.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button_Save.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.button_Save.Location = new System.Drawing.Point(216, 326);
+            this.button_Save.Location = new System.Drawing.Point(216, 176);
             this.button_Save.Name = "button_Save";
             this.button_Save.Size = new System.Drawing.Size(75, 23);
             this.button_Save.TabIndex = 0;
@@ -58,7 +58,7 @@
             // 
             this.button_Cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button_Cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.button_Cancel.Location = new System.Drawing.Point(297, 326);
+            this.button_Cancel.Location = new System.Drawing.Point(297, 176);
             this.button_Cancel.Name = "button_Cancel";
             this.button_Cancel.Size = new System.Drawing.Size(75, 23);
             this.button_Cancel.TabIndex = 1;
@@ -70,7 +70,7 @@
             // 
             this.label1.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(43, 32);
+            this.label1.Location = new System.Drawing.Point(43, 13);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(104, 13);
             this.label1.TabIndex = 2;
@@ -100,7 +100,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(357, 308);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(357, 158);
             this.tableLayoutPanel1.TabIndex = 3;
             // 
             // comboBox_speedFormat
@@ -112,7 +112,7 @@
             "mps",
             "kmph",
             "knots"});
-            this.comboBox_speedFormat.Location = new System.Drawing.Point(153, 259);
+            this.comboBox_speedFormat.Location = new System.Drawing.Point(153, 127);
             this.comboBox_speedFormat.Name = "comboBox_speedFormat";
             this.comboBox_speedFormat.Size = new System.Drawing.Size(201, 21);
             this.comboBox_speedFormat.TabIndex = 9;
@@ -126,7 +126,7 @@
             "m",
             "km",
             "ft"});
-            this.comboBox_distFormat.Location = new System.Drawing.Point(153, 182);
+            this.comboBox_distFormat.Location = new System.Drawing.Point(153, 87);
             this.comboBox_distFormat.Name = "comboBox_distFormat";
             this.comboBox_distFormat.Size = new System.Drawing.Size(201, 21);
             this.comboBox_distFormat.TabIndex = 8;
@@ -139,7 +139,7 @@
             this.comboBox_altFormat.Items.AddRange(new object[] {
             "m",
             "ft"});
-            this.comboBox_altFormat.Location = new System.Drawing.Point(153, 105);
+            this.comboBox_altFormat.Location = new System.Drawing.Point(153, 48);
             this.comboBox_altFormat.Name = "comboBox_altFormat";
             this.comboBox_altFormat.Size = new System.Drawing.Size(201, 21);
             this.comboBox_altFormat.TabIndex = 7;
@@ -148,7 +148,7 @@
             // 
             this.label2.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(22, 109);
+            this.label2.Location = new System.Drawing.Point(22, 52);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(125, 13);
             this.label2.TabIndex = 3;
@@ -159,7 +159,7 @@
             // 
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(27, 186);
+            this.label3.Location = new System.Drawing.Point(27, 91);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(120, 13);
             this.label3.TabIndex = 4;
@@ -170,7 +170,7 @@
             // 
             this.label4.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(24, 263);
+            this.label4.Location = new System.Drawing.Point(24, 131);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(123, 13);
             this.label4.TabIndex = 5;
@@ -185,7 +185,7 @@
             this.comboBox_coordFormat.Items.AddRange(new object[] {
             "WGS84",
             "MGRS"});
-            this.comboBox_coordFormat.Location = new System.Drawing.Point(153, 28);
+            this.comboBox_coordFormat.Location = new System.Drawing.Point(153, 9);
             this.comboBox_coordFormat.Name = "comboBox_coordFormat";
             this.comboBox_coordFormat.Size = new System.Drawing.Size(201, 21);
             this.comboBox_coordFormat.TabIndex = 6;
@@ -196,12 +196,12 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.button_Cancel;
-            this.ClientSize = new System.Drawing.Size(384, 361);
+            this.ClientSize = new System.Drawing.Size(384, 211);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.button_Cancel);
             this.Controls.Add(this.button_Save);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
-            this.MinimumSize = new System.Drawing.Size(320, 300);
+            this.MinimumSize = new System.Drawing.Size(400, 200);
             this.Name = "SettingForm";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
