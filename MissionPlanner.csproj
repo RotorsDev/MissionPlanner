@@ -924,6 +924,7 @@
     </Compile>
     <Compile Include="MV04\CameraControlLib\MavProto.cs" />
     <Compile Include="MV04\HudCrosshairCalc\HudCrosshairCalc.cs" />
+    <Compile Include="MV04\HudCrosshairCalc\HudElements.cs" />
     <Compile Include="MV04\Settings\SettingForm.cs">
       <SubType>Form</SubType>
     </Compile>
