@@ -922,6 +922,7 @@
       <SubType>Form</SubType>
       <DependentUpon>MainV2.cs</DependentUpon>
     </Compile>
+    <Compile Include="MV04\CameraControlLib\MavProto.cs" />
     <Compile Include="MV04\Settings\SettingForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -5262,7 +5263,9 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="MV04\CameraViewLib\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(ProjectDir)ExtLibs\System.IO.Compression.dll" "$(ProjectDir)$(OutDir)"</PostBuildEvent>
