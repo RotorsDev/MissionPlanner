@@ -333,6 +333,9 @@
     <EmbeddedResource Include="Log\MavlinkLog.uk.resx">
       <DependentUpon>MavlinkLog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="MV04\HudCrosshairCalc\TestForm.resx">
+      <DependentUpon>TestForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MV04\Settings\SettingForm.resx">
       <DependentUpon>SettingForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -925,6 +928,13 @@
     <Compile Include="MV04\CameraControlLib\MavProto.cs" />
     <Compile Include="MV04\HudCrosshairCalc\HudCrosshairCalc.cs" />
     <Compile Include="MV04\HudCrosshairCalc\HudElements.cs" />
+    <Compile Include="MV04\HudCrosshairCalc\TestForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MV04\HudCrosshairCalc\TestForm.Designer.cs">
+      <DependentUpon>TestForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MV04\HudCrosshairCalc\TestPlugin.cs" />
     <Compile Include="MV04\Settings\SettingForm.cs">
       <SubType>Form</SubType>
     </Compile>
