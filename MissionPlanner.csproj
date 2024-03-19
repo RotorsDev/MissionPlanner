@@ -923,6 +923,7 @@
       <DependentUpon>MainV2.cs</DependentUpon>
     </Compile>
     <Compile Include="MV04\CameraControlLib\MavProto.cs" />
+    <Compile Include="MV04\HudCrosshairCalc\HudCrosshairCalc.cs" />
     <Compile Include="MV04\Settings\SettingForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -936,6 +937,7 @@
     </None>
     <None Include="MissionPlanner.GCSViews.ConfigurationView.ConfigGPSOrder+GPSCAN.datasource" />
     <None Include="MissionPlanner.GCSViews.ConfigurationView.ConfigHWCompass2+CompassDeviceInfo.datasource" />
+    <None Include="MV04\HudCrosshairCalc\README.md" />
     <None Include="MV04\Settings\README.md" />
     <None Include="plugins\example10-canlogfile.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
