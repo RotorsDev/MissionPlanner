@@ -1,30 +1,27 @@
-﻿using MissionPlanner;
-using MissionPlanner.Plugin;
-using MissionPlanner.Utilities;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Windows.Forms;
-using System.Diagnostics;
-using System.Drawing;
-using MissionPlanner.Controls.PreFlight;
-using MissionPlanner.Controls;
-using System.Linq;
+﻿using ClipperLib;
 using FastColoredTextBoxNS;
 using GMap.NET;
 using GMap.NET.WindowsForms;
 using GMap.NET.WindowsForms.Markers;
+using MissionPlanner;
+using MissionPlanner.Controls;
+using MissionPlanner.Controls.PreFlight;
 using MissionPlanner.Maps;
-using System.Text;
-using System.Media;
-using ClipperLib;
-using System.Net.Sockets;
-using System.Net;
-using static MissionPlanner.Utilities.LTM;
+using MissionPlanner.Plugin;
+using MissionPlanner.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
-
-
-
+using System.Media;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Windows.Forms;
+using static MissionPlanner.Utilities.LTM;
 
 //By Bandi
 namespace ptPlugin1
@@ -53,21 +50,21 @@ namespace ptPlugin1
         public PointLatLngAlt pos1;
         public float heading1;
         public float airspeed1;
+
         public int sysid2;
         public PointLatLngAlt pos2;
         public float heading2;
         public float airspeed2;
+
         public int sysid3;
         public PointLatLngAlt pos3;
         public float heading3;
         public float airspeed3;
-
     }
 
     [PreventTheming]
     public partial class ptPlugin1 : Plugin
     {
-
         public situation sit = new situation();
         
         public static int plane1ID = 0;
@@ -90,18 +87,13 @@ namespace ptPlugin1
 
         public static FloatingForm annunciatorForm = new FloatingForm();
 
-
-
         public TabPage payloadControlpage = new TabPage();
         public payloadcontrol plControl = new payloadcontrol();
         public List<Payload> payloadSettings = new List<Payload>();
         payloadSetupForm fPs;
 
-
-
         public TabPage engineControlPage = new TabPage();
         public engineControl eCtrl = new engineControl();
-
 
         public TabPage colorMessagePage = new TabPage();
         public FastColoredTextBox fctb;
@@ -109,12 +101,9 @@ namespace ptPlugin1
         public DateTime lastDisplayedMessage2 = DateTime.MinValue;
         public DateTime lastDisplayedMessage3 = DateTime.MinValue;
 
-
-
         TextStyle infoStyle = new TextStyle(Brushes.White, null, FontStyle.Regular);
         TextStyle warningStyle = new TextStyle(Brushes.BurlyWood, null, FontStyle.Regular);
         TextStyle errorStyle = new TextStyle(Brushes.Red, null, FontStyle.Regular);
-
 
         public TabPage connectionControlPage = new TabPage();
         public ConnectionStats connectionStats;
@@ -122,10 +111,8 @@ namespace ptPlugin1
         public TabPage batteryPage = new TabPage();
         public batterypanel bp = new batterypanel();
 
-
         public TabPage ekfPage = new TabPage();
         public ekfStatControl ekfStat = new ekfStatControl();
-
 
         public TabPage pitotPage = new TabPage();
         public pitotControl pitot = new pitotControl();
@@ -135,7 +122,6 @@ namespace ptPlugin1
 
         public TabPage landingPage = new TabPage();
         public landingControl lc = new landingControl();
-
 
         public TabPage overviewPage = new TabPage();
         public TableLayoutPanel tlOw = new TableLayoutPanel();   
@@ -157,7 +143,6 @@ namespace ptPlugin1
         public int chuteServo = 9;
         public int chuteServoOpenPWM = 1100;
 
-
         internal GMapMarker markerLanding;
         internal GMapMarker markerWaiting;
         internal GMapMarker markerTarget;
@@ -169,12 +154,11 @@ namespace ptPlugin1
 
         DateTime lastNonCriticalUpdate = DateTime.MinValue;
 
-        //udp client for the Flight Termination System Data display
-        //IP address and port is hardcoded (192.168.69.99 - FT, 192.168.69.100 - GCS, PORT - 19728
+        // UDP client for the Flight Termination System Data display
+        // IP address and port is hardcoded (192.168.69.99 - FT, 192.168.69.100 - GCS, PORT - 19728
         UdpClient FTudpClient;
         IPEndPoint FTudpEndPoint;
         internal static GMapOverlay FTOverlay = new GMapOverlay();
-
 
         public override string Name
         {
@@ -191,29 +175,26 @@ namespace ptPlugin1
             get { return "Schaffer Andras"; }
         }
 
+        // Init called when the plugin dll is loaded
         //[DebuggerHidden]
         public override bool Init()
-        //Init called when the plugin dll is loaded
         {
-            loopratehz = 5;  //Loop runs every second (The value is in Hertz, so 2 means every 500ms, 0.1f means every 10 second...) 
+            loopratehz = 5;  // Loop runs every second (The value is in Hertz, so 2 means every 500ms, 0.1f means every 10 second...) 
 
             return true;	 // If it is false then plugin will not load
         }
 
+        // Loaded called after the plugin dll successfully loaded
         public override bool Loaded()
-        //Loaded called after the plugin dll successfully loaded
         {
-
             tsLandingPoint.Text = "Set Landing Point";
             tsLandingPoint.Click += TsLandingPoint_Click;
             Host.FDMenuMap.Items.Add(tsLandingPoint);
             landingOverlay = new GMapOverlay("landing");
 
-
             tsStartSim.Text = "Start Simulator";
             tsStartSim.Click += TsStartSim_Click;
             Host.FDMenuMap.Items.Add(tsStartSim);
-
 
             tsSetupFleet.Text = "Setup Fleet";
             tsSetupFleet.Click += TsSetupFleet_Click;
@@ -223,9 +204,7 @@ namespace ptPlugin1
             tsDoAutoConnect.Click += TsDoAutoConnect_Click; 
             Host.FDMenuMap.Items.Add(tsDoAutoConnect);
 
-
             Panel panel1 = Host.MainForm.Controls.Find("Panel1", true).FirstOrDefault() as Panel;
-
 
             string[] btnLabels = new string[] {
                 "PLANE",
@@ -271,7 +250,6 @@ namespace ptPlugin1
                 "MSG",
                 "COMMS" };
 
-
             aMain1.setPanels(btnNames, btnLabels);
             aMain1.Enabled = true;
             aMain1.Location = new Point(0, 0);
@@ -311,18 +289,15 @@ namespace ptPlugin1
             aMain3.Active = false;
             aMain3.Refresh();
 
-
             MainV2.instance.BeginInvoke((MethodInvoker)(() =>
             {
-
                 MenuStrip MainMenu = Host.MainForm.Controls.Find("MainMenu", true).FirstOrDefault() as MenuStrip;
                 if (MainMenu != null) MainMenu.Visible = false;
 
                 panel1.Size = new Size(panel1.Width, 141);
-
             }));
 
-            //Check undocked status
+            // Check undocked status
             if (Settings.Instance["aMainDocked"] != null)
             {
                 bool aMainDocked = Settings.Instance.GetBoolean("aMainDocked");
@@ -333,11 +308,8 @@ namespace ptPlugin1
                 else
                 {
                     panel1.Controls.Add(aMain1);
-
                     panel1.Controls.Add(aMain2); 
                     panel1.Controls.Add(aMain3);
-
-
                 }
             }
             else
@@ -346,7 +318,6 @@ namespace ptPlugin1
                 panel1.Controls.Add(aMain2);
                 panel1.Controls.Add(aMain3);
             }
-
 
             MainV2.instance.BeginInvoke((MethodInvoker)(() =>
             {
@@ -360,7 +331,6 @@ namespace ptPlugin1
                 }
             }));
 
-
             colorMessagePage.Text = "ColorMessages";
             colorMessagePage.Name = "colorMsgTab";
             fctb = new FastColoredTextBoxNS.FastColoredTextBox();
@@ -368,7 +338,6 @@ namespace ptPlugin1
             this.fctb.Size = colorMessagePage.ClientSize;
             colorMessagePage.Controls.Add(fctb);
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(colorMessagePage);
-
 
             payloadControlpage.Text = "PayloadControl";
             payloadControlpage.Name = "payLoadCTRTab";
@@ -402,10 +371,6 @@ namespace ptPlugin1
 
             eCtrl.setEngineStatus("Ready to Start", "No error");
 
-
-
-
-
             connectionControlPage.Text = "Comms";
             connectionControlPage.Name = "commsTab";
 
@@ -420,7 +385,6 @@ namespace ptPlugin1
             connectionControlPage.Controls.Add(connectionStats);
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(connectionControlPage);
 
-
             batteryPage.Text = "Battery";
             batteryPage.Name = "battTab";
             bp.Location = new Point(0, 0);
@@ -429,7 +393,6 @@ namespace ptPlugin1
             batteryPage.Controls.Add(bp);
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(batteryPage);
 
-
             ekfPage.Text = "EKF";
             ekfPage.Name = "ekfTab";
             ekfPage.Controls.Add(ekfStat);
@@ -437,7 +400,6 @@ namespace ptPlugin1
             ekfStat.Location = new Point(0, 0);
             ekfStat.Dock = DockStyle.Fill;
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(ekfPage);
-
 
             pitotPage.Text = "Airspeed";
             pitotPage.Name = "pitotTab";
@@ -457,21 +419,18 @@ namespace ptPlugin1
             fuel.loadedFuelClicked += Fuel_loadedFuelClicked;
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(fuelPage);
 
-
             landingPage.Text = "Landing";
             landingPage.Name = "landingTab";
             landingPage.Controls.Add(lc);
             lc.Size = landingPage.ClientSize;
             lc.Location = new Point(0, 0);
             lc.Dock = DockStyle.Fill;
-            lc.StartLandingClicked += Lc_waitClicked;
-            lc.landClicked += Lc_landClicked;
+            lc.StartLandingClicked += Lc_startLandingClicked;
             lc.setspeedClicked += Lc_setspeedClicked;
             lc.setCruiseSpeedClicked += Lc_setCruiseSpeedClicked;
             lc.abortLandingClicked += Lc_abortLandingClicked;
             lc.nudgeSpeedClicked += Lc_nudgeSpeedClicked;
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(landingPage);
-
 
             initTWPConsole();
             twpPage.Text = "Timed Waypoints";
@@ -527,7 +486,7 @@ namespace ptPlugin1
                 tlOw.Controls.Add(l3, 2, i);
             }
 
-            //Update Row Names
+            // Update Row Names
             ((Label)tlOw.GetControlFromPosition(0, 0)).Text = "SYSID";
             ((Label)tlOw.GetControlFromPosition(0, 1)).Text = "Callsign";
             ((Label)tlOw.GetControlFromPosition(0, 2)).Text = "AirSpeed";
@@ -543,9 +502,8 @@ namespace ptPlugin1
 
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(overviewPage);
 
-
             #region FTDataDisplaySetup
-            //*** Flight termination data display setup
+            // Flight termination data display setup
             ftPage.Text = "Flight Termination System";
             ftPage.Name = "FlightTermViewTab";
             ftPage.Controls.Add(tlFT);
@@ -604,9 +562,8 @@ namespace ptPlugin1
             cb.Checked = false;
             cb.AutoSize = true;
             tlFT.Controls.Add(cb, 1, 10);
-
-
-            //Update Row Names
+             
+            // Update Row Names
             ((Label)tlFT.GetControlFromPosition(0, 0)).Text = "SYSID";
             ((Label)tlFT.GetControlFromPosition(0, 1)).Text = "FT State";
             ((Label)tlFT.GetControlFromPosition(0, 2)).Text = "AirSpeed";
@@ -619,42 +576,40 @@ namespace ptPlugin1
             ((Label)tlFT.GetControlFromPosition(0, 9)).Text = "AIR RSSI";
             ((Label)tlFT.GetControlFromPosition(0, 10)).Text = "Show on Map";
 
-
             Host.MainForm.FlightData.tabControlactions.TabPages.Add(ftPage);
-            //*** End of flight termination data display setup
+            // End of flight termination data display setup
             #endregion
 
-            //Get servo settings from config
+            // Get servo settings from config
             chuteServo = Settings.Instance.GetInt32("chuteServo", 9);
             Settings.Instance["chuteServo"] = chuteServo.ToString();
 
             chuteServoOpenPWM = Settings.Instance.GetInt32("chuteServoOpenPWM", 1100);
             Settings.Instance["chuteServoOpenPWM"] = chuteServoOpenPWM.ToString();
 
-
-            //Set up Fligh Termination UDP packet receiving 
+            // Set up Fligh Termination UDP packet receiving 
             FTudpEndPoint = new IPEndPoint(IPAddress.Parse("192.168.69.100"), 19728);
             FTudpClient = new UdpClient(19728);
             FTudpClient.BeginReceive(new AsyncCallback(ProcessFTMessage), null);
 
-            //Add Flight Termination Overlay
+            // Add Flight Termination Overlay
             FTOverlay.Id = "FTO";
             Host.FDGMapControl.Overlays.Add(FTOverlay);
 
-            return true;     //If it is false plugin will not start (loop will not called)
+            return true;     // If it is false plugin will not start (loop will not called)
         }
 
         private void ProcessFTMessage(IAsyncResult result)
         {
-
             try
             {
                 // Get message
                 byte[] m = FTudpClient.EndReceive(result, ref FTudpEndPoint);
+
                 // Restart listener
                 FTudpClient.BeginReceive(new AsyncCallback(ProcessFTMessage), null);
 
-                //Process the message
+                // Process the message
                 Console.WriteLine("FT Message received, SysID:" + m[0].ToString());
 
                 int sysid = m[0];
@@ -677,6 +632,7 @@ namespace ptPlugin1
                         ftstate = "UNKNOWN";
                         break;
                 }
+
                 string fltmode;
                 switch (m[15])
                 {
@@ -724,7 +680,6 @@ namespace ptPlugin1
 
                 MainV2.instance.BeginInvoke((MethodInvoker)(() =>
                 {
-
                     ((Label)tlFT.GetControlFromPosition(m[18] + 1, 0)).Text = sysid.ToString();
                     ((Label)tlFT.GetControlFromPosition(m[18] + 1, 1)).Text = ftstate;
                     ((Label)tlFT.GetControlFromPosition(m[18] + 1, 2)).Text = airspeed.ToString() + " m/s";
@@ -736,7 +691,6 @@ namespace ptPlugin1
                     ((Label)tlFT.GetControlFromPosition(m[18] + 1, 8)).Text = m[16].ToString() + "dBm";
                     ((Label)tlFT.GetControlFromPosition(m[18] + 1, 9)).Text = ((sbyte)m[17]).ToString() + "dBm";
                 }));
-
 
                 bool showplanes = ((CheckBox)tlFT.GetControlFromPosition(1, 10)).Checked;
                 if (!showplanes)
@@ -773,7 +727,6 @@ namespace ptPlugin1
             }
         }
 
-
         private void Fuel_loadedFuelClicked(object sender, EventArgs e)
         {
             Host.cs.fuel_loaded = fuel.loadedFuel;
@@ -784,10 +737,9 @@ namespace ptPlugin1
             AutoConnect.Start();
         }
 
-        //Setup sysid's and names and number of planes in the air;
+        // Setup sysid's and names and number of planes in the air;
         private void TsSetupFleet_Click(object sender, EventArgs e)
         {
-
             fleetSetup frm = new fleetSetup();
             frm.ShowDialog();
 
@@ -800,7 +752,7 @@ namespace ptPlugin1
 
             MainV2.instance.BeginInvoke((MethodInvoker)(() =>
             {
-                //If this is not a supervisor then you have to setup only one ID
+                // If this is not a supervisor then you have to setup only one ID
                 if (!isSupervisor())
                 {
                     aMain1.Active = true;
@@ -820,11 +772,9 @@ namespace ptPlugin1
                     panel1.Size = new Size(panel1.Width, panelsize);
 
                 }
-
-
             }));
 
-            //Send fleet setup data to the flight termination unit as well
+            // Send fleet setup data to the flight termination unit as well
             try
             {
                 UdpClient client = new UdpClient();
@@ -874,7 +824,7 @@ namespace ptPlugin1
 
         private void Lc_abortLandingClicked(object sender, EventArgs e)
         {
-            //Clean up markers
+            // Clean up markers
             try
             {
                 landingOverlay.Markers.RemoveAt(3);
@@ -885,10 +835,8 @@ namespace ptPlugin1
 
         private void Lc_setCruiseSpeedClicked(object sender, EventArgs e)
         {
-
             if (Host.cs.connected)
             {
-
                 var speed = MainV2.comPort.MAV.param["TRIM_ARSPD_CM"].Value / 100;
                 if (speed <= 0) return;
                 try
@@ -903,7 +851,6 @@ namespace ptPlugin1
             }
         }
 
-
         public void sendUDPBroadcast(string message)
         {
             try
@@ -915,34 +862,29 @@ namespace ptPlugin1
                 client.Close();
             }
             catch { }
-
         }
 
-        //Returns true if this is a supervisor station, if there is no setting then it returns false by default
+        // Returns true if this is a supervisor station, if there is no setting then it returns false by default
         public bool isSupervisor()
         {
             bool val = Settings.Instance.GetBoolean("Protar_Supervisor", false);
             return val;
         }
 
+        // Loop is called in regular intervalls (set by loopratehz)
         public override bool Loop()
-        //Loop is called in regular intervalls (set by loopratehz)
         {
-            //The most important thing is to do the landing update, this will run at 5hz 
-
+            //The most important thing is to do the landing update, this will run at 5hz
             doLanding();
 
             //If 500ms ellapsed to the processing
             if (((TimeSpan)(DateTime.Now - lastNonCriticalUpdate)).TotalMilliseconds > 500)
             {
-
-
-
                 lastNonCriticalUpdate = DateTime.Now;
-
 
                 updateNotifications();
                 update_gauges();
+
                 if (isSupervisor()) updateOverview();
 
                 if (isSupervisor()) sendUDPBroadcast(sit.ToJSON());
@@ -951,7 +893,6 @@ namespace ptPlugin1
                 {
                     lc.updateLabels();
                 }));
-
 
                 #region MessagesBox
 
@@ -1107,8 +1048,6 @@ namespace ptPlugin1
 
                 #endregion
 
-
-
                 #region GCSPower
                 PowerStatus pwr = SystemInformation.PowerStatus;
                 bp.setGcsVoltage(pwr.BatteryLifePercent, pwr.PowerLineStatus);
@@ -1120,13 +1059,10 @@ namespace ptPlugin1
 
         private void updateOverview()
         {
-
             MainV2.instance.BeginInvoke((MethodInvoker)(() =>
             {
-
-            foreach (var port in MainV2.Comports)
-            {
-
+                foreach (var port in MainV2.Comports)
+                {
                     if (port.sysidcurrent != 0)
                     {
                         if (port.sysidcurrent == aMain1.SysID)
@@ -1143,7 +1079,6 @@ namespace ptPlugin1
                             ((Label)tlOw.GetControlFromPosition(1, 9)).Text = port.MAV.cs.eng_rpm.ToString("F0");
                             ((Label)tlOw.GetControlFromPosition(1, 10)).Text = port.MAV.cs.eng_egt.ToString("F0") + " C";
                             ((Label)tlOw.GetControlFromPosition(1, 11)).Text = port.MAV.cs.eng_throttle.ToString("F0") + " %";
-
                         }
 
                         if (port.sysidcurrent == aMain2.SysID)
@@ -1162,6 +1097,7 @@ namespace ptPlugin1
                             ((Label)tlOw.GetControlFromPosition(2, 11)).Text = port.MAV.cs.eng_throttle.ToString("F0") + " %";
 
                         }
+
                         if (port.sysidcurrent == aMain3.SysID)
                         {
                             ((Label)tlOw.GetControlFromPosition(3, 0)).Text = aMain3.SysID.ToString();
@@ -1178,52 +1114,43 @@ namespace ptPlugin1
                             ((Label)tlOw.GetControlFromPosition(3, 11)).Text = port.MAV.cs.eng_throttle.ToString("F0") + " %";
                         }
                     }
-            }
-
-
+                }
             }));
-
-
-
         }
 
+        // Exit called when plugin is terminated (usually when Mission Planner is exiting)
         public override bool Exit()
-        //Exit called when plugin is terminated (usually when Mission Planner is exiting)
         {
-
-
-            //Save position, we need to do it since formclose is not called in plugins
-
+            // Save position, we need to do it since formclose is not called in plugins
             annunciatorForm?.SaveStartupLocation();
-            return true;	//Return value is not used
+
+            return true;	// Return value is not used
         }
 
-
+        // This will handle the landing process
         private void doLanding()
         {
-            //This will handle the landing process
-
             if (!Host.cs.connected || !Host.cs.armed)
             {
                 lc.state = LandState.None;
                 return;
             }
 
-            //Check status
+            // Check status
             if (lc.state == LandState.None) return;
 
             if (lc.state == LandState.GoToWaiting)
             {
-                //Wait until we started loitering around the waiting point (+50meter need to check for discrepancies between loiter radius and actual radius
+                // Wait until we started loitering around the waiting point (+50meter need to check for discrepancies between loiter radius and actual radius
                 Console.WriteLine(Host.cs.Location.GetDistance(lc.WaitingPoint));
                 if (Host.cs.Location.GetDistance(lc.WaitingPoint) <= MainV2.comPort.MAV.param["WP_LOITER_RAD"].Value + 50
-                    && (Host.cs.alt <= lc.LandingAlt+20) )
+                    && (Host.cs.alt <= lc.LandingAlt + 20))
                 {
                     lc.state = LandState.WaitForSpeed;
                     try
                     {
                         MainV2.comPort.doCommandAsync(MainV2.comPort.MAV.sysid, MainV2.comPort.MAV.compid,
-                                MAVLink.MAV_CMD.DO_CHANGE_SPEED, 0, (float)lc.LandingSpeed, 0, 0, 0, 0, 0);
+                                MAVLink.MAV_CMD.DO_CHANGE_SPEED, 0, (float)lc.HoldingSpeed, 0, 0, 0, 0, 0);
                     }
                     catch
                     {
@@ -1235,7 +1162,7 @@ namespace ptPlugin1
 
             if (lc.state == LandState.WaitForSpeed)
             {
-                if (Host.cs.airspeed <= lc.LandingSpeed + 3)
+                if (Host.cs.airspeed <= lc.HoldingSpeed + 3)
                 {
                     lc.state = LandState.WaitForTangent;
                 }
@@ -1245,28 +1172,21 @@ namespace ptPlugin1
             {
                 if (Math.Abs(lc.WindDirection - Host.cs.yaw) < 3)
                 {
-                    /*
-                    // During the final we aim to reduce the speed to a set value (finalSpeed).
-                    // Todo: finalSpeed setting should be handled by the GUI.
-
-                    float finalSpeed = 30;
-                    // For testing, send landingSpeed again here (instead of finalSpeed)
-
+                    // Reduce the airspeed further during approach
                     try
                     {
                         MainV2.comPort.doCommandAsync(MainV2.comPort.MAV.sysid, MainV2.comPort.MAV.compid,
-                                MAVLink.MAV_CMD.DO_CHANGE_SPEED, 0, finalSpeed, 0, 0, 0, 0, 0);
+                                MAVLink.MAV_CMD.DO_CHANGE_SPEED, 0, (float)lc.ApproachSpeed, 0, 0, 0, 0, 0);
                     }
                     catch
                     {
                         lc.state = LandState.None;
                         CustomMessageBox.Show("Unable to set speed", "Error");
                     }
-                    */
 
                     lc.state = LandState.GoToLand;
-                    Locationwp gotohere = new Locationwp();
 
+                    Locationwp gotohere = new Locationwp();
                     gotohere.id = (ushort)MAVLink.MAV_CMD.WAYPOINT;
                     gotohere.alt = (float)lc.LandingPoint.Alt; // back to m
                     gotohere.lat = (lc.LandingPoint.Lat);
@@ -1282,17 +1202,27 @@ namespace ptPlugin1
                         CustomMessageBox.Show("Unable go to Landing point" + ex.Message, "ERROR");
                         lc.state = LandState.None;
                     }
-
                 }
             }
 
-            //Switch from landingpoint to target point if we are within loiter radius + 200meter
+            // Switch from landingpoint to target point if we are within loiter radius + 200meter
             if (lc.state == LandState.GoToLand)
             {
-                if (Host.cs.Location.GetDistance(lc.LandingPoint) <= MainV2.comPort.MAV.param["WP_LOITER_RAD"].Value + 200)
+                if (Host.cs.Location.GetDistance(lc.LandingPoint) <= MainV2.comPort.MAV.param["WP_LOITER_RAD"].Value + lc.FinalApproachDistance)
                 {
-                    Locationwp gotohere = new Locationwp();
+                    // Reduce the airspeed further during final approach
+                    try
+                    {
+                        MainV2.comPort.doCommandAsync(MainV2.comPort.MAV.sysid, MainV2.comPort.MAV.compid,
+                                MAVLink.MAV_CMD.DO_CHANGE_SPEED, 0, (float)lc.FinalApproachSpeed, 0, 0, 0, 0, 0);
+                    }
+                    catch
+                    {
+                        lc.state = LandState.None;
+                        CustomMessageBox.Show("Unable to set speed", "Error");
+                    }
 
+                    Locationwp gotohere = new Locationwp();
                     gotohere.id = (ushort)MAVLink.MAV_CMD.WAYPOINT;
                     gotohere.alt = (float)lc.TargetPoint.Alt; // back to m
                     gotohere.lat = (lc.TargetPoint.Lat);
@@ -1301,15 +1231,14 @@ namespace ptPlugin1
                     try
                     {
                         MainV2.comPort.setGuidedModeWP(gotohere);
-
                     }
                     catch { }
+
                     lc.state = LandState.CloseToLand;
                 }
             }
 
-
-            //Landing position calculation
+            // Landing position calculation
 
             var speed = Host.cs.airspeed;
             PointLatLngAlt currentpos = new PointLatLngAlt(Host.cs.Location);
@@ -1319,8 +1248,7 @@ namespace ptPlugin1
 
             if (Convert.ToBoolean(Host.config["reverse_winddir_drag", "true"]))
             {
-
-                wd = wrap360(lc.WindDirection-180);
+                wd = wrap360(lc.WindDirection - 180);
             }
             else
             {
@@ -1334,11 +1262,8 @@ namespace ptPlugin1
             GMarkerGoogle p2 = new GMarkerGoogle(openpos2, GMarkerGoogleType.yellow_small);
             p2.Tag = "p2";
 
-
-
             if (openpos2.GetDistance(lc.LandingPoint) <= 20 )
             {
-
                 if (lc.chute == ChuteState.AutoOpenEnabled)
                 {
                     Host.cs.messageHigh = "OPEN OPEN OPEN";
@@ -1349,13 +1274,11 @@ namespace ptPlugin1
                 {
                     Host.cs.messageHigh = "SIMULTED CHUTE OPEN";
                     SystemSounds.Exclamation.Play();
-
                 }
-
             }
+
             MainV2.instance.BeginInvoke((MethodInvoker)(() =>
             {
-
                 try
                 {
                     landingOverlay.Markers.RemoveAt(3);
@@ -1369,13 +1292,12 @@ namespace ptPlugin1
             }));
         }
 
-
         private void Lc_setspeedClicked(object sender, EventArgs e)
         {
             try
             {
                 MainV2.comPort.doCommandAsync(MainV2.comPort.MAV.sysid, MainV2.comPort.MAV.compid,
-                        MAVLink.MAV_CMD.DO_CHANGE_SPEED, 0, (float)lc.LandingSpeed, 0, 0, 0, 0, 0);
+                        MAVLink.MAV_CMD.DO_CHANGE_SPEED, 0, (float)lc.HoldingSpeed, 0, 0, 0, 0, 0);
             }
             catch
             {
@@ -1383,65 +1305,48 @@ namespace ptPlugin1
             }
         }
 
-        private void Lc_landClicked(object sender, EventArgs e)
+        private void Lc_startLandingClicked(object sender, EventArgs e)
         {
-
-            //Todo Check valid point
-            if (Host.cs.Location.GetDistance(lc.TargetPoint) > 8000)
-            {
-                CustomMessageBox.Show("Target point is more tha 8Km away!", "ERROR");
-                return;
-            }
-
-
-            Locationwp gotohere = new Locationwp();
-
-            gotohere.id = (ushort)MAVLink.MAV_CMD.WAYPOINT;
-            gotohere.alt = (float)lc.LandingPoint.Alt; // back to m
-            gotohere.lat = (lc.LandingPoint.Lat);
-            gotohere.lng = (lc.LandingPoint.Lng);
-
-            try
-            {
-                MainV2.comPort.setGuidedModeWP(gotohere);
-                lc.state = LandState.GoToLand;
-            }
-            catch (Exception ex)
-            {
-                CustomMessageBox.Show("Unable go to Landing point" + ex.Message, "ERROR");
-            }
-        }
-
-        private void Lc_waitClicked(object sender, EventArgs e)
-        {
-            //Todo Check valid point
+            // Check waiting point distance
             if (Host.cs.Location.GetDistance(lc.WaitingPoint) > 8000)
             {
                 CustomMessageBox.Show("Waiting point is more tha 8Km away!", "ERROR");
                 return;
             }
+            // TODO: Check valid point
 
-            lc.state = LandState.GoToWaiting;
+            // Reduce the airspeed further before reaching the turn
+            try
+            {
+                MainV2.comPort.doCommandAsync(MainV2.comPort.MAV.sysid, MainV2.comPort.MAV.compid,
+                        MAVLink.MAV_CMD.DO_CHANGE_SPEED, 0, (float)lc.HoldingSpeed, 0, 0, 0, 0, 0);
+            }
+            catch
+            {
+                lc.state = LandState.None;
+                CustomMessageBox.Show("Unable to set speed", "Error");
+            }
 
-            Locationwp gotohere = new Locationwp();
-
-            gotohere.id = (ushort)MAVLink.MAV_CMD.WAYPOINT;
-            gotohere.alt = (float)lc.WaitingPoint.Alt;  // back to m
-            gotohere.lat = (lc.WaitingPoint.Lat);
-            gotohere.lng = (lc.WaitingPoint.Lng);
-
+            // Send to waiting point in guided
+            Locationwp gotohere = new Locationwp()
+            {
+                id = (ushort)MAVLink.MAV_CMD.WAYPOINT,
+                alt = (float)lc.WaitingPoint.Alt, // back to m
+                lat = (lc.WaitingPoint.Lat),
+                lng = (lc.WaitingPoint.Lng)
+            };
             try
             {
                 MainV2.comPort.setGuidedModeWP(gotohere);
             }
             catch (Exception ex)
             {
-                CustomMessageBox.Show("Unable go to Waiting point" + ex.Message, "ERROR");
                 lc.state = LandState.None;
+                CustomMessageBox.Show("Unable go to Waiting point" + ex.Message, "ERROR");
             }
 
-
-
+            // Increment state
+            lc.state = LandState.GoToWaiting;
         }
 
         private void ECtrl_emergencyClicked(object sender, EventArgs e)
@@ -1461,7 +1366,6 @@ namespace ptPlugin1
 
         private void ECtrl_armClicked(object sender, EventArgs e)
         {
-            
             if (!Host.cs.connected)
                 return;
 
@@ -1518,11 +1422,10 @@ namespace ptPlugin1
 
         }
 
-        //set landing point an init landing sequence
+        // Set landing point
         private void TsLandingPoint_Click(object sender, EventArgs e)
         {
-
-            //Check wind velocity and if it is below 3m/s then ask for direction
+            // Check wind velocity and if it is below 4 m/s then ask for direction
             var winddir = Host.cs.g_wind_dir;
             string winddir_input = winddir.ToString();
 
@@ -1533,18 +1436,16 @@ namespace ptPlugin1
                 {
                     winddir = float.Parse(winddir_input);
                 }
-                catch
-                {
+                catch { }
 
-                }
-                //Sanity checks 
+                // Sanity checks 
                 if (winddir < 0 || winddir > 359) winddir = Host.cs.g_wind_dir;
             }
 
-            PointLatLngAlt lp = Host.FDMenuMapPosition;
-            float landReverse = Settings.Instance.GetFloat("LandDirectionReverse", 0);
-            Settings.Instance["LandDirectionReverse"] = landReverse.ToString();
+            float landReverse = Settings.Instance.GetFloat("LandDirectionReverse", 0);  // Load or default
+            Settings.Instance["LandDirectionReverse"] = landReverse.ToString();         // Save
    
+            PointLatLngAlt lp = Host.FDMenuMapPosition;
             lc.updateLandingData(lp, wrap360(winddir - landReverse), Host.cs.g_wind_vel, (int)MainV2.comPort.MAV.param["WP_LOITER_RAD"].Value);
    
             landingOverlay.Markers.Clear();
@@ -1570,10 +1471,8 @@ namespace ptPlugin1
             Host.FDGMapControl.Overlays.Add(landingOverlay);
             Host.FDGMapControl.Position = Host.FDGMapControl.Position;
 
-
             lc.LandingPoint.Tag = "LP";
             lc.WaitingPoint.Tag = "WP";
-
         }
 
         private void Pitot_calibrateClicked(object sender, EventArgs e)
@@ -1588,7 +1487,6 @@ namespace ptPlugin1
             {
                 CustomMessageBox.Show("You cannot do it while aircraft is armed!", "Action", MessageBoxButtons.OK);
                 return;
-
             }
 
             if (CustomMessageBox.Show("Are you sure you want to do Preflight Calibration ?", "Action", MessageBoxButtons.YesNo) == (int)DialogResult.Yes)
@@ -1601,14 +1499,11 @@ namespace ptPlugin1
                     int param2 = 0;
                     int param3 = 1;
 
-                    //baro/airspeed calibration, but no gyro !
+                    // baro/airspeed calibration, but no gyro !
                     param3 = 1; // baro / airspeed
                     var cmd = (MAVLink.MAV_CMD)Enum.Parse(typeof(MAVLink.MAV_CMD), "Preflight_Calibration".ToUpper());
 
-                    if (MainV2.comPort.doCommand(cmd, param1, param2, param3, 0, 0, 0, 0))
-                    {
-                    }
-                    else
+                    if (!MainV2.comPort.doCommand(cmd, param1, param2, param3, 0, 0, 0, 0))
                     {
                         CustomMessageBox.Show("Calibration Failed" + cmd, "ERROR");
                     }
@@ -1638,8 +1533,7 @@ namespace ptPlugin1
             plControl.redrawControls();
         }
 
-
-        //This updates the gauge data based on the currently selected mavlink datastream;
+        // This updates the gauge data based on the currently selected mavlink datastream;
         public void update_gauges()
         {
             eCtrl.setRpmEgt(Host.cs.eng_rpm, Host.cs.eng_egt);
@@ -1654,14 +1548,13 @@ namespace ptPlugin1
             plControl.setSafetyStatus(Host.cs.safety_switch);
         }
 
-        //This updates all annunciator panels, based on connected vehicles. (Assuming cs is updated)
+        // This updates all annunciator panels, based on connected vehicles. (Assuming cs is updated)
         public void updateNotifications()
         {
             foreach (var port in MainV2.Comports)
             {
                 if (port.sysidcurrent != 0)
                 {
-
                     if (port.sysidcurrent == aMain1.SysID)
                     {
                         Stat engineStat = Stat.NOMINAL;
@@ -1699,8 +1592,6 @@ namespace ptPlugin1
                         sit.pos1 = new PointLatLngAlt(port.MAV.cs.Location.Lat,port.MAV.cs.Location.Lng,port.MAV.cs.alt);
                         sit.heading1 = port.MAV.cs.yaw;
                         sit.airspeed1 = port.MAV.cs.airspeed;
-
-
                     }
 
                     if (port.sysidcurrent == aMain2.SysID)
@@ -1737,7 +1628,6 @@ namespace ptPlugin1
                         sit.pos2 = new PointLatLngAlt(port.MAV.cs.Location.Lat, port.MAV.cs.Location.Lng, port.MAV.cs.alt);
                         sit.heading2 = port.MAV.cs.yaw;
                         sit.airspeed2 = port.MAV.cs.airspeed;
-
                     }
 
                     if (port.sysidcurrent == aMain3.SysID)
@@ -1777,25 +1667,22 @@ namespace ptPlugin1
                     }
                 }
             }
-
         }
-
 
         public byte getBatteryStatus(CurrentState cs)
         {
-
-            byte retval = 0;
+            byte retval = 0;    // NOMINAL
 
             switch (cs.bat_servo1)
             {
                 case float f when f <= 6:
-                    retval = 2;
+                    retval = 2; // ALERT
                     break;
                 case float f when f > 6 && f <= 6.8:
-                    retval = 1;
+                    retval = 1; // WARNING
                     break;
-                case float f when f > 8.4:
-                    retval = 2;
+                case float f when f > 8.6:
+                    retval = 2; // ALERT
                     break;
                 default:
                     break;
@@ -1806,13 +1693,13 @@ namespace ptPlugin1
             switch (cs.bat_servo2)
             {
                 case float f when f <= 6:
-                    retval = 2;
+                    retval = 2; // ALERT
                     break;
                 case float f when f > 6 && f <= 6.8:
-                    retval = 1;
+                    retval = 1; // WARNING
                     break;
-                case float f when f > 8.4:
-                    retval = 2;
+                case float f when f > 8.6:
+                    retval = 2; // ALERT
                     break;
                 default:
                     break;
@@ -1823,43 +1710,45 @@ namespace ptPlugin1
             switch (cs.bat_payload)
             {
                 case float f when f <= 9:
-                    retval = 2;
+                    retval = 2; // ALERT
                     break;
                 case float f when f > 9 && f <= 10.2:
-                    retval = 1;
+                    retval = 1; // WARNING
                     break;
-                case float f when f > 12.6:
-                    retval = 2;
+                case float f when f > 12.8:
+                    retval = 2; // ALERT
                     break;
                 default:
                     break;
             }
+
             if (retval == 2) return retval;
 
             switch (cs.bat_main)
             {
                 case float f when f <= 12:
-                    retval = 2;
+                    retval = 2; // ALERT
                     break;
                 case float f when f > 12 && f <= 13.6:
-                    retval = 1;
+                    retval = 1; // WARNING
                     break;
-                case float f when f > 16.8:
-                    retval = 2;
+                case float f when f > 17:
+                    retval = 2; // ALERT
                     break;
                 default:
                     break;
             }
+
             if (retval == 2) return retval;
 
             PowerStatus pwr = SystemInformation.PowerStatus;
             switch (pwr.BatteryLifePercent)
             {
                 case float f when f <= 0.1:
-                    retval = 2;
+                    retval = 2; // ALERT
                     break;
                 case float f when f > 0.1 && f <= 0.2:
-                    retval = 1;
+                    retval = 1; // WARNING
                     break;
                 default:
                     break;
@@ -1869,16 +1758,14 @@ namespace ptPlugin1
 
         private void annunciator1_buttonClicked(object sender, EventArgs e)
         {
-
-            //Check if we are in the right vehicle, if not then switch vehicle
+            // Check if we are in the right vehicle, if not then switch vehicle
             var s = (annunciator)sender;
-
 
                 if (s.SysID != 0)
                 {
                     MainV2.instance.FlightPlanner.updateCurrentWpTable();
                     MainV2.instance.FlightPlanner.updatealltime();
-                    //If SysID os zero, then we does not have to update anything.
+                    // If SysID os zero, then we does not have to update anything.
                     if (s.SysID != Host.comPort.sysidcurrent)
                     {
                         foreach (var port in MainV2.Comports)
@@ -1887,8 +1774,8 @@ namespace ptPlugin1
                             {
                                 MainV2.comPort = port;
                                 MainV2.comPort.sysidcurrent = s.SysID;
-                                MainV2.comPort.compidcurrent = 1; //Always do the vehicle  
-                                MainV2.instance.FlightPlanner.UpdateVehicleMissionOnScreen(s.SysID);  //Notify FlightPlanner that we changed vehicle
+                                MainV2.comPort.compidcurrent = 1; // Always do the vehicle  
+                                MainV2.instance.FlightPlanner.UpdateVehicleMissionOnScreen(s.SysID);  // Notify FlightPlanner that we changed vehicle
                                 MainV2.View.Reload();
                             }
 
@@ -1899,21 +1786,23 @@ namespace ptPlugin1
                         }
                     }
                 }
-            //We also assume that all three controls are named and sorted on the same way, so no need to differentiate
+            // We also assume that all three controls are named and sorted on the same way, so no need to differentiate
             switch (s.clickedButtonName)
             {
                 case "FD":
                     MainV2.instance.MyView.ShowScreen("FlightData");
                     break;
+                
                 case "FP":
                     if (!MainV2.instance.FlightData.GetDropoutState("FlightPlanner")) MainV2.instance.MyView.ShowScreen("FlightPlanner");
                     MainV2.instance.FlightPlanner.cmb_missiontype.SelectedIndex = 0;
                     break;
+                
                 case "GF":
                     if (!MainV2.instance.FlightData.GetDropoutState("FlightPlanner")) MainV2.instance.MyView.ShowScreen("FlightPlanner");
                     MainV2.instance.FlightPlanner.cmb_missiontype.SelectedIndex = 1;
-
                     break;
+                
                 case "SETUP":
                     MainV2.instance.MyView.ShowScreen("HWConfig");
                     actualPanel = "SETUP";
@@ -1930,18 +1819,21 @@ namespace ptPlugin1
                         if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
                         break;
                     }
+
                 case "ENGINE":
                     {
                         TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["engCtrlTab"];
                         if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
                         break;
                     }
+
                 case "COMMS":
                     {
                         TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["commsTab"];
                         if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
                         break;
                     }
+
                 case "MSG":
                     {
                         TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["colorMsgTab"];
@@ -1951,62 +1843,71 @@ namespace ptPlugin1
                         aMain3.setStatus("MSG", Stat.NOMINAL);
                         break;
                     }
+
                 case "BATT":
                     {
                         TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["battTab"];
                         if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
                         break;
                     }
+
                 case "DATA":
                     {
                         TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["tabQuick"];
                         if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
                         break;
                     }
+
                 case "ACTIONS":
                     {
                         TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["tabActions"];
                         if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
                         break;
                     }
+
                 case "EKF":
                     {
                         TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["ekfTab"];
                         if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
                         break;
                     }
+
                 case "PITOT":
                     {
                         TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["pitotTab"];
                         if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
                         break;
                     }
+
                 case "FUEL":
                     {
                         TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["fuelTab"];
                         if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
                         break;
                     }
+
                 case "PREFLGHT":
                     {
                         TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["tabPagePreFlight"];
                         if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
                         break;
                     }
+
                 case "WEATHER":
                     {
                         TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["tabWeather"];
                         if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
                         break;
                     }
+
                 case "LAND":
                     {
                         TabPage tobeSelected = Host.MainForm.FlightData.tabControlactions.TabPages["landingTab"];
                         if (tobeSelected != null) Host.MainForm.FlightData.tabControlactions.SelectedTab = tobeSelected;
                         break;
                     }
-                default:
-                    break;
+
+                default: break;
             }
         }
 
@@ -2048,10 +1949,7 @@ namespace ptPlugin1
             (sender as Form).Dispose();
         }
 
-
-
         //************** FCTB
-
 
         void setupFCTB()
         {
@@ -2093,8 +1991,8 @@ namespace ptPlugin1
             this.fctb.TextSource.CurrentTB = fctb;
             this.fctb.AppendText("Messages starting", infoStyle);
             this.fctb.EndUpdate();
-            
         }
+
         float wrap360(float noin)
         {
             if (noin < 0)
@@ -2307,9 +2205,7 @@ namespace ptPlugin1
             this.twpPanel.ResumeLayout(false);
             this.twpPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgV)).EndInit();
-
         }
-
 
         //Start timed waypoint flight 
         //You have to be in Auto. This will change the next waypoint to the one in the TXT_WP textbox
@@ -2317,9 +2213,6 @@ namespace ptPlugin1
 
         private void BExecute_Click(object sender, EventArgs e)
         {
-
-            
-
             foreach (var port in MainV2.Comports)
             {
                 if ((port.sysidcurrent == aMain1.SysID) || (port.sysidcurrent == aMain2.SysID) || (port.sysidcurrent == aMain3.SysID))
@@ -2335,8 +2228,6 @@ namespace ptPlugin1
                     }
                 }
             }
-
-
         }
 
         private void BRefresh_Click(object sender, EventArgs e)
@@ -2392,14 +2283,6 @@ namespace ptPlugin1
             catch { }
         }
 
-
-
-
         #endregion
-
-
-
-
-
     }
 }

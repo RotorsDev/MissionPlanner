@@ -15,14 +15,17 @@ namespace ptPlugin1
     [PreventTheming]
     public partial class landingControl : UserControl
     {
-
         public int WaitDistance = 1000;
-        public int LandingSpeed = 42;
+        public int HoldingSpeed = 50;
+        public int ApproachSpeed = 35;
+        public int FinalApproachSpeed = 30;
+        public int FinalApproachDistance = 200;
         public float OpeningTime = 1.8f;
         public float SinkRate = 5f;
         public int LandingAlt = 100;
         public float WindDrag = 1.2f;
         public float WindDirection = 0;
+
         public ChuteState chute = ChuteState.AutoOpenDisabled;
 
         public PointLatLngAlt LandingPoint = new PointLatLngAlt();
@@ -32,9 +35,7 @@ namespace ptPlugin1
 
         public LandState state = LandState.None;
 
-
         public event EventHandler StartLandingClicked;
-        public event EventHandler landClicked;
         public event EventHandler setspeedClicked;
         public event EventHandler setCruiseSpeedClicked;
         public event EventHandler abortLandingClicked;
@@ -49,7 +50,6 @@ namespace ptPlugin1
             }
         }
 
-
         protected virtual void OnAbortLandingClicked(EventArgs e)
         {
             EventHandler handler = this.abortLandingClicked;
@@ -58,7 +58,6 @@ namespace ptPlugin1
                 handler(this, e);
             }
         }
-
 
         protected virtual void OnSpeedClicked(EventArgs e)
         {
@@ -87,27 +86,33 @@ namespace ptPlugin1
             }
         }
 
-        protected virtual void OnLandClicked(EventArgs e)
-        {
-            EventHandler handler = this.landClicked;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
         public void updateLabels()
         {
-
-            //instead of labels, we update the color of the label
+            // Instead of labels, we update the color of the label
             if (mWaitDistance.NumericUpDown.Value != WaitDistance)
                 mWaitDistance.NumericUpDown.BackColor = Color.Red;
             else
                 mWaitDistance.NumericUpDown.BackColor = Color.Green;
 
-            if (mLandSpeed.NumericUpDown.Value != LandingSpeed)
-                mLandSpeed.NumericUpDown.BackColor = Color.Red;
+            if (mHoldingSpeed.NumericUpDown.Value != HoldingSpeed)
+                mHoldingSpeed.NumericUpDown.BackColor = Color.Red;
             else
-                mLandSpeed.NumericUpDown.BackColor = Color.Green;
+                mHoldingSpeed.NumericUpDown.BackColor = Color.Green;
+
+            if (mApproachSpeed.NumericUpDown.Value != ApproachSpeed)
+                mApproachSpeed.NumericUpDown.BackColor = Color.Red;
+            else
+                mApproachSpeed.NumericUpDown.BackColor = Color.Green;
+
+            if (mFinalApproachSpeed.NumericUpDown.Value != FinalApproachSpeed)
+                mFinalApproachSpeed.NumericUpDown.BackColor = Color.Red;
+            else
+                mFinalApproachSpeed.NumericUpDown.BackColor = Color.Green;
+
+            if (mFinalApproachDistance.NumericUpDown.Value != FinalApproachDistance)
+                mFinalApproachDistance.NumericUpDown.BackColor = Color.Red;
+            else
+                mFinalApproachDistance.NumericUpDown.BackColor = Color.Green;
 
             if (mOPeningTime.NumericUpDown.Value != (int)(OpeningTime*10))
                 mOPeningTime.NumericUpDown.BackColor = Color.Red;
@@ -129,7 +134,6 @@ namespace ptPlugin1
             else
                 mWindDrag.NumericUpDown.BackColor = Color.Green;
 
-
             if (chute == ChuteState.AutoOpenDisabled)
             {
                 buttonEnableChuteOpen.Text = "ENABLE Auto Chute open";
@@ -145,51 +149,55 @@ namespace ptPlugin1
 
             lRightStatus.Text = state.ToString();
 
-            //Update labels as well
+            // Update labels as well
             lWaitDist.Text = WaitDistance.ToString();
-            lLandingSpeed.Text = LandingSpeed.ToString();
+            lHoldingSpeed.Text = HoldingSpeed.ToString();
+            lApproachSpeed.Text = ApproachSpeed.ToString();
+            lFinalApproachSpeed.Text = FinalApproachSpeed.ToString();
+            lFinalApproachDistance.Text = FinalApproachDistance.ToString();
             lOpeningTime.Text = OpeningTime.ToString("F1");
             lSinkRate.Text = SinkRate.ToString("F1");
             lLandAlt.Text = LandingAlt.ToString();
             lWindDrag.Text = WindDrag.ToString("F1");
-
         }
 
         public landingControl()
         {
             InitializeComponent();
 
-
             mWaitDistance.NumericUpDown.Maximum = 5000;
-
             mWaitDistance.NumericUpDown.Value = WaitDistance;
-            mLandSpeed.NumericUpDown.Value = LandingSpeed;
+            mHoldingSpeed.NumericUpDown.Value = HoldingSpeed;
+            mApproachSpeed.NumericUpDown.Value = ApproachSpeed;
+            mFinalApproachSpeed.NumericUpDown.Value = FinalApproachSpeed;
+            mFinalApproachDistance.NumericUpDown.Value = FinalApproachDistance;
             mOPeningTime.NumericUpDown.Value = (int)(OpeningTime * 10) ;
             mSInkRate.NumericUpDown.Value = (int)(SinkRate * 10);
             mLandingAlt.NumericUpDown.Value = LandingAlt;
             mWindDrag.NumericUpDown.Value = (int)(WindDrag * 10);
-
 
             //Update labels as well
             updateLabels();
 
             mWaitDistance.Button.Click += bWaitDistanceSet_clicked;
             mLandingAlt.Button.Click += bLandingAltSet_clicked;
-            mLandSpeed.Button.Click += bLandingSpeedSet_clicked;
+            mHoldingSpeed.Button.Click += bHoldingSpeedSet_clicked;
+            mApproachSpeed.Button.Click += bApproachSpeedSet_clicked;
+            mFinalApproachSpeed.Button.Click += bFinalApproachSpeedSet_clicked;
+            mFinalApproachDistance.Button.Click += bFinalApproachDistanceSet_clicked;
             mOPeningTime.Button.Click += bOpeningTimeSet_clicked;
             mSInkRate.Button.Click += bSinkRateSet_clicked;
             mWindDrag.Button.Click += bWindDragSet_clicked;
 
             mWaitDistance.NumericUpDown.ValueChanged += NumericUpDown_ValueChanged;
             mLandingAlt.NumericUpDown.ValueChanged += NumericUpDown_ValueChanged;
-            mLandSpeed.NumericUpDown.ValueChanged += NumericUpDown_ValueChanged;
+            mHoldingSpeed.NumericUpDown.ValueChanged += NumericUpDown_ValueChanged;
+            mApproachSpeed.NumericUpDown.ValueChanged += NumericUpDown_ValueChanged;
+            mFinalApproachSpeed.NumericUpDown.ValueChanged += NumericUpDown_ValueChanged;
+            mFinalApproachDistance.NumericUpDown.ValueChanged += NumericUpDown_ValueChanged;
             mOPeningTime.NumericUpDown.ValueChanged += NumericUpDown_ValueChanged;
             mSInkRate.NumericUpDown.ValueChanged += NumericUpDown_ValueChanged;
             mWindDrag.NumericUpDown.ValueChanged += NumericUpDown_ValueChanged;
-
-
-
-
         }
 
         private void NumericUpDown_ValueChanged(object sender, EventArgs e)
@@ -216,9 +224,27 @@ namespace ptPlugin1
             updateLabels();
         }
 
-        private void bLandingSpeedSet_clicked(object sender, EventArgs e)
+        private void bHoldingSpeedSet_clicked(object sender, EventArgs e)
         {
-            LandingSpeed = (int)mLandSpeed.NumericUpDown.Value;
+            HoldingSpeed = (int)mHoldingSpeed.NumericUpDown.Value;
+            updateLabels();
+        }
+
+        private void bApproachSpeedSet_clicked(object sender, EventArgs e)
+        {
+            ApproachSpeed = (int)mApproachSpeed.NumericUpDown.Value;
+            updateLabels();
+        }
+
+        private void bFinalApproachSpeedSet_clicked(object sender, EventArgs e)
+        {
+            FinalApproachSpeed = (int)mFinalApproachSpeed.NumericUpDown.Value;
+            updateLabels();
+        }
+
+        private void bFinalApproachDistanceSet_clicked(object sender, EventArgs e)
+        {
+            FinalApproachDistance = (int)mFinalApproachDistance.NumericUpDown.Value;
             updateLabels();
         }
 
@@ -245,18 +271,13 @@ namespace ptPlugin1
             TargetPoint = l.newpos(WindDir, 2000);
             lLandPoint.Text = l.Lat.ToString("F5") + "," + l.Lng.ToString("F5");
             WindDirection = WindDir;
-
         }
-        float wrap360(float noin)
+
+        private float wrap360(float noin)
         {
             if (noin < 0)
                 return noin + 360;
             return noin;
-        }
-
-        private void mWaitDistance_Load(object sender, EventArgs e)
-        {
-
         }
 
         private void bStartLanding_Click(object sender, EventArgs e)
