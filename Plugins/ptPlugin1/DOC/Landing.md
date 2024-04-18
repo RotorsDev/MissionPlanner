@@ -26,6 +26,8 @@ flowchart TD
     updateLandingData --> a14
 ```
 
+![Landing points](Landing_points_dark.png)
+
 ## Landing procedure start
 
 ```mermaid
