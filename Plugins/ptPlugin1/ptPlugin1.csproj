@@ -39,6 +39,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="DOC\Landing.md" />
     <None Include="packages.config" />
     <None Include="timedwp.lua">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
