@@ -1,4 +1,11 @@
-# Protar landing procedure
+# Protar landing procedure<!-- omit from toc -->
+
+1. [Landing point selection](#landing-point-selection)
+2. [Landing points calculation](#landing-points-calculation)
+3. [Landing procedure start](#landing-procedure-start)
+4. [Landing procedure](#landing-procedure)
+5. [Landing procedure state machine](#landing-procedure-state-machine)
+6. [Landing settings window](#landing-settings-window)
 
 ## Landing point selection
 
@@ -25,6 +32,8 @@ flowchart TD
     a23 --> a24
     updateLandingData --> a14
 ```
+
+## Landing points calculation
 
 ![Landing points](Landing_points_dark.png)
 
@@ -135,3 +144,7 @@ The `doLanding` procedure is constantly running in a 5Hz loop.
 | GoToLand | UAV is heading to the landing point |
 | CloseToLand | UAV is on final approach to the landing point |
 | Land | Not used |
+
+## Landing settings window
+
+![Landing settings window](<Landing settings window.jpg>)
