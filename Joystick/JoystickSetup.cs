@@ -6,7 +6,6 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
-
 namespace MissionPlanner.Joystick
 {
     public partial class JoystickSetup : MyUserControl, IDeactivate
@@ -447,6 +446,7 @@ namespace MissionPlanner.Joystick
 
             switch ((buttonfunction)Enum.Parse(typeof(buttonfunction), cmb.SelectedItem.ToString()))
             {
+                // Base functions
                 case buttonfunction.ChangeMode:
                     new Joy_ChangeMode((string)cmb.Tag).ShowDialog();
                     break;
@@ -471,6 +471,18 @@ namespace MissionPlanner.Joystick
                 case buttonfunction.Button_axis1:
                     new Joy_Button_axis((string)cmb.Tag).ShowDialog();
                     break;
+
+                // MV04 functions
+                case buttonfunction.MV04_Arm:
+                    new Joy_MV04_Arm((string)cmb.Tag).ShowDialog();
+                    break;
+                case buttonfunction.MV04_CameraMode:
+                    new Joy_MV04_CameraMode((string)cmb.Tag).ShowDialog();
+                    break;
+                case buttonfunction.MV04_FlightMode:
+                    new Joy_MV04_FlightMode((string)cmb.Tag).ShowDialog();
+                    break;
+
                 default:
                     CustomMessageBox.Show("No settings to set", "No settings");
                     break;

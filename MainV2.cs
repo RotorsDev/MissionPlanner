@@ -1383,6 +1383,14 @@ namespace MissionPlanner
             SaveConfig();
         }
 
+        private void MenuCameraView_Click(object sender, EventArgs e)
+        {
+            MyView.ShowScreen("CameraView");
+
+            // Save config
+            SaveConfig();
+        }
+
         public void MenuSetup_Click(object sender, EventArgs e)
         {
             if (Settings.Instance.GetBoolean("password_protect") == false)
@@ -3140,6 +3148,7 @@ namespace MissionPlanner
 
             MyView.AddScreen(new MainSwitcher.Screen("FlightData", FlightData, true));
             MyView.AddScreen(new MainSwitcher.Screen("FlightPlanner", FlightPlanner, true));
+            MyView.AddScreen(new MainSwitcher.Screen("CameraView", typeof(GCSViews.CameraView), true));
             MyView.AddScreen(new MainSwitcher.Screen("HWConfig", typeof(GCSViews.InitialSetup), false));
             MyView.AddScreen(new MainSwitcher.Screen("SWConfig", typeof(GCSViews.SoftwareConfig), false));
             MyView.AddScreen(new MainSwitcher.Screen("Simulation", Simulation, true));

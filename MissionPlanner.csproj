@@ -149,6 +149,9 @@
     <EmbeddedResource Include="Controls\Vibration.uk.resx">
       <DependentUpon>Vibration.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GCSViews\CameraView.resx">
+      <DependentUpon>CameraView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GCSViews\ConfigurationView\ConfigAccelerometerCalibration.uk.resx">
       <DependentUpon>ConfigAccelerometerCalibration.cs</DependentUpon>
     </EmbeddedResource>
@@ -318,6 +321,12 @@
     <EmbeddedResource Include="Joystick\Joy_Mount_Mode.uk.resx">
       <DependentUpon>Joy_Mount_Mode.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Joystick\Joy_MV04_CameraMode.resx">
+      <DependentUpon>Joy_MV04_CameraMode.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Joystick\Joy_MV04_FlightMode.resx">
+      <DependentUpon>Joy_MV04_FlightMode.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Log\LogBrowse.uk.resx">
       <DependentUpon>LogBrowse.cs</DependentUpon>
     </EmbeddedResource>
@@ -332,12 +341,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Log\MavlinkLog.uk.resx">
       <DependentUpon>MavlinkLog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MV04\HudCrosshairCalc\TestForm.resx">
-      <DependentUpon>TestForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MV04\Settings\SettingForm.resx">
-      <DependentUpon>SettingForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Radio\Sikradio.uk.resx">
       <DependentUpon>Sikradio.cs</DependentUpon>
@@ -362,6 +365,10 @@
     <Reference Include="BitMiracle.LibTiff.NetStandard">
       <HintPath>.\extlibs\BitMiracle.LibTiff.NetStandard.dll</HintPath>
       <Private>true</Private>
+    </Reference>
+    <Reference Include="NextVisionVideoControlLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ExtLibs\MV04.Camera\NextVisionVideoControlLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -504,6 +511,14 @@
       <Name>MissionPlanner.Drawing</Name>
       <Aliases>Drawing</Aliases>
     </ProjectReference>
+    <ProjectReference Include="ExtLibs\MV04.Camera\MV04.Camera.csproj">
+      <Project>{e12dbd68-f282-491a-be11-5e6ff21932c1}</Project>
+      <Name>MV04.Camera</Name>
+    </ProjectReference>
+    <ProjectReference Include="ExtLibs\MV04.Settings\MV04.Settings.csproj">
+      <Project>{2a73fa7a-705c-467e-9c31-f1d0978e366e}</Project>
+      <Name>MV04.Settings</Name>
+    </ProjectReference>
     <ProjectReference Include="ExtLibs\netDxf\netDxf.csproj">
       <Project>{785380e0-ceb9-4c34-82e5-60d0e33e848e}</Project>
       <Name>netDxf</Name>
@@ -600,6 +615,9 @@
     <PackageReference Include="BouncyCastle.Cryptography">
       <Version>2.0.0</Version>
     </PackageReference>
+    <PackageReference Include="CoordinateSharp">
+      <Version>2.22.1.1</Version>
+    </PackageReference>
     <PackageReference Include="Crc32.NET">
       <Version>1.2.0</Version>
     </PackageReference>
@@ -652,6 +670,9 @@
     </PackageReference>
     <PackageReference Include="SharpDX" version="4.1.0" targetFramework="net462" />
     <PackageReference Include="SharpDX.DirectInput" version="4.1.0" targetFramework="net462" />
+    <PackageReference Include="SharpGL.WinForms">
+      <Version>3.1.1</Version>
+    </PackageReference>
     <PackageReference Include="SkiaSharp" Version="2.80.2" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies">
       <Version>2.80.3</Version>
@@ -799,6 +820,12 @@
     <Compile Include="Controls\FollowMe.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="GCSViews\CameraView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GCSViews\CameraView.Designer.cs">
+      <DependentUpon>CameraView.cs</DependentUpon>
+    </Compile>
     <Compile Include="GCSViews\ConfigurationView\ConfigADSB.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -917,6 +944,24 @@
     <Compile Include="Joystick\JoystickAxis.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Joystick\Joy_MV04_Arm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Joystick\Joy_MV04_Arm.Designer.cs">
+      <DependentUpon>Joy_MV04_Arm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Joystick\Joy_MV04_CameraMode.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Joystick\Joy_MV04_CameraMode.Designer.cs">
+      <DependentUpon>Joy_MV04_CameraMode.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Joystick\Joy_MV04_FlightMode.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Joystick\Joy_MV04_FlightMode.Designer.cs">
+      <DependentUpon>Joy_MV04_FlightMode.cs</DependentUpon>
+    </Compile>
     <Compile Include="Log\MavlinkLogBase.cs" />
     <Compile Include="MainV2.cs">
       <SubType>Form</SubType>
@@ -925,120 +970,16 @@
       <SubType>Form</SubType>
       <DependentUpon>MainV2.cs</DependentUpon>
     </Compile>
-    <Compile Include="MV04\CameraControlLib\MavProto.cs" />
-    <Compile Include="MV04\HudCrosshairCalc\HudCrosshairCalc.cs" />
-    <Compile Include="MV04\HudCrosshairCalc\HudElements.cs" />
-    <Compile Include="MV04\HudCrosshairCalc\TestForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MV04\HudCrosshairCalc\TestForm.Designer.cs">
-      <DependentUpon>TestForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MV04\HudCrosshairCalc\TestPlugin.cs" />
-    <Compile Include="MV04\Settings\SettingForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MV04\Settings\SettingForm.Designer.cs">
-      <DependentUpon>SettingForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MV04\Settings\SettingManager.cs" />
     <Compile Include="NativeMethods.cs" />
     <None Include="Drivers\cubeorangeplus.cat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="libman.json" />
     <None Include="MissionPlanner.GCSViews.ConfigurationView.ConfigGPSOrder+GPSCAN.datasource" />
     <None Include="MissionPlanner.GCSViews.ConfigurationView.ConfigHWCompass2+CompassDeviceInfo.datasource" />
-    <None Include="MV04\HudCrosshairCalc\README.md" />
-    <None Include="MV04\Settings\README.md" />
-    <None Include="plugins\example10-canlogfile.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example11-trace.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example12-forwarding.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example13-herelink2.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example14-mass.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example15-leds.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example16-donate.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example17-menuremove.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example18-externalapi.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example19-multiforward.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example21-persistentsimple.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example20-multiplepositions.cs" />
     <Compile Include="Utilities\AirMarket.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <None Include="plugins\example2-menu.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example3-fencedist.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example4-herelink.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example5-latencytracker.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example6-mapicondesc.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example7-canrtcm.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example8-modechange.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\generator.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <SubType>UserControl</SubType>
-    </None>
-    <None Include="plugins\example.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example2.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example3.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example4.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example5.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example6.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example7.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example8.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="plugins\example9-hudonoff.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Radio\Models.cs" />
     <Compile Include="ResEdit.Designer.cs">
@@ -4892,9 +4833,6 @@
     <Content Include="rotmat.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="plugins\example-watchbutton.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include=".editorconfig" />
     <None Include="BurntKermit.mpsystheme">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -5277,7 +5215,7 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="MV04\CameraViewLib\" />
+    <Folder Include="plugins\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

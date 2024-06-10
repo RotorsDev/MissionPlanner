@@ -1,13 +1,14 @@
-﻿using System;
+﻿using log4net;
+using MissionPlanner.ArduPilot;
+using MissionPlanner.Utilities;
+using MV04.Camera;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using log4net;
-using MissionPlanner.ArduPilot;
-using MissionPlanner.Utilities;
 
 namespace MissionPlanner.Joystick
 {
@@ -368,6 +369,7 @@ namespace MissionPlanner.Joystick
 
                 switch (but.function)
                 {
+                    // Base functions
                     case buttonfunction.ChangeMode:
                         string mode = but.mode;
                         if (mode != null)
@@ -593,6 +595,60 @@ namespace MissionPlanner.Joystick
                             catch
                             {
                                 CustomMessageBox.Show("Failed to Button_axis1");
+                            }
+                        }, null);
+                        break;
+
+                    // MV04 functions
+                    case buttonfunction.MV04_SnapShot:
+                        _context.Send(delegate
+                        {
+                            CameraHandler.DoPhoto();
+                        }, null);
+                        break;
+                    case buttonfunction.MV04_FlightMode:
+                        _context.Send(delegate
+                        {
+                            switch ((int)Math.Round(but.p1))
+                            {
+                                case 0: // Loiter
+                                    // TODO: Switch camera and joysticks to Loiter mode
+                                    break;
+                                case 1: // TapToFly
+                                    // TODO: Switch camera and joysticks to TapToFly mode
+                                    break;
+                                case 2: // Auto
+                                    // TODO: Switch camera and joysticks to Auto mode
+                                    break;
+                                case 3: // Track
+                                    // TODO: Switch camera and joysticks to Track mode
+                                    break;
+                                default: break;
+                            }
+                        }, null);
+                        break;
+                    case buttonfunction.MV04_CameraMode:
+                        _context.Send(delegate
+                        {
+                            CameraHandler.SetImageSensorAsync((int)Math.Round(but.p1) == 1);
+                            // p1 = 0 -> Day   -> false
+                            // p1 = 1 -> Night -> true
+                        }, null);
+                        break;
+                    case buttonfunction.MV04_Arm:
+                        _context.Send(delegate
+                        {
+                            switch ((int)Math.Round(but.p1))
+                            {
+                                case 0: // Safe
+                                    Interface.doARM((byte)Interface.sysidcurrent, (byte)Interface.compidcurrent, false);
+                                    Interface.setMode(new MAVLink.mavlink_set_mode_t() { custom_mode = 1u, target_system = (byte)Interface.sysidcurrent }, MAVLink.MAV_MODE_FLAG.SAFETY_ARMED);
+                                    break;
+                                case 1: // Armed
+                                    Interface.setMode(new MAVLink.mavlink_set_mode_t() { custom_mode = 0u, target_system = (byte)Interface.sysidcurrent }, MAVLink.MAV_MODE_FLAG.SAFETY_ARMED);
+                                    Interface.doARM((byte)Interface.sysidcurrent, (byte)Interface.compidcurrent, true);
+                                    break;
+                                default: break;
                             }
                         }, null);
                         break;

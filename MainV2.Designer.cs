@@ -45,6 +45,7 @@ namespace MissionPlanner
             this.connectionListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuFlightData = new System.Windows.Forms.ToolStripButton();
             this.MenuFlightPlanner = new System.Windows.Forms.ToolStripButton();
+            this.MenuCamera = new System.Windows.Forms.ToolStripButton();
             this.MenuInitConfig = new System.Windows.Forms.ToolStripButton();
             this.MenuConfigTune = new System.Windows.Forms.ToolStripButton();
             this.MenuSimulation = new System.Windows.Forms.ToolStripButton();
@@ -69,6 +70,7 @@ namespace MissionPlanner
             this.MainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuFlightData,
             this.MenuFlightPlanner,
+            this.MenuCamera,
             this.MenuInitConfig,
             this.MenuConfigTune,
             this.MenuSimulation,
@@ -140,6 +142,14 @@ namespace MissionPlanner
             this.MenuFlightPlanner.Margin = new System.Windows.Forms.Padding(0);
             this.MenuFlightPlanner.Name = "MenuFlightPlanner";
             this.MenuFlightPlanner.Click += new System.EventHandler(this.MenuFlightPlanner_Click);
+            // 
+            // MenuCamera
+            // 
+            this.MenuCamera.ForeColor = System.Drawing.SystemColors.ControlLight;
+            resources.ApplyResources(this.MenuCamera, "MenuCamera");
+            this.MenuCamera.Margin = new System.Windows.Forms.Padding(0);
+            this.MenuCamera.Name = "MenuCamera";
+            this.MenuCamera.Click += new System.EventHandler(this.MenuCameraView_Click);
             // 
             // MenuInitConfig
             // 
@@ -248,6 +258,7 @@ namespace MissionPlanner
 
         public System.Windows.Forms.ToolStripButton MenuFlightData;
         public System.Windows.Forms.ToolStripButton MenuFlightPlanner;
+        public System.Windows.Forms.ToolStripButton MenuCamera;
         public System.Windows.Forms.ToolStripButton MenuInitConfig;
         public System.Windows.Forms.ToolStripButton MenuSimulation;
         public System.Windows.Forms.ToolStripButton MenuConfigTune;

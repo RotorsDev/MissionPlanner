@@ -353,6 +353,9 @@ namespace MissionPlanner
         [DisplayText("Alt Home Offset (dist)")]
         public float altoffsethome { get; set; }
 
+        /// <summary>
+        /// GPS status number (0 = no GPS, 1 = no fix, 2 = 2D fix, 3 = 3D fix, 4 = 3D dgps, 5 = rtk float, 6 = rtk fixed)
+        /// </summary>
         [GroupText("Position")]
         [DisplayText("Gps Status")]
         public float gpsstatus { get; set; }

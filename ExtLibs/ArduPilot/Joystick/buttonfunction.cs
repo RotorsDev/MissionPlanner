@@ -2,6 +2,7 @@
 {
     public enum buttonfunction
     {
+        // Base functions
         ChangeMode,
         Do_Set_Relay,
         Do_Repeat_Relay,
@@ -17,5 +18,11 @@
         Mount_Control_0,
         Button_axis0,
         Button_axis1,
+
+        // MV04 functions
+        MV04_SnapShot = 20,
+        MV04_FlightMode,
+        MV04_CameraMode,
+        MV04_Arm
     }
 }
